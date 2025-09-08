@@ -25,3 +25,6 @@ This is a document that should be processed by the publishing software of the Jo
 It is necessary for journal submissions to be compilable.
 Hence, this is an attempt to provide a working foundation to build the paper off.
 
+# Acknowledgements
+
+Matthijs van der Wild is supported by the Science and Technology Facilities Council via LOFAR-U.K. [ST/V002406/1] and UKSRC [ST/T000244/1].
