@@ -1,6 +1,19 @@
 ---
 title: "Hello, World!"
-authors: []
+authors:
+  - name: Matthijs van der Wild
+    orcid: 0000-0002-3949-3063
+    corresponding: true
+    affiliation: 1
+affiliations:
+  - index: 1
+    name: |
+        Centre for Extragalactic Astronomy,
+        Deparment of Physics,
+        Durham University,
+        South Road,
+        Durham DH1 3LE, UK
+    index: 1
 ---
 
 # Summary
