@@ -1,5 +1,5 @@
 ---
-title: "Hello, World!"
+title: An automated pipeline for LOFAR very-long baseline interferometry
 authors:
   - name: Matthijs van der Wild
     orcid: 0000-0002-3949-3063
