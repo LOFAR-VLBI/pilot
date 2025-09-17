@@ -1,5 +1,12 @@
 ---
 title: An automated pipeline for LOFAR very-long baseline interferometry
+tags:
+  - AGN
+  - astronomy
+  - Common Workflow Language
+  - high-resolution imaging
+  - LOFAR
+  - Python
 authors:
   - name: Matthijs van der Wild
     orcid: 0000-0002-3949-3063
