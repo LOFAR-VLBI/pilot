@@ -20,7 +20,7 @@ affiliations:
         Durham University,
         South Road,
         Durham DH1 3LE, UK
-    index: 1
+bibliography: paper.bib
 ---
 
 # Summary
