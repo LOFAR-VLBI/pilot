@@ -18,16 +18,16 @@ affiliations:
 
 # Summary
 
-The Low-Frequency ARray Very-Long BaseLine Interferometry (LOFAR-VLBI) pipeline is an automated data reduction pipeline that produces calibrated radio data suitable for sub-second resolution imaging.
+The Very-Long Baseline Interferometry (VLBI) Pipeline for the International Low-Frequency ARray Telescope (PILoT) is an automated data reduction pipeline that produces calibrated radio data suitable for sub-second resolution imaging.
 It is a tool that facilitates calibrator and source selection, self-calibration of data, and both postage-stamp and widefield imaging.
 
 While a diverse ecosystem of processing and imaging tools exists for the LOFAR telescope, none of those tools have been designed with high-resolution imaging in mind.
-As a result, data reduction with the ILT is a manual and error-prone process.
+As a result, data reduction with the International LOFAR Telescope is a manual and error-prone process.
 Furthermore, owing to the distributed nature of software development in the LOFAR community, all of these tools have been developed with different input and output conventions.
 
-The LOFAR-VLBI pipeline aims to incorporate these diverse software tools into a simplified and unified framework, making VLBI imaging with LOFAR accessible to a larger group of astronomers.
-Special care has been placed on ensuring that all of its software components are controlled through a consistent framework and that intermediate steps of the pipeline can be consistently safely resumed in the event of intermediate failure.
-Because of the large volumes of data required to do VLBI with the international LOFAR telescope, the pipeline has been designed to use job schedulers common in High-Performance Computing (HPC) clusters.
+PILoT aims to incorporate these diverse software tools into a simple and unified framework, making VLBI imaging with LOFAR accessible to a larger group of astronomers.
+Special care has been placed on ensuring that all of its software components are controlled through a consistent framework and that intermediate steps of the pipeline can be consistently and safely resumed in the event of intermediate failure.
+Because of the large volumes of data required to do VLBI with the International LOFAR Telescope, the pipeline has been designed to use job schedulers common in High-Performance Computing (HPC) clusters.
 This minimises manual intervention and optimises the use of available computing resources.
 
 # Statement of need
