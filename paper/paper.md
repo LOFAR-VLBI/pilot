@@ -12,6 +12,30 @@ authors:
     orcid: 0000-0002-3949-3063
     corresponding: true
     affiliation: 1
+  - name: Frits Sweijen
+    orcid: 0000-0002-6470-7967
+    affiliation: 1
+  - name: Jurjen de Jong
+    orcid: 0000-0001-6876-8719
+    affiliation: "2, 3"
+  - name: Alexander Drabent
+    orcid: 0000-0003-2792-1793
+    affiliation: 4
+  - name: Neal Jackson
+    orcid: 0000-0002-0485-1617
+    affiliation: 5
+  - name: Marcel Loose
+    orcid: 0000-0003-4721-747X
+    affiliation: 3
+  - name: Vijay Mahatma
+    orcid: 0000-0001-5221-2636
+    affiliation: "6, 7"
+  - name: Leah Morabito
+    orcid: 0000-0003-0487-6651
+    affiliation: "1, 8"
+  - name: James Petley
+    orcid: 0000-0002-4496-0754
+    affiliation: 2
 affiliations:
   - index: 1
     name: |
@@ -20,6 +44,51 @@ affiliations:
         Durham University,
         South Road,
         Durham DH1 3LE, UK
+  - index: 2
+    name: |
+        Leiden Observatory,
+        Leiden University,
+        PO Box 9513,
+        2300 RA Leiden,
+        The Netherlands
+  - index: 3
+    name: |
+        ASTRON,
+        Oude Hoogeveensedijk 4,
+        7991 PD Dwingeloo,
+        The Netherlands
+  - index: 4
+    name: |
+        Thüringer Landessternwarte,
+        Sternwarte 5,
+        07778 Tautenburg,
+        Germany
+  - index: 5
+    name: |
+        University of Manchester,
+        Jodrell Bank Centre for Astrophysics,
+        Department of Physics and Astronomy,
+        Oxford Rd, Manchester M13 9PL,
+        United Kingdom
+  - index: 6
+    name: |
+        Cavendish Laboratory - Astrophysics Group,
+        University of Cambridge,
+        19 JJ Thomson Avenue, Cambridge CB3 0HE,
+        United Kingdom
+  - index: 7
+    name: |
+        Kavli Institute for Cosmology,
+        University of Cambridge,
+        Madingley Road, Cambridge CB3 0HA,
+        United Kingdom
+  - index: 8
+    name: |
+        Institute for Computational Cosmology,
+        Department of Physics,
+        Durham University,
+        South Road, Durham DH1 3LE,
+        United Kingdom
 bibliography: paper.bib
 ---
 
