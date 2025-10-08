@@ -21,6 +21,9 @@ authors:
   - name: Alexander Drabent
     orcid: 0000-0003-2792-1793
     affiliation: 4
+  - name: Emmy Escott
+    orcid: 0009-0009-5108-4324
+    affiliation: 1
   - name: Neal Jackson
     orcid: 0000-0002-0485-1617
     affiliation: 5
