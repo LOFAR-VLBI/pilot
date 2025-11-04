@@ -15,6 +15,10 @@ inputs:
   - id: msin
     type: Directory[]
     doc: input MS
+  - id: ncpu
+    type: int?
+    doc: Number of cores to use.
+    default: 6
 
 outputs:
   - id: msout
@@ -39,7 +43,7 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
   - class: ResourceRequirement
-    coresMin: 6
+    coresMin: $(inputs.ncpu)
 
 stdout: dp3_parset.log
 stderr: dp3_parset_err.log

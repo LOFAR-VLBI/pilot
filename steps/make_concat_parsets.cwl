@@ -43,6 +43,7 @@ outputs:
 
 arguments:
   - --make_only_parset
+  - --remove_flagged_station
   - --only_basename
 
 requirements:

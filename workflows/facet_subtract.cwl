@@ -8,16 +8,15 @@ inputs:
     - id: msin
       type: Directory[]
       doc: Unaveraged MeasurementSets with coverage of the target directions.
-    - id: model_image_folder
+    - id: model_image_directory
       type: Directory
-      doc: Folder with 1.2" model images.
+      doc: Directory with 1.2" model images.
     - id: h5parm
       type: File
-      doc: Merged h5parms
-    - id: copy_to_local_scratch
-      type: boolean?
-      doc: Specific option for using --bypass-file-store on the Spider cluster to run predict and subtract on local scratch.
-      default: false
+      doc: Merged h5parm with calibration solutions for multiple directions
+    - id: tmpdir
+      type: string?
+      doc: Temporary directory to run I/O heavy jobs.
     - id: ncpu
       type: int?
       doc: Number of cores to use during predict and subtract.
@@ -29,48 +28,27 @@ inputs:
 
 steps:
     - id: get_facet_layout
-      label: Get DS9 facet layout
       in:
         - id: msin
           source: msin
           valueFrom: $(self[0])
         - id: h5parm
           source: h5parm
+        - id: imsize
+          default: 22500
       out:
         - id: facet_regions
       run: ../steps/get_facet_layout.cwl
 
-    - id: get_model_images
-      label: Get WSClean model images
+    - id: gather_all_model_images
       in:
-        - id: model_image_folder
-          source: model_image_folder
+        - id: model_image_directory
+          source: model_image_directory
       out:
-        - id: filtered_model_image_folder
+        - id: filtered_model_image_directory
       run: ../steps/gather_model_images.cwl
 
-    - id: subtract_fov_wsclean
-      label: Subtract complete FoV
-      in:
-         - id: msin
-           source: msin
-         - id: h5parm
-           source: h5parm
-         - id: facet_regions
-           source: get_facet_layout/facet_regions
-         - id: model_image_folder
-           source: get_model_images/filtered_model_image_folder
-         - id: copy_to_local_scratch
-           source: copy_to_local_scratch
-         - id: ncpu
-           source: ncpu
-      out:
-         - subtracted_ms
-      run: ../steps/subtract_fov_wsclean.cwl
-      scatter: msin
-
     - id: split_polygons
-      label: Split polygon file
       in:
          - id: facet_regions
            source: get_facet_layout/facet_regions
@@ -81,34 +59,39 @@ steps:
          - id: polygon_regions
       run: ../steps/split_polygons.cwl
 
-    - id: predict_facet
-      label: Predict a polygon back in empty MS
-      in:
-         - id: subtracted_ms
-           source: subtract_fov_wsclean/subtracted_ms
-         - id: polygon_region
-           source: split_polygons/polygon_regions
-         - id: h5parm
-           source: h5parm
-         - id: polygon_info
-           source: split_polygons/polygon_info
-         - id: model_image_folder
-           source: get_model_images/filtered_model_image_folder
-         - id: copy_to_local_scratch
-           source: copy_to_local_scratch
-         - id: ncpu
-           source: ncpu
-      out:
-         - facet_ms
-      run: ../steps/predict_facet.cwl
-      scatter: [subtracted_ms, polygon_region]
-      scatterMethod: flat_crossproduct
-
-    - id: make_concat_parset
-      label: Make concat parsets
+    - id: predict_facets
       in:
          - id: msin
-           source: predict_facet/facet_ms
+           source: msin
+         - id: model_image_directory
+           source: gather_all_model_images/filtered_model_image_directory
+         - id: h5parm
+           source: h5parm
+         - id: polygons
+           source: split_polygons/polygon_regions
+         - id: polygon_info
+           source: split_polygons/polygon_info
+         - id: ncpu
+           source: ncpu
+         - id: tmpdir
+           source: tmpdir
+      out:
+         - subtracted_facet_ms
+      run: subworkflows/predict_subtract_facets.cwl
+      scatter: msin
+
+    - id: flatten_subtracte_ms
+      in:
+         - id: nestedarray
+           source: predict_facets/subtracted_facet_ms
+      out:
+         - flattenedarray
+      run: ../steps/flatten.cwl
+
+    - id: make_concat_parset
+      in:
+         - id: msin
+           source: flatten_subtracte_ms/flattenedarray
          - id: dysco_bitrate
            source: dysco_bitrate
       out:
@@ -116,12 +99,13 @@ steps:
       run: ../steps/make_concat_parsets.cwl
 
     - id: concat_facets
-      label: Run DP3 parsets
       in:
+        - id: msin
+          source: flatten_subtracte_ms/flattenedarray
         - id: parset
           source: make_concat_parset/concat_parsets
-        - id: msin
-          source: predict_facet/facet_ms
+        - id: ncpu
+          default: 24
       out:
         - id: msout
       run: ../steps/dp3_parset.cwl
@@ -130,14 +114,12 @@ steps:
 requirements:
   - class: MultipleInputFeatureRequirement
   - class: ScatterFeatureRequirement
+  - class: SubworkflowFeatureRequirement
 
 outputs:
     - id: facet_ms
       type: Directory[]
-      outputSource:
-        - concat_facets/msout
-        - predict_facet/facet_ms
-      pickValue: first_non_null
+      outputSource: concat_facets/msout
     - id: polygon_info
       type: File
       outputSource: split_polygons/polygon_info
