@@ -52,7 +52,7 @@ outputs:
   - id: msout
     type: Directory[]
     outputSource:
-      - subtract/subms
+      - upsample_subtract/subms
     doc: MS from which the LoTSS skymodel has been subtracted.
 
 steps:
@@ -118,7 +118,7 @@ steps:
       - id: mslist
         source: makemslist/mslist
       - id: column
-        valueFrom: DATA_DI_CORRECTED
+        valueFrom: DATA
       - id: solsdir
         source: fix_symlinks/solsdir
       - id: dds3sols
@@ -138,13 +138,23 @@ steps:
       - id: chunkhours
         source: chunkhours
     out:
-      - id: subms
-    run: ../../steps/subtract.cwl
+      - id: predictms
+    run: ../../steps/box_predict.cwl
     scatter:
       - ms
       - mslist
     scatterMethod: dotproduct
     doc: Subtract the LoTSS model from the data.
+
+  - id: upsample_subtract
+    in:
+      - id: msin_lowres
+        source: subtract/predictms
+      - id: msin_highres
+        source: msin
+    out:
+      - id: subms
+    run: ../../steps/upsample_subtract.cwl
 
 requirements:
   - class: ScatterFeatureRequirement

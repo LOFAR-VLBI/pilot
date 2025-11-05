@@ -56,4 +56,4 @@ hints:
     coresMin: 4
 
 stdout: 6asec_avg.log
-stderr: 6asec_err.log
+stderr: 6asec_avg_err.log

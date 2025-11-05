@@ -2,7 +2,7 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: subtract-LoTSS
 label: Subtract a LoTSS model from the data.
-doc: Subtract a LoTSS model from the data using the images and DD solutions derived by the ddf-pipeline. This requires DDFacet.
+doc: Predict a LoTSS model using the images and DD solutions derived by the ddf-pipeline. This requires DDFacet.
 
 baseCommand:
   - sub_sources_outside_region
@@ -13,6 +13,7 @@ arguments:
   - --keeplongbaselines
   - --nophaseshift
   - --nofixsym
+  - --nosubtract
 
 inputs:
   - id: ms
@@ -88,7 +89,7 @@ inputs:
     doc: The facet layout from the ddf-pipeline run.
 
 outputs:
-  - id: subms
+  - id: predictms
     type: Directory
     doc: MeasurementSet containing the subtracted data.
     outputBinding:
