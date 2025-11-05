@@ -16,7 +16,7 @@ inputs:
       separate: false
 
 outputs:
-  - id: ms_avg
+  - id: avg_ms
     doc: MeasurementSet at lower time/freq resolution
     type: Directory
     outputBinding:

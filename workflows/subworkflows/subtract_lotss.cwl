@@ -104,10 +104,11 @@ steps:
   - id: avg_ms_for_box_subtract
     in:
       - id: msin
-        souce: msin
+        source: msin
     out:
       - id: avg_ms
     run: ../../steps/avg_ms_for_box_subtract.cwl
+    scatter: msin
 
   - id: subtract
     in:
@@ -118,7 +119,7 @@ steps:
       - id: mslist
         source: makemslist/mslist
       - id: column
-        valueFrom: DATA
+        default: "DATA"
       - id: solsdir
         source: fix_symlinks/solsdir
       - id: dds3sols
@@ -150,13 +151,29 @@ steps:
     in:
       - id: msin_lowres
         source: subtract/predictms
+        valueFrom: |
+          ${
+            return self.slice().sort(function (a, b) {
+              return a.basename.localeCompare(b.basename);
+            });
+          }
       - id: msin_highres
         source: msin
+        valueFrom: |
+          ${
+            return self.slice().sort(function (a, b) {
+              return a.basename.localeCompare(b.basename);
+            });
+          }
     out:
       - id: subms
     run: ../../steps/upsample_subtract.cwl
+    scatter:
+      - msin_lowres
+      - msin_highres
+    scatterMethod: dotproduct
 
 requirements:
   - class: ScatterFeatureRequirement
   - class: StepInputExpressionRequirement
-
+  - class: InlineJavascriptRequirement
