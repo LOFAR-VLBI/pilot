@@ -51,7 +51,7 @@ def calculate_expected_rms(ra,dec,obsdate,observation_time=8):
     return correction_factor_rms
 
 ####
-def image_quality(stats_matrix, expected_rms=75e-5, cut_peak=0.1, cut_rms=3):
+def image_quality(stats_matrix, expected_rms=75e-5, cut_peak=0.01, cut_rms=3):
     """
     Get image quality acceptance column
 
