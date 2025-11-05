@@ -1,7 +1,7 @@
 class: Workflow
 cwlVersion: v1.2
 id: facet_subtract_per_subband
-doc: Predict and subtract model data per subband and per facet.
+doc: Use WSClean to predict and subtract model data per subband and per facet.
 
 inputs:
     - id: msin
@@ -61,7 +61,7 @@ steps:
            source: tmpdir
       out:
          - model_data_npy
-      run: ../../steps/predict_facet_masks.cwl
+      run: ../../steps/predict_facets.cwl
       scatter: polygons
 
     - id: make_facet_masks

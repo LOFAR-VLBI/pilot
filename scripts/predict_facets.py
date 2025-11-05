@@ -126,13 +126,13 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
 
     Parameters
     ----------
-    ms : str, optional
+    ms : str
         Path to the Measurement Set.
     model_images : list of str, optional
         List of model image FITS files.
-    h5parm : str, optional
+    h5parm : str
         Path to H5Parm file containing calibration solutions.
-    facet_region : str, optional
+    facet_region : str
         DS9 region file (.reg) defining the facet polygon.
     """
     f = fits.open(model_images[0])
@@ -216,7 +216,7 @@ def parse_args():
     -------
     Parsed arguments
     """
-    parser = ArgumentParser("Predict facet masks in MeasurementSet for subtraction")
+    parser = ArgumentParser("Predict facets and return npy files with corresponding MODEL_DATA for all facet polygons.")
     parser.add_argument('--msin', help='Input MeasurementSet', default=None)
     parser.add_argument('--model_images', nargs="+", help='Model images', default=None)
     parser.add_argument('--polygon', help='Polygon region file', default=None)

@@ -2,12 +2,12 @@ class: Workflow
 cwlVersion: v1.2
 id: facet_subtract
 label: Facet subtraction
-doc: Use WSClean to predict and subtract model data, to split all facets into separate MeasurementSets.
+doc: Use WSClean to predict and subtract model data and split all facets into separate MeasurementSets.
 
 inputs:
     - id: msin
       type: Directory[]
-      doc: Unaveraged MeasurementSets with coverage of the target directions.
+      doc: MeasurementSets with coverage of the target directions.
     - id: model_image_directory
       type: Directory
       doc: Directory with 1.2" model images.

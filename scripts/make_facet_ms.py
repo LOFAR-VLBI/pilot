@@ -30,27 +30,27 @@ def run_dp3(
     """
     Run DP3 to upsample from low- to high-resolution data and split out a facet.
 
-    This step performs transfer, combination, phase shifting, averaging,
+    This step performs transfer (interpolation), phase shifting, averaging,
     calibration, and beam correction using DP3. It assumes the applied
     solutions are scalar.
 
     Parameters
     ----------
-    low_ms : str, optional
+    low_ms : str
         Path to the low-resolution Measurement Set.
-    high_ms : str, optional
+    high_ms : str
         Path to the high-resolution Measurement Set.
     facet_column : str, default="MODEL_DATA"
         Data column to process within the facet.
-    phaseshift : str, optional
+    phaseshift : str
         Phase centre to shift to, in `[ra,dec]` format.
-    freqavg : str, optional
+    freqavg : str
         Frequency averaging, given as number of channels or resolution string.
-    timeres : str, optional
+    timeres : str
         Time resolution for averaging (e.g., in seconds).
-    applycal_h5 : str, optional
+    applycal_h5 : str
         Path to H5Parm file with calibration solutions to apply.
-    dirname : str, optional
+    dirname : str
         Direction name from the H5Parm.
     outdir : str, default="."
         Directory to write DP3 log files.
@@ -286,7 +286,9 @@ def parse_args():
     """
 
     parser = ArgumentParser(description='Split out MeasurementSet for a specific facet after interpolating MODEL_DATA '
-                                        'to higher time/freq resolution and subtracting this from the original DATA column at high time/freq resolution.')
+                                        'to higher time/freq resolution and subtracting this from the original DATA '
+                                        'column at high time/freq resolution. This is followed by a phase-shift, averaging,'
+                                        'applying of calibrations and the beam.')
     parser.add_argument('--low_ms', help='Low-resolution MeasurementSet that needs to be interpolated to high-resolution MeasurementSet data resolution.', required=True)
     parser.add_argument('--high_ms', help='High-resolution MeasurementSet with desired time/freq resolution.', required=True)
     parser.add_argument('--polygon', help='DS9 polygon region.', required=True)
@@ -320,7 +322,8 @@ def main():
     # Make facet data
     print("Run DP3")
     msout = run_dp3(args.low_ms, high_ms, facet_column, phasecentre, freqavg, timeres, args.h5parm, dirname, outdir)
-    copy_data(msout, outdir)
+    if args.tmp != '.':
+        copy_data(msout, outdir)
 
     # Delete a copy to save storage
     if args.cleanup:

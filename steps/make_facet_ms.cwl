@@ -1,7 +1,9 @@
 class: CommandLineTool
 cwlVersion: v1.2
 id: make_facet_ms
-doc: Split out facet MeasurementSet after interpolating model data to data
+doc: |
+    Split out facet MeasurementSet after interpolating MODEL_DATA to DATA, subtraction, phase-shifting, averaging,
+    applying of calibration solutions and the beam.
 
 baseCommand:
   - make_facet_ms.py

@@ -2,7 +2,7 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: combine_facets
 doc: |
-    Make facet masks by summing predicted visibilities from facets
+    Make facet masks by summing predicted visibilities from facet polygons
     to form a mask. Output is returned in MeasurementSet as model data.
 
 baseCommand:

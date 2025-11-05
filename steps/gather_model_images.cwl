@@ -1,7 +1,9 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: gatherdis2
-doc: Gather the correct WSClean model images from the directory with model images
+id: gather_model_images
+doc: |
+    Gather the correct WSClean model images from a given directory
+    with WSClean output products from a previous imaging run
 
 baseCommand:
   - gather_model_images.sh

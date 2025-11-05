@@ -2,10 +2,10 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: predict_facet
 label: Predict with WSClean
-doc: Uses WSClean to predict facet masks in MeasurementSet for subtraction.
+doc: |
+    Predict facets and return npy files with corresponding MODEL_DATA
 
-
-baseCommand: predict_facet_masks.py
+baseCommand: predict_facets.py
 
 inputs:
     - id: msin
