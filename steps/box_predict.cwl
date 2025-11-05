@@ -64,7 +64,7 @@ inputs:
   - id: ncpu
     type: int?
     doc: Number of cores to use during the subtract. Defaults to 24.
-    default: 24
+    default: 6
     inputBinding:
       position: 5
       prefix: --ncpu
