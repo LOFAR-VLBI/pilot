@@ -327,7 +327,6 @@ def main():
         print("Cleanup...")
         if args.tmp != '.':
             os.system(f"rm -rf {msout}")
-        os.system(f'rm *.dat')
 
 
 if __name__ == '__main__':

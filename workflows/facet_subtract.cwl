@@ -13,7 +13,7 @@ inputs:
       doc: Directory with 1.2" model images.
     - id: h5parm
       type: File
-      doc: Merged h5parm with calibration solutions for multiple directions
+      doc: Merged h5parm with calibration solutions for multiple directions.
     - id: tmpdir
       type: string?
       doc: Temporary directory to run I/O heavy jobs.
