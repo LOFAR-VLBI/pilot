@@ -101,10 +101,18 @@ steps:
       - id: solsdir
     run: ../../steps/fix_symlinks_ddf.cwl
 
+  - id: avg_ms_for_box_subtract
+    in:
+      - id: msin
+        souce: msin
+    out:
+      - id: avg_ms
+    run: ../../steps/avg_ms_for_box_subtract.cwl
+
   - id: subtract
     in:
       - id: ms
-        source: msin
+        source: avg_ms_for_box_subtract/avg_ms
       - id: boxfile
         source: makebox/box
       - id: mslist
