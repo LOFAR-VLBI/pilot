@@ -32,6 +32,7 @@ outputs:
 
 arguments:
   - steps=[avg]
+  - msin.datacolumn=DATA_DI_CORRECTED
   - avg.type=averager
   - avg.timeresolution=8
   - avg.freqresolution='97.68kHz'
