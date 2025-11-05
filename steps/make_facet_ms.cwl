@@ -67,7 +67,7 @@ outputs:
       type: File[]
       doc: Log files from model selection
       outputBinding:
-        glob: facet_ms*.log
+        glob: make_facet_ms*.log
 
 arguments:
     - --cleanup
@@ -88,5 +88,5 @@ requirements:
         - entry: $(inputs.polygon_info)
 
 
-stdout: facet_ms.log
-stderr: facet_ms_err.log
+stdout: make_facet_ms.log
+stderr: make_facet_ms_err.log

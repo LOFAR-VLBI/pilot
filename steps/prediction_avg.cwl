@@ -1,6 +1,6 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: dp3_avg_for_prediction
+id: prediction_avg
 label: DP3 averaging for prediction
 doc: Average MeasurementSet in time and frequency for faster prediction.
 
@@ -26,7 +26,7 @@ outputs:
   - id: logfile
     type: File[]
     outputBinding:
-      glob: 1asec_avg*.log
+      glob: predict_avg*.log
     doc: |
         The files containing the stdout
         and stderr from the step.
@@ -56,6 +56,6 @@ hints:
   - class: ResourceRequirement
     coresMin: 4
 
-stdout: 1asec_avg.log
-stderr: 1asec_err.log
+stdout: predict_avg.log
+stderr: predict_avg.log
 
