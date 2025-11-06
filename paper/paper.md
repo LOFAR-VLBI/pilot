@@ -33,7 +33,7 @@ authors:
   - name: Vijay Mahatma
     orcid: 0000-0001-5221-2636
     affiliation: "6, 7"
-  - name: Leah Morabito
+  - name: Leah K. Morabito
     orcid: 0000-0003-0487-6651
     affiliation: "1, 8"
   - name: James Petley
