@@ -162,6 +162,7 @@ A list of ongoing research projects where PILoT is a central tool is provided in
 
 Matthijs van der Wild is supported by the Science and Technology Facilities Council via LOFAR-U.K. [ST/V002406/1] and UKSRC [ST/T000244/1].
 FS appreciates the support of STFC [ST/Y004159/1].
+JMGHJdJ acknowledges support from project CORTEX (NWA.1160.18.316) of research programme NWA-ORC, which is (partly) financed by the Dutch Research Council (NWO), and support from the OSCARS project, which has received funding from the European Commission’s Horizon Europe Research and Innovation programme under grant agreement No. 101129751.
 LKM is grateful for support from a UKRI FLF [MR/Y020405/1] and LOFAR-UK via STFC [ST/V002406/1].
 AD acknowledges support by the BMBF Verbundforschung under the grant 05A23STA.
 ELE is grateful for support from the Medical Research Council [MR/T042842/1].
