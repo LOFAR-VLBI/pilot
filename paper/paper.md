@@ -164,6 +164,7 @@ Matthijs van der Wild is supported by the Science and Technology Facilities Coun
 FS appreciates the support of STFC [ST/Y004159/1].
 LKM is grateful for support from a UKRI FLF [MR/Y020405/1] and LOFAR-UK via STFC [ST/V002406/1].
 AD acknowledges support by the BMBF Verbundforschung under the grant 05A23STA.
+ELE is grateful for support from the Medical Research Council [MR/T042842/1].
 This research made use of the University of Hertfordshire high-performance computing facility and the LOFAR-UK computing facility located at the University of Hertfordshire and supported by STFC [ST/P000096/1].
 
 The scripts developed for PILoT make use of the ASTROPY [@astropy], casacore [@casacore], LoSoTo [@losoto], numpy [@numpy], pandas [@pandas], and PyBDSF [@pybdsf] libraries.
