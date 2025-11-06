@@ -111,7 +111,7 @@ This minimises manual intervention and optimises the use of available computing 
 
 # Statement of need
 
-The International Low-Frequency ARray Telescope (ILT) [@LOFAR] comprises 38 Dutch stations and 15 international stations located in partner countries across the European Union.
+The International Low-Frequency ARray Telescope (ILT) [@LOFAR] comprises 38 Dutch stations and 15 international stations located in partner countries across Europe.
 It is a radio telescope operating at low radio frequencies with a sensitivity of up to 3 orders of magnitude better than previous telescopes operating at comparable frequencies.
 By combining data from all stations, the ILT is effectively a continent-sized telescope which is able to image astronomical radio sources at sub-arcsecond resolution [@Morabito-2025].
 
