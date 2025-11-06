@@ -106,22 +106,22 @@ Furthermore, owing to the distributed nature of software development in the LOFA
 
 PILoT aims to incorporate these diverse software tools into a simple and unified framework, making VLBI imaging with LOFAR accessible to a larger group of astronomers.
 Special care has been placed on ensuring that all of its software components are controlled through a consistent framework and that intermediate steps of the pipeline can be consistently and safely resumed in the event of intermediate failure.
-Because of the large volumes of data required to do VLBI with the International LOFAR Telescope, the pipeline has been designed to use job schedulers common in High-Performance Computing (HPC) clusters.
+Because of the large volumes of data required to do VLBI with the International LOFAR Telescope, the pipeline has been designed to integrate with job schedulers common in High-Performance Computing (HPC) clusters.
 This minimises manual intervention and optimises the use of available computing resources.
 
 # Statement of need
 
 The International Low-Frequency ARray Telescope (ILT) [@LOFAR] comprises 38 Dutch stations and 15 international stations located in partner countries across Europe.
-It is a radio telescope operating at low radio frequencies with a sensitivity of up to 3 orders of magnitude better than previous telescopes operating at comparable frequencies.
+It is a radio telescope operating at radio frequencies under 240 MHz with a sensitivity of up to 3 orders of magnitude better than previous telescopes operating at comparable frequencies.
 By combining data from all stations, the ILT is effectively a continent-sized telescope which is able to image astronomical radio sources at sub-arcsecond resolution [@Morabito-2025].
 
 The VLBI Pipeline for the International LOFAR Telescope (PILoT) is an implementation of a data reduction pipeline which was designed to exploit the full imaging power of the ILT [@Morabito-2022].
 PILoT addresses several critical issues the original reference implementation had to face:
 
 - The original pipeline was implemented in an obsolete framework, which makes it difficult to impossible to ensure that it would be functional on modern computing infrastructure.
-  In contrast, PILoT is implemented in the Common Workflow Language [@CWL].
+  In contrast, PILoT is implemented in the Common Workflow Language [@CWL], which is an actively maintained framework in widespread use.
   This ensures that the pipeline will be logically consistent and maintainable in the long term.
-- The original pipeline did not support modern scheduling systems such as SLURM or TOIL.
+- The original pipeline did not support modern scheduling systems such as Slurm or TORQUE.
   The implementation in CWL allowed for optimisation of PILoT for the workflow runner toil [@toil], providing native support for these schedulers.
   This reduces the runtimes of the pipeline by orders of magnitudes as individual processing jobs can automatically be distributed to available nodes.
 
