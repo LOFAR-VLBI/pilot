@@ -14,7 +14,8 @@ inputs:
       itemSeparator: ' '
       prefix: '-c'
   - id: image_name
-    type: File
+    type: string?
+    default: "mosaic.fits"
     inputBinding:
       position: 3
       shellQuote: false
@@ -26,7 +27,7 @@ inputs:
       position: 4
       itemSeparator: ' '
   - id: cores
-    type: int
+    type: int?
     default: 8
 
 outputs:
