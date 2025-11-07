@@ -104,22 +104,22 @@ While a diverse ecosystem of processing and imaging tools exists for the LOFAR t
 As a result, data reduction with the International LOFAR Telescope is a manual and error-prone process.
 Furthermore, owing to the distributed nature of software development in the LOFAR community, all of these tools have been developed with different input and output conventions.
 
-PILoT aims to incorporate these diverse software tools into a simple and unified framework, making VLBI imaging with LOFAR accessible to a larger group of astronomers.
-Special care has been placed on ensuring that all of its software components are controlled through a consistent framework and that intermediate steps of the pipeline can be consistently and safely resumed in the event of intermediate failure.
-Because of the large volumes of data required to do VLBI with the International LOFAR Telescope, the pipeline has been designed to integrate with job schedulers common in High-Performance Computing (HPC) clusters.
+PILoT aims to incorporate these diverse software tools into a unified framework, making VLBI imaging with LOFAR accessible to a larger group of astronomers.
+Special care has been placed on ensuring that PILoT is interoperable and reusable, and that all of its software components are controlled through a consistent framework and that intermediate steps of the pipeline can be consistently and safely resumed in the event of intermediate failure.
+Since typical observations done with the International LOFAR Telescope result in datasets consisting of terabytes of data, the pipeline has been designed to integrate with job schedulers common in High-Performance Computing (HPC) clusters.
 This minimises manual intervention and optimises the use of available computing resources.
 
 # Statement of need
 
-The International Low-Frequency ARray Telescope (ILT) [@LOFAR] comprises 38 Dutch stations and 15 international stations located in partner countries across Europe.
+The International Low-Frequency ARray Telescope (ILT) [@LOFAR] currently comprises 38 Dutch stations and 14 international stations located in partner countries across Europe.
 It is a radio telescope operating at radio frequencies under 240 MHz with a sensitivity of up to 3 orders of magnitude better than previous telescopes operating at comparable frequencies.
-By combining data from all stations, the ILT is effectively a continent-sized telescope which is able to image astronomical radio sources at sub-arcsecond resolution [@Morabito-2025].
+By combining data from all stations with baselines of up to 1980 km, the ILT is effectively a continent-sized telescope which is able to image astronomical radio sources at sub-arcsecond resolution [@Varenius-2015; @Morabito-2025].
 
 The VLBI Pipeline for the International LOFAR Telescope (PILoT) is an implementation of a data reduction pipeline which was designed to exploit the full imaging power of the ILT [@Morabito-2022].
 PILoT addresses several critical issues the original reference implementation had to face:
 
 - The original pipeline was implemented in an obsolete framework, which makes it difficult to impossible to ensure that it would be functional on modern computing infrastructure.
-  In contrast, PILoT is implemented in the Common Workflow Language [@CWL], which is an actively maintained framework in widespread use.
+  In contrast, PILoT is implemented in the Common Workflow Language (CWL; @CWL), which is an actively maintained framework in widespread use.
   This ensures that the pipeline will be logically consistent and maintainable in the long term.
 - The original pipeline did not support modern scheduling systems such as Slurm or TORQUE.
   The implementation in CWL allowed for optimisation of PILoT for the workflow runner toil [@toil], providing native support for these schedulers.
@@ -128,7 +128,7 @@ PILoT addresses several critical issues the original reference implementation ha
 In addition, PILoT includes expanded functionality featuring implementations of state-of-the-art advances in imaging techniques such as improvements in imaging resolution [@Ye-2024; @Sweijen-2022], source selection [@Sweijen-2022; @DeJong-2024], and wide-field imaging techniques [@Sweijen-2022; @DeJong-2025b].
 
 PILoT forms a natural part of the LOFAR software landscape and is designed to be used on data that has been corrected for various instrumental and ionospheric effects [@deGasperin-2019] and calibrated for directional effects using the data obtained by the Dutch stations using pipelines such as DDF-pipeline [@DDF-calibration; @DDF-pipeline] or Rapthor [@rapthor].
-It uses DP3 [@DP3], WSclean [@WSclean], AOflagger [@AOflagger], and the LOFAR Initial Calibration (LINC) pipeline [@LINC], which are developed by the ILT host institute ASTRON, as well as various codebases developed by researchers in the LOFAR community such as the DDF-pipeline [@DDF-calibration] for direction-dependent calibration, LOFAR facet-selfcal [@VanWeeren-2021;@lofar-facet-selfcal] for self-calibration, and the LOFAR Helpers [@lofar-helpers] auxiliary library.
+It uses DP3 [@DP3], WSclean [@WSclean], AOflagger [@AOflagger], and the LOFAR Initial Calibration (LINC) pipeline [@LINC], which are developed by the ILT host institute ASTRON, as well as various codebases developed by researchers in the LOFAR community such as the DDF-pipeline [@DDF-calibration] for direction-dependent calibration, LOFAR facet-selfcal [@VanWeeren-2021;@lofar-facet-selfcal] for self-calibration, and the LOFAR Helpers [@DeJong-2022; @lofar-helpers] auxiliary library.
 Finally, it has been adapted and integrated into the FLoCs LOFAR containers [@flocs] to ensure portability across computing facilities.
 
 PILoT embeds the software tools above into a single cohesive framework and provides several complementary modes with the aim of being a modular and fully automated imaging pipeline.
@@ -139,21 +139,15 @@ The pipeline provides the following main modes of operation:
 
 ## Postage stamp imaging
 The pipeline supports single-source imaging, in which the calibration is performed on an in-field calibrator to correct for direction-independent phases and delays from the international stations.
-Following this, multiple imaging targets can be specified at once; the pipeline performs self-calibration and imaging on each target (for a small field-of-view around the target) in parallel.
+PILoT selects the best calibrator based on the images and solutions from all performed self-calibration cycles.
+Following this, multiple imaging targets can be specified at once; the pipeline performs self-calibration and imaging on each target (with a resolution of 0.3 arcseconds) in parallel.
 The data products are the calibrated data and images and the phase solutions in a H5parm format[^1].
-
-## Source subtraction from catalogue
-The pipeline is able to remove radio sources from observation data beyond a square field of view of 6.25 degrees² centred on the imaging target, if given a 6 arcsecond image generated by the DDF-pipeline.
-The dataproduct is the data with the sources removed in a MeasurementSet format[^2].
-
-## Automatic calibrator selection and validation of the calibrator solutions
-This module selects the best calibrator sources out of a single catalogue, based on the images and solutions from all performed self-calibration cycles.
-The data product is a single H5parm, which contains the phase and amplitude solutions from the selected calibrators.
 
 ## Wide-field imaging
 The pipeline is capable of intermediate (1–2 arcseconds) and high-resolution (sub-arcsecond) imaging.
-High-resolution imaging supports a resolution of 0.6 or 0.3 arcseconds, of which the former reduces the imaging time by a factor of 2 compared to the latter.
-Intermediate resolution imaging speeds up the imaging time by a factor of 4 compared to the 0.3 arcsecond imaging.
+Before imaging the pipeline removes radio sources from observation data beyond a square field of view of 6.25 degrees² centred on the imaging target, if given a 6 arcsecond image generated by the DDF-pipeline.
+High-resolution imaging supports a resolution of 0.6 or 0.3 arcseconds, of which the former reduces the imaging time by a factor of 4 compared to the latter.
+Intermediate resolution imaging speeds up the imaging time by a factor of 16 compared to the 0.3 arcsecond imaging.
 The data products are FITS formatted images of the stated resolution.
 
 A list of ongoing research projects where PILoT is a central tool is provided in section 4 of reference [@Morabito-2025].
