@@ -29,6 +29,12 @@ inputs:
         Optional DS9 region file(s) that will be used to trim the facet.
         Its length should match that of `msin`.
 
+    - id: swarp_config
+      type: File?
+      doc: |
+        Optional configuration file to be passed to SWarp for mosaicing.
+        If given, a final mosaic will be made of the trimmed facet images.
+
 
 steps:
     - id: sort_mses
@@ -72,6 +78,21 @@ steps:
       scatterMethod: dotproduct
       run: ./subworkflows/image_and_trim.cwl
 
+    - id: mosaic_facets
+      label: mosaic_facets
+      in:
+        - id: config
+          source: swarp_config
+          # This is to circumvent cwltool validation complaining about incompatible types.
+          # This step won't run if the config is `null`, so it should always be compatible.
+          valueFrom: $(self)
+        - id: image_name
+        - id: input_images
+      out:
+        - id: output_image
+      run: ../steps/swarp.cwl
+      when: $(inputs.config != null)
+
 outputs:
   - id: MFS_images_pb
     type: File[]
@@ -97,3 +118,7 @@ outputs:
   - id: MFS_psfs
     type: File[]
     outputSource: image_and_trim/MFS_psf
+
+  - id: MFS_mosaic
+    type: File?
+    outputSource: mosaic_facets/output_image
