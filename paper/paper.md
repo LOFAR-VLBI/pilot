@@ -15,7 +15,7 @@ authors:
   - name: Frits Sweijen
     orcid: 0000-0002-6470-7967
     affiliation: 1
-  - name: Jurjen de Jong
+  - name: Jurjen M.~G.~H.~J. de~Jong
     orcid: 0000-0001-6876-8719
     affiliation: "2, 3"
   - name: Alexander Drabent
