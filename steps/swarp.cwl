@@ -45,7 +45,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: InitialWorkDirRequirement
     listing:
-      - entry: $(inputs.msin)
+      - entry: $(inputs.input_images)
   - class: ResourceRequirement
     coresMin: $(inputs.cores)
 
