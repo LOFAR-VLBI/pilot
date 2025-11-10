@@ -68,16 +68,6 @@ steps:
     run: ../../steps/makebox.cwl
     doc: Make the box outside which the LoTSS skymodel will be subtracted.
 
-  - id: makemslist
-    in:
-      - id: ms
-        source: msin
-    out:
-      - id: mslist
-    run: ../../steps/make_mslist.cwl
-    scatter: ms
-    doc: Make the list of MSes to subtract.
-
   - id: gather_dds3
     in:
       - id: ddf_rundir
@@ -109,6 +99,16 @@ steps:
       - id: avg_ms
     run: ../../steps/avg_ms_for_box_subtract.cwl
     scatter: msin
+
+  - id: makemslist
+    in:
+      - id: ms
+        source: avg_ms_for_box_subtract/avg_ms
+    out:
+      - id: mslist
+    run: ../../steps/make_mslist.cwl
+    scatter: ms
+    doc: Make the list of MSes to subtract.
 
   - id: subtract
     in:
