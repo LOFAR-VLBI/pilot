@@ -20,7 +20,7 @@ outputs:
     doc: MeasurementSet at lower time/freq resolution
     type: Directory
     outputBinding:
-      glob: "$( inputs.msin.basename + '.avg6asec.ms')"
+      glob: "$( inputs.msin.basename )"
 
   - id: logfile
     type: File[]
@@ -37,7 +37,7 @@ arguments:
   - avg.timeresolution=8
   - avg.freqresolution='97.68kHz'
   - msout.storagemanager='dysco'
-  - msout=$( inputs.msin.basename + '.avg6asec.ms')
+  - msout=$( inputs.msin.basename )
   - msout.antennacompression=false
   - msout.uvwcompression=false
   - msout.scalarflags=false
@@ -49,10 +49,6 @@ requirements:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
-  - class: InitialWorkDirRequirement
-    listing:
-      - entry: $(inputs.msin)
-        writable: false
   - class: ResourceRequirement
     coresMin: 4
 
