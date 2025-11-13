@@ -1,7 +1,7 @@
-# LOFAR VLBI pipeline
+# Pipeline for the International LOFAR Telescope (PILOT)
 
-The Low-Frequency Array Very Long Baseline Interferometry (LOFAR-VLBI) pipeline is a calibration and imaging pipeline that includes all of LOFAR’s international stations.
-This is an implementation of the LOFAR-VLBI pipeline in the Common Workflow Language, which will eventually replace the [Genericpipeline](https://github.com/lmorabit/lofar-vlbi) implementation.
+The Pipeline for the International LOFAR Telscope (PILOT) is a calibration and imaging pipeline that includes all of LOFAR’s international stations to achieve sub-arcsecond resolution. 
+It is implemented in Common Workflow Language and we recommend the use of Toil for running it.
 
 Instruction on setting up, configuration and usage of the pipeline can be found in the dedicated [wiki](https://git.astron.nl/RD/VLBI-cwl/-/wikis/home).
 
