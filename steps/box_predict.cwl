@@ -35,12 +35,6 @@ inputs:
     inputBinding:
       position: 1
       prefix: --mslist
-  - id: prefix
-    type: string?
-    doc: Prefix for the output MeasurementSet after subtracting. Defaults to sub6asec.
-    default: sub6asec
-    inputBinding:
-      prefix: --prefix
   - id: column
     type: string?
     doc: Column from which to subtract. Defaults to DATA_DI_CORRECTED.
@@ -92,9 +86,9 @@ inputs:
 outputs:
   - id: predictms
     type: Directory
-    doc: MeasurementSet containing the subtracted data.
+    doc: MeasurementSet containing the predicted column.
     outputBinding:
-      glob: $(inputs.prefix)*.ms
+      glob: $(inputs.ms)
 
 requirements:
   - class: InlineJavascriptRequirement
