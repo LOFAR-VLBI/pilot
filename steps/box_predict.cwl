@@ -14,6 +14,7 @@ arguments:
   - --nophaseshift
   - --nofixsym
   - --nosubtract
+  - --stopafterpredict
 
 inputs:
   - id: ms
