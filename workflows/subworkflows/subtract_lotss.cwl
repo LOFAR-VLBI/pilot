@@ -151,20 +151,8 @@ steps:
     in:
       - id: msin_lowres
         source: subtract/predictms
-        valueFrom: |
-          ${
-            return self.slice().sort(function (a, b) {
-              return a.basename.localeCompare(b.basename);
-            });
-          }
       - id: msin_highres
         source: msin
-        valueFrom: |
-          ${
-            return self.slice().sort(function (a, b) {
-              return a.basename.localeCompare(b.basename);
-            });
-          }
     out:
       - id: subms
     run: ../../steps/upsample_subtract.cwl
