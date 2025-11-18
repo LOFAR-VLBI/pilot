@@ -63,8 +63,6 @@ hints:
     listing:
       - entry: $(inputs.msin_lowres)
         writable: false
-      - entry: $(inputs.msin_highres)
-        writable: false
   - class: ResourceRequirement
     coresMin: 8
 
