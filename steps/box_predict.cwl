@@ -88,7 +88,7 @@ outputs:
     type: Directory
     doc: MeasurementSet containing the predicted column.
     outputBinding:
-      glob: $(inputs.ms)
+      glob: $(inputs.ms.basename)
   - id: logfile
     type: File[]
     doc: log files corresponding to this step
