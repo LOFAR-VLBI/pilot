@@ -89,6 +89,12 @@ outputs:
     doc: MeasurementSet containing the predicted column.
     outputBinding:
       glob: $(inputs.ms)
+  - id: logfile
+    type: File[]
+    doc: log files corresponding to this step
+    outputBinding:
+      glob: box_predict*.log
+
 
 requirements:
   - class: InlineJavascriptRequirement
@@ -108,3 +114,6 @@ requirements:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
+
+stdout: box_predict.log
+stderr: box_predict_err.log
