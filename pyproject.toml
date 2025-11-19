@@ -30,6 +30,7 @@ envlist = ["py39", "py310", "py311", "py312", "py313"]
 
 [tool.tox.env_run_base]
 change_dir = "{tox_root}/tests"
+description = "Run tests under {base_python}"
 allowlist_externals = ["sh", "pytest"]
 commands = [
     [ "sh", "prepare_data.sh" ],
