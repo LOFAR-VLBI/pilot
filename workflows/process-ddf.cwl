@@ -53,12 +53,6 @@ outputs:
       - subtract_lotss/regionbox
     pickValue: all_non_null
     doc: DS9 region file outside of which the LoTSS skymodel has been subtracted.
-  - id: mslist
-    type: File[]?
-    outputSource:
-      - subtract_lotss/mslist
-    pickValue: all_non_null
-    doc: Text file containing the name of the input MS from which the LoTSS skymodel hase been subtracted.
   - id: msout
     type: Directory[]
     outputSource:
@@ -115,7 +109,6 @@ steps:
         source: do_subtraction
     out:
       - id: regionbox
-      - id: mslist
       - id: msout
     label: subtract_lotss
     when: $(inputs.do_subtraction)

@@ -44,11 +44,6 @@ outputs:
     outputSource:
       - makebox/box
     doc: DS9 region file outside of which the LoTSS skymodel has been subtracted.
-  - id: mslist
-    type: File[]
-    outputSource:
-      - makemslist/mslist
-    doc: Text file containing the name of the input MS from which the LoTSS skymodel hase been subtracted.
   - id: msout
     type: Directory[]
     outputSource:
