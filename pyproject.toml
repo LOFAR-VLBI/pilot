@@ -35,8 +35,8 @@ extras = ["test"]
 allowlist_externals = ["sh", "pytest"]
 commands = [
     [ "sh", "prepare_data.sh" ],
-    [ "sh", "validate_steps.sh" ],
-    [ "sh", "validate_workflows.sh" ],
+    [ "sh", "validate_steps.sh", {replace = "posargs", extend = true} ],
+    [ "sh", "validate_workflows.sh", {replace = "posargs", extend = true} ],
     [ "pytest" ],
 ]
 
