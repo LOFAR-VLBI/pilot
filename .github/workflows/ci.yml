@@ -31,10 +31,3 @@ jobs:
 
       - name: Run tests
         run: tox
-
-  finalise:
-    runs-on: ubuntu-latest
-    needs: [testing]
-    steps:
-      - name: finalise
-        run: echo "All done"
