@@ -6,7 +6,6 @@ __author__ = "Jurjen de Jong, James Petley, Leah Morabito"
 from argparse import ArgumentParser
 from collections.abc import Sequence
 import os
-import ret
 
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
