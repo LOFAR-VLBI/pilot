@@ -51,6 +51,7 @@ arguments:
   - msout.antennacompression=false
   - msout.uvwcompression=false
   - msout.scalarflags=false
+  - msin.datacolumn=DATA_DI_CORRECTED
 
 requirements:
   - class: ShellCommandRequirement
@@ -64,7 +65,7 @@ hints:
       - entry: $(inputs.msin_lowres)
         writable: false
   - class: ResourceRequirement
-    coresMin: 8
+    coresMin: 4
 
 stdout: upsample_subtract.log
 stderr: upsample_subtract_err.log
