@@ -36,23 +36,23 @@ def run_dp3(
 
     Parameters
     ----------
-    low_ms : str
-        Path to the low-resolution Measurement Set.
-    high_ms : str
-        Path to the high-resolution Measurement Set.
-    facet_column : str, default="MODEL_DATA"
+    low_ms
+        Path to the low-resolution MeasurementSet.
+    high_ms
+        Path to the high-resolution MeasurementSet.
+    facet_column
         Data column to process within the facet.
-    phaseshift : str
+    phaseshift
         Phase centre to shift to, in `[ra,dec]` format.
-    freqavg : str
+    freqavg
         Frequency averaging, given as number of channels or resolution string.
-    timeres : str
+    timeres
         Time resolution for averaging (e.g., in seconds).
-    applycal_h5 : str
+    applycal_h5
         Path to H5Parm file with calibration solutions to apply.
-    dirname : str
+    dirname
         Direction name from the H5Parm.
-    outdir : str, default="."
+    outdir
         Directory to write DP3 log files.
 
     Returns
