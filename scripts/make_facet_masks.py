@@ -91,7 +91,7 @@ def update_memmap(dat: np.memmap, poly_number: int | str, poly_data: np.ndarray)
     """
     facet_id = basename(dat.filename).replace("FACET_", "").replace(".dat", "")
     if facet_id != poly_number:
-        print(f"COMPUTE {dat.filename} + POLY_{poly_number}")
+        print(f"{dat.filename} + POLY_{poly_number}")
         # Get the column, convert to complex64, and add it in place
         add_in_place(dat, poly_data)
 
@@ -155,10 +155,10 @@ def main():
     shape = get_data_shape(args.msin)
 
     # Create memmaps
-memmaps = Parallel(n_jobs=ncpu, backend="loky")(
-    delayed(create_memmap)(facetnumber, shape, dtype)
-    for facetnumber in range(len(args.model_data_npy))
-)
+    memmaps = Parallel(n_jobs=ncpu, backend="loky")(
+        delayed(create_memmap)(facetnumber, shape, dtype)
+        for facetnumber in range(len(args.model_data_npy))
+    )
 
     # Predict facets
     for model_npy in args.model_data_npy:
