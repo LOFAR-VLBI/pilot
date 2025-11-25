@@ -12,6 +12,7 @@ dependencies = [
     "numpy",
     "pandas",
     "psutil",
+    "joblib",
 ]
 
 [project.optional-dependencies]
