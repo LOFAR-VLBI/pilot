@@ -212,13 +212,28 @@ def get_facet_info(polygon_info_file: str, ms: str, polygon_region: str):
     """
     Extract facet information from polygon metadata and a MeasurementSet.
 
-    Args:
-        polygon_info_file (str): Path to the CSV file with polygon averaging and names.
-        ms (str): Path to the MeasurementSetMeasurementSet.
-        polygon_region (str): Name of the polygon region (e.g., DS9 region path).
+    Parameters
+    ----------
+        polygon_info_file
+            Path to the CSV file with polygon averaging and names.
+        ms
+            Path to the MeasurementSet.
+        polygon_region
+            Name of the polygon region (e.g., DS9 region path).
 
-    Returns:
-        tuple: (phasecentre, freq_avg, time_avg, direction_name)
+    Returns
+    -------
+        tuple
+            A tuple containing:
+            - The phase center
+            - the frequency average
+            - the time average
+            - the direction name
+            
+    Raises
+    ------
+        ValueError
+            If `polygon_region` is not contained in `polygon_info_file`.
     """
 
     # Load polygon info CSV
