@@ -81,8 +81,6 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
                       '*-model-fpb.fits', '*-model-pb.fits', '*-model.fits']
     for model_pattern in model_patterns[0:3]: rename_and_resort(model_pattern)
 
-    return
-
 
 def parse_args():
     """
