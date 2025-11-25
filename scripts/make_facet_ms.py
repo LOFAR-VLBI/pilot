@@ -287,9 +287,9 @@ def copy_data(dat: str, to: str):
 
     Parameters
     ----------
-    dat : str
+    dat
         Path to the source file or directory.
-    to : str
+    to
         Destination path.
     """
     os.system(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}")
