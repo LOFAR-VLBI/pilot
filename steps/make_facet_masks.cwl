@@ -63,8 +63,6 @@ requirements:
         - entry: $(inputs.msin)
           writable: true
         - entry: $(inputs.facet_model_data)
-    - class: InplaceUpdateRequirement
-      inplaceUpdate: true
 
 stdout: combine_facets.log
 stderr: combine_facets_err.log
