@@ -58,7 +58,7 @@ def run_dp3(
     Returns
     -------
     str
-        The path of the output Measurement Set created by DP3.
+        The path of the output MeasurementSet created by DP3.
     """
 
     steps = []
