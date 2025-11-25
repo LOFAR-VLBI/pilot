@@ -5,8 +5,7 @@ doc: |
     Make facet masks by summing predicted visibilities from facet polygons
     to form a mask. Output is returned in MeasurementSet as model data.
 
-baseCommand:
-    - make_facet_masks.py
+baseCommand: make_facet_masks.py
 
 inputs:
     - id: msin
