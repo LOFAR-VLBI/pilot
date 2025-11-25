@@ -335,7 +335,7 @@ def main():
     phasecentre, freqavg, timeres, dirname, facet_column = get_facet_info(args.polygon_info, high_ms, args.polygon)
 
     # Make facet data
-    print("Run DP3")
+    print("Running DP3")
     msout = run_dp3(args.low_ms, high_ms, facet_column, phasecentre, freqavg, timeres, args.h5parm, dirname, outdir)
     if args.tmp != '.':
         copy_data(msout, outdir)
