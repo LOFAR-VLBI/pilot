@@ -3,19 +3,19 @@
 
 __author__ = "Jurjen de Jong"
 
+from argparse import ArgumentParser
+from glob import glob
 import os
 from os.path import basename
-import subprocess
 import re
-from argparse import ArgumentParser
-import numpy as np
-import tables
-from glob import glob
+import subprocess
 
 from astropy.io import fits
 from casacore.tables import table
-from numba import njit, prange, set_num_threads
 from joblib import Parallel, delayed
+from numba import njit, prange, set_num_threads
+import numpy as np
+import tables
 
 
 def make_utf8(inp: str | bytes) -> str:
