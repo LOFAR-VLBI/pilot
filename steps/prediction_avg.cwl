@@ -43,7 +43,6 @@ arguments:
   - msout.scalarflags=false
 
 requirements:
-  - class: ShellCommandRequirement
   - class: InlineJavascriptRequirement
 
 hints:
