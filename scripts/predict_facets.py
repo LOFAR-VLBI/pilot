@@ -189,7 +189,6 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
 
     command += [ms]
 
-    # Run predict
     print('\n'.join(command))
     predict_cmd = open("predict.cmd", "w")
     predict_cmd.write('\n'.join(command))
