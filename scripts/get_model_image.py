@@ -55,9 +55,9 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
         """
         files = sorted(glob(pattern))
         if len(files) > 1:
-            for n, modim in enumerate(files):
-                new_name = re.sub(r'\d{4}', add_trailing_zeros(str(n), 4), modim)
-                os.system(f'mv {modim} {new_name}')
+            for n, model_image in enumerate(files):
+                new_name = re.sub(r'\d{4}', add_trailing_zeros(str(n), 4), model_image)
+                os.system(f'mv {model_image} {new_name}')
         elif len(files) == 1:
             new_name = re.sub(r'\-\d{4}', '', files[0])
             os.system(f'mv {files[0]} {new_name}')
@@ -68,13 +68,13 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
         freqs += list(t.getcol("CHAN_FREQ")[0])
     fmax_ms = max(freqs)
     fmin_ms = min(freqs)
-    for modim in model_images:
-        fts = fits.open(modim)[0]
+    for model_image in model_images:
+        fts = fits.open(model_image)[0]
         fdelt, fcent = fts.header['CDELT3'] / 2, fts.header['CRVAL3']
         fmin, fmax = fcent - fdelt, fcent + fdelt
         if not (fmin > fmax_ms or fmax < fmin_ms):
-            print(f"Take {modim}")
-            os.system(f"cp {modim} .")
+            print(f"Take {model_image}")
+            os.system(f"cp {model_image} .")
 
     # Rename for WSClean predict
     model_patterns = ['*-????-model-fpb.fits', '*-????-model-pb.fits', '*-????-model.fits',
