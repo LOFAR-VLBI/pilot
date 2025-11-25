@@ -40,7 +40,7 @@ def get_data_shape(ms: str) -> tuple[int, int, int]:
 
     Returns
     -------
-    tuple of int
+    tuple[int]
         A tuple (nrows, nfreq, npol) where:
         - nrows is the number of rows in the table,
         - nfreq is the number of frequency channels,
