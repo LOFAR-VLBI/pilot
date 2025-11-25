@@ -102,9 +102,9 @@ def add_axis(arr: np.ndarray, ax_size: int) -> np.ndarray:
 
     Parameters
     ----------
-    arr : np.ndarray
+    arr
         Input array.
-    ax_size : int
+    ax_size
         Size of the new axis.
 
     Returns
