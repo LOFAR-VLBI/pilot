@@ -3,14 +3,14 @@
 
 __author__ = "Jurjen de Jong"
 
-import os
-import re
 from argparse import ArgumentParser
 from glob import glob
 from itertools import repeat
+import os
+import re
 
-from casacore.tables import table
 from astropy.io import fits
+from casacore.tables import table
 
 
 def add_trailing_zeros(s: str, digitsize: int = 4) -> str:
