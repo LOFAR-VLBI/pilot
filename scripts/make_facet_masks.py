@@ -155,7 +155,10 @@ def main():
     shape = get_data_shape(args.msin)
 
     # Create memmaps
-    memmaps = (Parallel(n_jobs=ncpu, backend='loky')(delayed(create_memmap)(facetnumber, shape, dtype) for facetnumber in range(len(args.model_data_npy))))
+memmaps = Parallel(n_jobs=ncpu, backend="loky")(
+    delayed(create_memmap)(facetnumber, shape, dtype)
+    for facetnumber in range(len(args.model_data_npy))
+)
 
     # Predict facets
     for model_npy in args.model_data_npy:
