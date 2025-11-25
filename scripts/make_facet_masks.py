@@ -25,7 +25,6 @@ def add_in_place(acc, arr):
         arr (np.ndarray): The array to add into acc.
     """
     flat_size = acc.size
-    # Loop over all elements in parallel
     for i in prange(flat_size):
         acc.flat[i] += arr.flat[i]
 
