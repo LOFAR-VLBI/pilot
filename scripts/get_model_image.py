@@ -110,7 +110,7 @@ def main():
     """
 
     args = parse_args()
-    get_model_image(args.ms, glob(args.model_images+"/*.fits"))
+    get_model_image(args.ms, glob(args.model_images + "/*.fits"))
 
 
 if __name__ == '__main__':
