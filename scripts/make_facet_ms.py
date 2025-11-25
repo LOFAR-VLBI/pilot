@@ -259,7 +259,7 @@ def get_facet_info(polygon_info_file: str, ms: str, polygon_region: str):
     if 'poly_center' in polygon and pd.notna(polygon['poly_center'].values[0]):
         phasecentre = polygon['poly_center'].values[0]
     else:
-        print('WARNING: No poly_center in polygon_info.csv; using dir instead.')
+        print('WARNING: No poly_center column in polygon_info.csv; using dir instead.')
         phasecentre = polygon['dir'].values[0]
 
     # Frequency averaging
