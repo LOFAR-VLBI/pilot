@@ -5,8 +5,7 @@ doc: |
     Split out facet MeasurementSet after interpolating MODEL_DATA to DATA, subtraction, phase-shifting, averaging,
     applying of calibration solutions and the beam.
 
-baseCommand:
-  - make_facet_ms.py
+baseCommand: make_facet_ms.py
 
 inputs:
     - id: avg_ms
