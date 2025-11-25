@@ -24,7 +24,7 @@ inputs:
 outputs:
     - id: output_model_images
       type: File[]
-      doc: Matching model images
+      doc: The selected model images
       outputBinding:
         glob: "*model*.fits"
     - id: logfile
