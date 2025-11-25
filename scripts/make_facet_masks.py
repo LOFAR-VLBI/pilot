@@ -165,7 +165,9 @@ memmaps = Parallel(n_jobs=ncpu, backend="loky")(
         # Adding polygon to memmap facet masks
         poly_number = basename(model_npy).replace("POLY_", "").replace(".npy", "")
         poly_data = np.load(model_npy)
-        Parallel(n_jobs=ncpu, backend='loky')(delayed(update_memmap)(dat, poly_number, poly_data) for dat in memmaps)
+        Parallel(n_jobs=ncpu, backend="loky")(
+            delayed(update_memmap)(dat, poly_number, poly_data) for dat in memmaps
+        )
 
     # Add final POLY_* to measurement set
     for dat in memmaps:
