@@ -98,7 +98,7 @@ def update_memmap(dat: np.memmap, poly_number: int | str, poly_data: np.ndarray)
 
 def add_axis(arr: np.ndarray, ax_size: int) -> np.ndarray:
     """
-    Add a new axis to an array with a given size.
+    Add a new axis to an array with a given size with the values of the old array.
 
     Parameters
     ----------
