@@ -4,8 +4,9 @@
 __author__ = "Jurjen de Jong"
 
 from argparse import ArgumentParser
-import os
+from os import popen, getcwd, chdir
 from os.path import basename, abspath
+from subprocess import run, STDOUT
 import re
 import sys
 
@@ -124,7 +125,7 @@ def run_dp3(
     command += ['steps=' + str(steps).replace(" ", "").replace("\'", "")]
 
     print('\n'.join(command) )
-    os.system(' '.join(command) + f' > {outdir}/DP3.log')
+    run(' '.join(command) + f' > {outdir}', shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
     return msout
 
@@ -174,7 +175,7 @@ def parse_history(ms: str, hist_item: str) -> str | None:
         The first matching history entry if found, otherwise None.
     """
 
-    hist = os.popen('taql "SELECT * FROM ' + ms + '::HISTORY" | grep ' + hist_item).read().split(' ')
+    hist = popen('taql "SELECT * FROM ' + ms + '::HISTORY" | grep ' + hist_item).read().split(' ')
     for item in hist:
         if hist_item in item and len(hist_item) <= len(item):
             return item
@@ -292,7 +293,7 @@ def copy_data(dat: str, to: str):
     to
         Destination path.
     """
-    os.system(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}")
+    run(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}", shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
 
 def parse_args():
@@ -326,8 +327,8 @@ def main():
 
     if args.tmp != '.':
         rundir = args.tmp
-        outdir = os.getcwd()
-        os.chdir(rundir)
+        outdir = getcwd()
+        chdir(rundir)
     else:
         outdir = '.'
 
@@ -344,7 +345,7 @@ def main():
     if args.cleanup:
         print("Cleaning up")
         if args.tmp != '.':
-            os.system(f"rm -rf {msout}")
+            run(f"rm -rf {msout}", shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
 
 if __name__ == '__main__':
