@@ -21,7 +21,7 @@ def add_trailing_zeros(s: str, digitsize: int = 4) -> str:
     ----------
     s
         Input string representing a number.
-    digitsize : int, default=4
+    digitsize
         Total width of the output string.
 
     Returns
