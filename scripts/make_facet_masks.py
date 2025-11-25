@@ -57,11 +57,11 @@ def create_memmap(facetnumber: int | str, shape: tuple[int, int], dtype: np.dtyp
 
     Parameters
     ----------
-    facetnumber : int or str
+    facetnumber
         Identifier for the facet, used in the filename.
-    shape : tuple of int
+    shape
         Dimensions of the array.
-    dtype : data-type
+    dtype
         Data type of the array elements.
 
     Returns
