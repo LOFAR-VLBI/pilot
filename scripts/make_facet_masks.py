@@ -32,7 +32,7 @@ def add_in_place(acc, arr):
 
 def get_data_shape(ms: str) -> tuple[int, int, int]:
     """
-    Get the shape of the DATA column in a Measurement Set.
+    Get the shape of the DATA column in a MeasurementSet.
 
     Parameters
     ----------
