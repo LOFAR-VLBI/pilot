@@ -13,6 +13,7 @@ dependencies = [
     "pandas",
     "psutil",
     "joblib",
+    "numba",
 ]
 
 [project.optional-dependencies]
