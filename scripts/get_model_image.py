@@ -45,7 +45,7 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
     ----------
     msin
         Path to the input Measurement Set.
-    model_images : list of str
+    model_images
         List of candidate model image FITS files.
     """
 
