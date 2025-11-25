@@ -82,11 +82,11 @@ def update_memmap(dat: np.memmap, poly_number: int | str, poly_data: np.ndarray)
 
     Parameters
     ----------
-    dat : np.memmap
+    dat
         Memory-mapped array representing the facet data.
-    poly_number : int or str
+    poly_number
         Identifier for the polynomial data.
-    poly_data : np.ndarray
+    poly_data
         Array of data to be added in place.
     """
     facet_id = basename(dat.filename).replace("FACET_", "").replace(".dat", "")
