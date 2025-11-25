@@ -86,7 +86,7 @@ steps:
            source: msin
          - id: h5parm
            source: h5parm
-         - id: polygons
+         - id: polygon
            source: polygons
          - id: polygon_info
            source: polygon_info
@@ -97,7 +97,7 @@ steps:
       out:
          - facet_ms
       run: ../../steps/make_facet_ms.cwl
-      scatter: polygons
+      scatter: polygon
 
 
 requirements:

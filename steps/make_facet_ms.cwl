@@ -29,7 +29,7 @@ inputs:
         prefix: "--h5"
         position: 3
         separate: true
-    - id: polygons
+    - id: polygon
       type: File
       doc: Facet polygon
       inputBinding:
@@ -84,7 +84,7 @@ requirements:
         - entry: $(inputs.full_ms)
         - entry: $(inputs.avg_ms)
         - entry: $(inputs.h5parm)
-        - entry: $(inputs.polygons)
+        - entry: $(inputs.polygon)
         - entry: $(inputs.polygon_info)
 
 
