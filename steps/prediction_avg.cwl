@@ -4,8 +4,7 @@ id: prediction_avg
 label: DP3 averaging for prediction
 doc: Average MeasurementSet in time and frequency for faster prediction.
 
-baseCommand:
-  - DP3
+baseCommand: DP3
 
 inputs:
   - id: msin
