@@ -2,7 +2,20 @@ class: Workflow
 cwlVersion: v1.2
 id: facet_subtract
 label: Facet subtraction
-doc: Use WSClean to predict and subtract model data and split all facets into separate MeasurementSets.
+doc: |
+    This workflow:
+    * Gets the facet layout using the merged h5parm
+    * Gathers the essential model images from the 1.2" imaging output data
+    * Splits the multi-facet region file into separate facets (polygons)
+    * Averages all input MeasurementSets to a lower time and frequency resolution
+    * Predicts model data for each facet polygon separately
+    * Makes a masks for subtraction by summing the corresponding polygon model data components
+    * Upsamples the model data from low data resolution to the initial data resolution
+    * Subtracts the upsampled data from the original data column
+    * Reads the phase centre and averaging factors for each facet MeasurementSet from the polygon_info CSV file and applies them
+    * Applies calibration solutions from the corresponding calibrator source
+    * Applies the beam at the centre of the facet
+    * Concatenates the subtracted phase-shifted MeasurementSets per polygon
 
 inputs:
     - id: msin

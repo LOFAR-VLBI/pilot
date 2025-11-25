@@ -3,12 +3,12 @@ cwlVersion: v1.2
 id: facet_subtract_per_subband
 doc: |
     This workflow:
-    * Averages a MeasurementSet to a lower time and frequency resolution
+    * Averages the input MeasurementSet to a lower time and frequency resolution
     * Predicts model data for each facet polygon separately
     * Makes a masks for subtraction by summing the corresponding polygon model data components
     * Upsamples the model data from low data resolution to the initial data resolution
     * Subtracts the upsampled data from the original data column
-    * Uses the polygon_info CSV file to phase shift and average the facet MeasurementSet
+    * Reads the phase centre and averaging factors for each facet MeasurementSet from the polygon_info CSV file and applies them
     * Applies calibration solutions from the corresponding calibrator source
     * Applies the beam at the centre of the facet
 
