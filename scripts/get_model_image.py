@@ -70,6 +70,9 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
     fmin_ms = min(freqs)
     for model_image in model_images:
         fts = fits.open(model_image)[0]
+        # CRVAL3   -- centre frequency of the output channel
+        # CDELT3   -- width of the output channel
+        # e.g. https://wsclean.readthedocs.io/en/latest/fits_keywords.html#meaning-of-frequency-keywords
         fdelt, fcent = fts.header['CDELT3'] / 2, fts.header['CRVAL3']
         fmin, fmax = fcent - fdelt, fcent + fdelt
         if not (fmin > fmax_ms or fmax < fmin_ms):
