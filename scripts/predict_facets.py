@@ -5,8 +5,9 @@ __author__ = "Jurjen de Jong"
 
 from argparse import ArgumentParser
 from glob import glob
-import os
-from os.path import basename
+from os import getcwd, rename, chdir
+from os.path import basename, exists
+from subprocess import run, STDOUT
 import re
 import subprocess
 
@@ -52,7 +53,7 @@ def split_facet_h5(h5parm: str, dirname: str):
         Name of the direction to extract.
     """
     outputh5 = f'{basename(h5parm)}.{dirname}.h5'
-    os.system(f'cp {h5parm} {outputh5}')
+    run(f'cp {h5parm} {outputh5}', shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
     with tables.open_file(outputh5, 'r+') as outh5:
 
@@ -112,12 +113,12 @@ def repack(h5):
     """
     tmph5 = f"{h5}.tmp"
     print(f"Repacking {h5}...")
-    os.rename(h5, tmph5)
+    rename(h5, tmph5)
     try:
         subprocess.run(["h5repack", tmph5, h5], check=True)
     finally:
-        if os.path.exists(tmph5):
-            os.rename(tmph5, h5)
+        if exists(tmph5):
+            rename(tmph5, h5)
 
 
 def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
@@ -191,7 +192,7 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
     predict_cmd.write('\n'.join(command))
     predict_cmd.close()
 
-    os.system(' '.join(command))
+    run(' '.join(command), shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
 
 def copy_data(dat: str, to: str):
@@ -205,7 +206,7 @@ def copy_data(dat: str, to: str):
     to : str
         Destination path.
     """
-    os.system(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}")
+    run(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}", shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
 
 def parse_args():
@@ -248,10 +249,10 @@ def main():
             copy_data(model, rundir)
 
         if args.cleanup_input:
-            os.system(f"rm -rf {msin}") # Delete input MS after copy to --tmp to free up space
+            run(f"rm -rf {msin}", shell=True, stderr=STDOUT, encoding="utf-8", text=True) # Delete input MS after copy to --tmp to free up space
 
-        outdir = os.getcwd()
-        os.chdir(rundir)
+        outdir = getcwd()
+        chdir(rundir)
     else:
         msin = args.msin
         model_images = args.model_images
@@ -268,7 +269,7 @@ def main():
         np.save(f"{outdir}/POLY_{poly_number}.npy", poly_data)
 
     if args.cleanup_input:
-        os.system(f"rm -rf {msin}") # Delete MS to free up space
+        run(f"rm -rf {msin}", shell=True, stderr=STDOUT, encoding="utf-8", text=True) # Delete MS to free up space
 
 
 if __name__ == '__main__':
