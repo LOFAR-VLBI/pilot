@@ -175,7 +175,7 @@ memmaps = Parallel(n_jobs=ncpu, backend="loky")(
         column = f"POLY_{datnum}"
 
         with table(args.msin, ack=False, readonly=False) as t:
-            print(f"Update POLY_{datnum} with FACET_{datnum}.dat")
+            print(f"Updating POLY_{datnum} with FACET_{datnum}.dat")
             inp = add_axis(np.array(dat), 4)
             inp[..., 1] = 0
             inp[..., 2] = 0
