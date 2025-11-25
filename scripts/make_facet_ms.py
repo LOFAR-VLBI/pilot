@@ -342,7 +342,7 @@ def main():
 
     # Delete a copy to save storage
     if args.cleanup:
-        print("Cleanup...")
+        print("Cleaning up")
         if args.tmp != '.':
             os.system(f"rm -rf {msout}")
 
