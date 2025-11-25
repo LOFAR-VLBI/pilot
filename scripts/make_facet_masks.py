@@ -35,8 +35,8 @@ def get_data_shape(ms: str) -> tuple[int, int, int]:
 
     Parameters
     ----------
-    ms : str
-        Path to the Measurement Set.
+    ms
+        Path to the MeasurementSet.
 
     Returns
     -------
