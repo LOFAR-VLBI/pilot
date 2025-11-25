@@ -73,7 +73,7 @@ def create_memmap(facetnumber: int | str, shape: tuple[int, int], dtype: np.dtyp
     filename = f"FACET_{facetnumber}.dat"
     print(f"Creating {filename}")
     memmap_obj = np.memmap(filename, dtype=dtype, mode='w+', shape=(shape[0], shape[1]))
-    memmap_obj[:] = 0  # Initialize the file with zeros
+    memmap_obj[:] = 0
     return memmap_obj
 
 
