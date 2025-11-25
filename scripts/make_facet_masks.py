@@ -3,16 +3,16 @@
 
 __author__ = "Jurjen de Jong"
 
+from argparse import ArgumentParser
 import os
 from os.path import basename
-from argparse import ArgumentParser
-import numpy as np
-import tables
 
 from astropy.io import fits
 from casacore.tables import table
-from numba import njit, prange, set_num_threads
 from joblib import Parallel, delayed
+from numba import njit, prange, set_num_threads
+import numpy as np
+import tables
 
 
 @njit(parallel=True)
