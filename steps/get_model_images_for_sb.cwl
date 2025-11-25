@@ -4,8 +4,7 @@ id: get_model_images
 label: Select model images matching with MS
 doc: Select the model images that match with the input MeasurementSet.
 
-baseCommand:
-  - get_model_image.py
+baseCommand: get_model_image.py
 
 inputs:
     - id: msin
