@@ -148,7 +148,8 @@ def main():
     dtype = np.complex64
 
     # Write memmaps in --tmp
-    if args.tmp != '.': os.chdir(args.tmp)
+    if args.tmp != '.':
+        os.chdir(args.tmp)
 
     # Get the shape for the memmap from msin
     shape = get_data_shape(args.msin)
