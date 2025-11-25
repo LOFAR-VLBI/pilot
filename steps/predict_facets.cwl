@@ -82,6 +82,8 @@ requirements:
         - entry: $(inputs.model_images)
         - entry: $(inputs.h5parm)
         - entry: $(inputs.polygons)
+    - class: InplaceUpdateRequirement
+      inplaceUpdate: true
 
 stdout: predict_facet.log
 stderr: predict_facet_err.log
