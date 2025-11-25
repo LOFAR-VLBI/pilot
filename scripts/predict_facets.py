@@ -165,8 +165,8 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
         command += ['-channels-out ' + str(len(model_images))]
 
     freqboundary = []
-    for modim in sorted(model_images)[:-1]:
-        with fits.open(modim) as fts:
+    for model_image in sorted(model_images)[:-1]:
+        with fits.open(model_image) as fts:
             fdelt, fcent = fts[0].header['CDELT3'] / 2, fts[0].header['CRVAL3']
             freqboundary.append(str(int(fcent + fdelt)))
 
