@@ -184,7 +184,7 @@ memmaps = Parallel(n_jobs=ncpu, backend="loky")(
 
             if column not in colnames:
                 desc = t.getcoldesc('DATA')
-                print('Create ' + column)
+                print('Creating ' + column)
                 desc['name'] = column
                 t.addcols(desc)
 
