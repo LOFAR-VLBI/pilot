@@ -4,7 +4,7 @@
 __author__ = "Jurjen de Jong"
 
 from argparse import ArgumentParser
-import os
+from os import cpu_count, getenv, chdir, remove
 from os.path import basename
 
 from astropy.io import fits
@@ -142,14 +142,14 @@ def main():
     args = parse_args()
 
     # Job requirements
-    slurm_ncpu = int(os.getenv("SLURM_CPUS_PER_TASK", os.cpu_count() - 1))
+    slurm_ncpu = int(getenv("SLURM_CPUS_PER_TASK", cpu_count() - 1))
     ncpu = min(args.ncpu, slurm_ncpu)
     set_num_threads(ncpu) # For numba
     dtype = np.complex64
 
     # Write memmaps in --tmp
     if args.tmp != '.':
-        os.chdir(args.tmp)
+        chdir(args.tmp)
 
     # Get the shape for the memmap from msin
     shape = get_data_shape(args.msin)
@@ -192,7 +192,7 @@ def main():
 
     # Cleanup memmaps
     for dat in memmaps:
-        os.remove(dat.filename)
+        remove(dat.filename)
 
 
 if __name__ == '__main__':
