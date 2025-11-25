@@ -26,8 +26,7 @@ def run_dp3(
     freqavg: str | None = None,
     timeres: str | None = None,
     applycal_h5: str | None = None,
-    dirname: str | None = None,
-    outdir: str = ".") -> str:
+    dirname: str | None = None) -> str:
     """
     Run DP3 to upsample from low- to high-resolution data and split out a facet.
 
@@ -53,8 +52,6 @@ def run_dp3(
         Path to H5Parm file with calibration solutions to apply.
     dirname
         Direction name from the H5Parm.
-    outdir
-        Directory to write DP3 log files.
 
     Returns
     -------
@@ -63,7 +60,7 @@ def run_dp3(
     """
 
     steps = []
-    msout = f"facet_{dirname.replace("Dir","")}_{basename(high_ms)}"
+    msout = f'facet_{dirname.replace("Dir","")}_{basename(high_ms)}'
 
     # 1) Upsampling
     command = ['DP3',
@@ -125,7 +122,7 @@ def run_dp3(
     command += ['steps=' + str(steps).replace(" ", "").replace("\'", "")]
 
     print('\n'.join(command) )
-    run(' '.join(command) + f' > {outdir}', shell=True, stderr=STDOUT, encoding="utf-8", text=True)
+    run(' '.join(command), shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
     return msout
 
@@ -337,7 +334,7 @@ def main():
 
     # Make facet data
     print("Running DP3")
-    msout = run_dp3(args.low_ms, high_ms, facet_column, phasecentre, freqavg, timeres, args.h5parm, dirname, outdir)
+    msout = run_dp3(args.low_ms, high_ms, facet_column, phasecentre, freqavg, timeres, args.h5parm, dirname)
     if args.tmp != '.':
         copy_data(msout, outdir)
 
