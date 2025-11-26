@@ -48,9 +48,9 @@ def split_facet_h5(h5parm: str, dirname: str):
 
     Parameters
     ----------
-    h5parm : str
+    h5parm
         Path to the multi-facet H5Parm file.
-    dirname : str
+    dirname
         Name of the direction to extract.
     """
     outputh5 = f'{basename(h5parm)}.{dirname}.h5'
