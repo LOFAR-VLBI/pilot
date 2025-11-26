@@ -7,9 +7,11 @@ from argparse import ArgumentParser
 from glob import glob
 from os import getcwd, rename, chdir
 from os.path import basename, exists
+from pathlib import Path
 from subprocess import run, STDOUT
 import re
 import subprocess
+from shutil import rmtree
 
 from astropy.io import fits
 from casacore.tables import table
@@ -211,6 +213,23 @@ def copy_data(dat: str, to: str):
     run(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}", shell=True, stderr=STDOUT, encoding="utf-8", text=True)
 
 
+def remove_dir(msin):
+    """
+    Remove or unlink directory
+
+    Parameters
+    ----------
+    msin : str
+         Path to input MeasurementSet
+    """
+
+    msin_path = Path(msin)
+    if msin_path.is_dir(): # if directory
+        rmtree(msin_path, ignore_errors=True)
+    else: # if symlink
+        msin_path.unlink(missing_ok=True)
+
+
 def parse_args():
     """
     Command line argument parser
@@ -251,7 +270,7 @@ def main():
             copy_data(model, rundir)
 
         if args.cleanup_input:
-            run(f"rm -rf {msin}", shell=True, stderr=STDOUT, encoding="utf-8", text=True) # Delete input MS after copy to --tmp to free up space
+            remove_dir(msin)
 
         outdir = getcwd()
         chdir(rundir)
@@ -271,7 +290,7 @@ def main():
         np.save(f"{outdir}/POLY_{poly_number}.npy", poly_data)
 
     if args.cleanup_input:
-        run(f"rm -rf {msin}", shell=True, stderr=STDOUT, encoding="utf-8", text=True) # Delete MS to free up space
+        remove_dir(msin)
 
 
 if __name__ == '__main__':

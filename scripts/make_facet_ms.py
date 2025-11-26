@@ -15,6 +15,8 @@ import numpy as np
 import pandas as pd
 import tables
 
+from predict_facets import remove_dir
+
 dtype = np.complex64
 
 
@@ -339,7 +341,7 @@ def main():
     if args.cleanup:
         print("Cleaning up")
         if args.tmp != '.':
-            run(f"rm -rf {msout}", shell=True, stderr=STDOUT, encoding="utf-8", text=True)
+            remove_dir(msout)
 
 
 if __name__ == '__main__':
