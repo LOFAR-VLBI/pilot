@@ -116,11 +116,8 @@ def repack(h5):
     tmph5 = f"{h5}.tmp"
     print(f"Repacking {h5}...")
     rename(h5, tmph5)
-    try:
-        subprocess.run(["h5repack", tmph5, h5], check=True)
-    finally:
-        if exists(tmph5):
-            rename(tmph5, h5)
+    subprocess.run(["h5repack", tmph5, h5], check=True)
+    rename(tmph5, h5)
 
 
 def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):

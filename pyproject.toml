@@ -14,6 +14,7 @@ dependencies = [
     "psutil",
     "joblib",
     "numba",
+    "tables",
 ]
 
 [project.optional-dependencies]
