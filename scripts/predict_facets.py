@@ -145,8 +145,14 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
                '-parallel-gridding 6']
 
     for n, argument in enumerate(comparse):
-        if argument in ['-gridder', '-padding',
-                        '-idg-mode', '-beam-aterm-update', '-pol', '-scale']:
+        if argument in [
+            "-gridder",
+            "-padding",
+            "-idg-mode",
+            "-beam-aterm-update",
+            "-pol",
+            "-scale"
+        ]:
             if ' '.join(comparse[n:n + 2]) == '-gridder wgridder-apply-primary-beam':
                 command.append('-gridder wgridder')
                 command.append('-apply-primary-beam')
