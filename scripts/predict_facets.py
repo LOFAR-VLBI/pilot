@@ -67,7 +67,12 @@ def split_facet_h5(h5parm: str, dirname: str):
         dir_idx = dirs.index(dirname)
 
         def get_data(soltab, axis):
-            return np.take(outh5.root.sol000._f_get_child(soltab)._f_get_child(axis)[:], indices=[dir_idx], axis=dir_axis)
+        def get_data(soltab, axis):
+            return np.take(
+                outh5.root.sol000._f_get_child(soltab)._f_get_child(axis)[:],
+                indices=[dir_idx],
+                axis=dir_axis,
+            )
 
         phase_w = get_data('phase000', 'weight')
         amplitude_w = get_data('amplitude000', 'weight')
