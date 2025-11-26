@@ -111,9 +111,7 @@ def add_axis(arr: np.ndarray, ax_size: int) -> np.ndarray:
     np.ndarray
         Array with an added axis of the specified size.
     """
-    or_shape = arr.shape
-    new_shape = list(or_shape) + [ax_size]
-    return np.repeat(arr, ax_size).reshape(new_shape)
+    return np.repeat(arr[..., np.newaxis], ax_size, axis=-1)
 
 
 def parse_args():
