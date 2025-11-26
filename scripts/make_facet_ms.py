@@ -4,9 +4,9 @@
 __author__ = "Jurjen de Jong"
 
 from argparse import ArgumentParser
-from os import popen, getcwd, chdir
+from os import getcwd, chdir
 from os.path import basename, abspath
-from subprocess import run, STDOUT
+from subprocess import run, STDOUT, PIPE
 import re
 import sys
 
@@ -172,7 +172,9 @@ def parse_history(ms: str, hist_item: str) -> str | None:
         The first matching history entry if found, otherwise None.
     """
 
-    hist = popen('taql "SELECT * FROM ' + ms + '::HISTORY" | grep ' + hist_item).read().split(' ')
+    taql_proc = run(["taql", f"SELECT * FROM {ms}::HISTORY"], stdout=PIPE, text=True)
+    grep_proc = run(["grep", hist_item], input=taql_proc.stdout, stdout=PIPE, text=True)
+    hist = grep_proc.stdout.split()
     for item in hist:
         if hist_item in item and len(hist_item) <= len(item):
             return item
