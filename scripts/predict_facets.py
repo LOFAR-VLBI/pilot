@@ -220,7 +220,13 @@ def copy_data(dat: str, to: str):
     to
         Destination path.
     """
-    run(f"rsync -avH --no-implied-dirs --copy-links {dat} {to}", shell=True, stderr=STDOUT, encoding="utf-8", text=True)
+    run(
+        f"rsync -avH --no-implied-dirs --copy-links {dat} {to}",
+        shell=True,
+        stderr=STDOUT,
+        encoding="utf-8",
+        text=True,
+    ) 
 
 
 def remove_dir(msin):
