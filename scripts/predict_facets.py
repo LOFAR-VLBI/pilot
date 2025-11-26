@@ -187,9 +187,12 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
         command += ['-channel-division-frequencies ' + ','.join(freqboundary)]
 
     if h5parm is not None:
-        command += [f'-apply-facet-solutions {h5parm} amplitude000,phase000',
-                    f'-facet-regions {facet_region}', '-apply-facet-beam',
-                    f'-facet-beam-update {comparse[comparse.index("-facet-beam-update") + 1]}']
+        command += [
+            f"-apply-facet-solutions {h5parm} amplitude000,phase000",
+            f"-facet-regions {facet_region}",
+            "-apply-facet-beam",
+            f'-facet-beam-update {comparse[comparse.index("-facet-beam-update") + 1]}',
+        ]
 
     if len(glob(ms+"*.tmp"))>0:
         command += ['-reuse-reordered']
