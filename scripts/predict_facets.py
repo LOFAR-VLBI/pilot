@@ -130,13 +130,13 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
 
     Parameters
     ----------
-    ms : str
-        Path to the Measurement Set.
-    model_images : list of str, optional
+    ms
+        Path to the MeasurementSet.
+    model_images
         List of model image FITS files.
-    h5parm : str
+    h5parm
         Path to H5Parm file containing calibration solutions.
-    facet_region : str
+    facet_region
         DS9 region file (.reg) defining the facet polygon.
     """
     f = fits.open(model_images[0])
