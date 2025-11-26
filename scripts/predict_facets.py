@@ -27,7 +27,7 @@ def make_utf8(inp: str | bytes) -> str:
 
     Parameters
     ----------
-    inp : str or bytes
+    inp
         Input value, either already a string or a byte sequence.
 
     Returns
