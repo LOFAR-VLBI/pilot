@@ -160,9 +160,14 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
                 command.append(' '.join(comparse[n:n + 2]))
         elif argument in ['-size']:
             command.append(' '.join(comparse[n:n + 3]))
-        elif argument in ['-use-differential-lofar-beam', '-grid-with-beam',
-                          '-use-idg', '-log-time', '-gap-channel-division',
-                          '-apply-primary-beam']:
+        elif argument in [
+            "-use-differential-lofar-beam",
+            "-grid-with-beam",
+            "-use-idg",
+            "-log-time",
+            "-gap-channel-division",
+            "-apply-primary-beam"
+        ]:
             if argument not in command:
                 command.append(argument)
 
