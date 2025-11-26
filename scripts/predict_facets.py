@@ -10,7 +10,6 @@ from os.path import basename, exists
 from pathlib import Path
 from subprocess import run, STDOUT
 import re
-import subprocess
 from shutil import rmtree
 
 from astropy.io import fits
@@ -116,7 +115,7 @@ def repack(h5):
     tmph5 = f"{h5}.tmp"
     print(f"Repacking {h5}...")
     rename(h5, tmph5)
-    subprocess.run(["h5repack", tmph5, h5], check=True)
+    run(["h5repack", tmph5, h5], check=True)
     rename(tmph5, h5)
 
 
