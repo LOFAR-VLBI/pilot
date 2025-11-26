@@ -7,7 +7,6 @@ from argparse import ArgumentParser
 from os import cpu_count, getenv, chdir, remove
 from os.path import basename
 
-from astropy.io import fits
 from casacore.tables import table
 from joblib import Parallel, delayed
 from numba import njit, prange, set_num_threads
