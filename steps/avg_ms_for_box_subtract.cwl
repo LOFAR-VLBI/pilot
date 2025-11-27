@@ -19,7 +19,7 @@ outputs:
     doc: MeasurementSet at a lower time/freq resolution
     type: Directory
     outputBinding:
-      glob: "$( inputs.msin.basename )"
+      glob: $( inputs.msin.basename )
 
   - id: logfile
     type: File[]
@@ -40,10 +40,6 @@ arguments:
   - msout.antennacompression=false
   - msout.uvwcompression=false
   - msout.scalarflags=false
-
-requirements:
-  - class: ShellCommandRequirement
-  - class: InlineJavascriptRequirement
 
 hints:
   - class: DockerRequirement
