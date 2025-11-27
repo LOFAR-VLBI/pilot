@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = "Jurjen de Jong"
+
+from argparse import ArgumentParser
+from glob import glob
+from itertools import repeat
+import os
+import re
+import subprocess
+
+from astropy.io import fits
+from casacore.tables import table
+
+
+def add_trailing_zeros(s: str, digitsize: int = 4) -> str:
+    """
+    Pad a string with leading zeros to a fixed width.
+
+    Parameters
+    ----------
+    s
+        Input string representing a number.
+    digitsize
+        Total width of the output string.
+
+    Returns
+    -------
+    str
+        Zero-padded string, e.g. "1" → "0001", "21" → "0021" (when digitsize=4).
+    """
+    padded_string = "".join(repeat("0", digitsize)) + s
+    return padded_string[-digitsize:]
+
+
+def get_model_image(msin: str, model_images: list[str]) -> None:
+    """
+    Match model images to a MeasurementSet and prepare them for prediction.
+
+    This function selects model images whose frequency coverage overlaps
+    with the input Measurement Set, copies them to the current directory,
+    and renames them into a consistent numbering scheme for WSClean.
+
+    Parameters
+    ----------
+    msin
+        Path to the input MeasurementSet.
+    model_images
+        List of candidate model image FITS files.
+    """
+
+    def rename_and_resort(pattern: list[str]):
+        """
+        Rename and resort model images --> remove trailing zeros when only 1 model image, otherwise renumber model images
+        """
+        files = sorted(glob(pattern))
+        if len(files) > 1:
+            for n, model_image in enumerate(files):
+                new_name = re.sub(r'\d{4}', add_trailing_zeros(str(n), 4), model_image)
+                subprocess.run(
+                    ["mv", model_image, new_name],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                )
+        elif len(files) == 1:
+            new_name = re.sub(r'\-\d{4}', '', files[0])
+            subprocess.run(
+                ["mv", files[0], new_name],
+                text=True,
+                stdout=subprocess.PIPE,
+            )
+
+    # Get images with overlapping frequencies
+    freqs = []
+    with table(msin + "::SPECTRAL_WINDOW", ack=False) as t:
+        freqs += list(t.getcol("CHAN_FREQ")[0])
+    fmax_ms = max(freqs)
+    fmin_ms = min(freqs)
+    for model_image in model_images:
+        fts = fits.open(model_image)[0]
+        # CRVAL3   -- centre frequency of the output channel
+        # CDELT3   -- width of the output channel
+        # e.g. https://wsclean.readthedocs.io/en/latest/fits_keywords.html#meaning-of-frequency-keywords
+        fdelt, fcent = fts.header['CDELT3'] / 2, fts.header['CRVAL3']
+        fmin, fmax = fcent - fdelt, fcent + fdelt
+        if not (fmin > fmax_ms or fmax < fmin_ms):
+            print(f"Taking {model_image}")
+            subprocess.run(
+                ["cp", model_image, "."],
+                text=True,
+                stdout=subprocess.PIPE,
+            )
+
+    # Rename for WSClean predict
+    model_patterns = [
+        "*-????-model-fpb.fits",
+        "*-????-model-pb.fits",
+        "*-????-model.fits",
+        "*-model-fpb.fits",
+        "*-model-pb.fits",
+        "*-model.fits",
+    ]
+    for model_pattern in model_patterns[0:3]: rename_and_resort(model_pattern)
+
+
+def parse_args():
+    """
+    Command line argument parser
+
+    Returns: Parsed arguments
+    """
+
+    parser = ArgumentParser(description="Get model images that match with MeasurementSet.")
+    parser.add_argument('--ms', help='Input MeasurementSet', default=None)
+    parser.add_argument('--model_images', help='Model image directory', default=None)
+    return parser.parse_args()
+
+
+def main():
+    """
+    Main function
+    """
+
+    args = parse_args()
+    get_model_image(args.ms, glob(args.model_images + "/*.fits"))
+
+
+if __name__ == '__main__':
+    main()

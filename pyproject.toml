@@ -12,6 +12,9 @@ dependencies = [
     "numpy",
     "pandas",
     "psutil",
+    "joblib",
+    "numba",
+    "tables",
     "tox",
 ]
 

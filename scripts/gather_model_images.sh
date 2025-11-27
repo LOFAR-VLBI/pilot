@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Ensure a model image folder is provided
+# Ensure a model image directory is provided
 if [ -z "$1" ]; then
-    echo "Usage: $0 <model_image_folder>"
+    echo "Usage: $0 <model_image_directory>"
     exit 1
 fi
 
-MODEL_IMAGE_FOLDER=$1
+MODEL_IMAGE_DIR=$1
 
 # Patterns to check with model images
 PATTERNS=(
@@ -21,7 +21,7 @@ copy_files() {
     local files=()
 
     # Filter files matching the pattern but excluding those with "MFS"
-    for file in "$MODEL_IMAGE_FOLDER"/$pattern; do
+    for file in "$MODEL_IMAGE_DIR"/$pattern; do
         [[ "$file" == *"MFS"* ]] && continue  # Skip files with "MFS"
         files+=("$file")
     done
@@ -41,5 +41,5 @@ for pattern in "${PATTERNS[@]}"; do
 done
 
 # If no files were copied, exit with error
-echo "ERROR: missing model images in folder $MODEL_IMAGE_FOLDER"
+echo "ERROR: missing model images in directory $MODEL_IMAGE_DIR"
 exit 1
