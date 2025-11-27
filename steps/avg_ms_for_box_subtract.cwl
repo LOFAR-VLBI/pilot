@@ -19,7 +19,7 @@ outputs:
     doc: MeasurementSet at a lower time/freq resolution
     type: Directory
     outputBinding:
-      glob: $( inputs.msin.basename )
+      glob: $(inputs.msin.basename)
 
   - id: logfile
     type: File[]
@@ -36,13 +36,10 @@ arguments:
   - avg.timeresolution=8
   - avg.freqresolution='97.68kHz'
   - msout.storagemanager='dysco'
-  - msout=$( inputs.msin.basename )
+  - msout=$(inputs.msin.basename)
   - msout.antennacompression=false
   - msout.uvwcompression=false
   - msout.scalarflags=false
-
-requirements:
-  - class: InlineJavascriptRequirement
 
 hints:
   - class: DockerRequirement
