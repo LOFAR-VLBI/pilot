@@ -15,13 +15,13 @@ dependencies = [
     "joblib",
     "numba",
     "tables",
+    "tox",
 ]
 
 [project.optional-dependencies]
 "test" = [
     "cwltool",
     "pytest",
-    "tox"
 ]
 
 [tool.setuptools]
@@ -29,15 +29,17 @@ packages = []
 
 [tool.tox]
 requires = ["tox>=4.22"]
-envlist = ["py39", "py310", "py311", "py312", "py313"]
+envlist = ["py310", "py311", "py312", "py313"]
 
 [tool.tox.env_run_base]
 change_dir = "{tox_root}/tests"
+description = "Run tests under {base_python}"
+extras = ["test"]
 allowlist_externals = ["sh", "pytest"]
 commands = [
     [ "sh", "prepare_data.sh" ],
-    [ "sh", "validate_steps.sh" ],
-    [ "sh", "validate_workflows.sh" ],
+    [ "sh", "validate_steps.sh", {replace = "posargs", extend = true} ],
+    [ "sh", "validate_workflows.sh", {replace = "posargs", extend = true} ],
     [ "pytest" ],
 ]
 
