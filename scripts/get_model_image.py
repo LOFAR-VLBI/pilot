@@ -8,6 +8,7 @@ from glob import glob
 from itertools import repeat
 import os
 import re
+import subprocess
 
 from astropy.io import fits
 from casacore.tables import table
@@ -57,10 +58,18 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
         if len(files) > 1:
             for n, model_image in enumerate(files):
                 new_name = re.sub(r'\d{4}', add_trailing_zeros(str(n), 4), model_image)
-                os.system(f'mv {model_image} {new_name}')
+                subprocess.run(
+                    ["mv", model_image, new_name],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                )
         elif len(files) == 1:
             new_name = re.sub(r'\-\d{4}', '', files[0])
-            os.system(f'mv {files[0]} {new_name}')
+            subprocess.run(
+                ["mv", files[0], new_name],
+                text=True,
+                stdout=subprocess.PIPE,
+            )
 
     # Get images with overlapping frequencies
     freqs = []
@@ -76,8 +85,12 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
         fdelt, fcent = fts.header['CDELT3'] / 2, fts.header['CRVAL3']
         fmin, fmax = fcent - fdelt, fcent + fdelt
         if not (fmin > fmax_ms or fmax < fmin_ms):
-            print(f"Take {model_image}")
-            os.system(f"cp {model_image} .")
+            print(f"Taking {model_image}")
+            subprocess.run(
+                ["cp", model_image, "."],
+                text=True,
+                stdout=subprocess.PIPE,
+            )
 
     # Rename for WSClean predict
     model_patterns = [
