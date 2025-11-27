@@ -1,7 +1,10 @@
 class: CommandLineTool
 cwlVersion: v1.2
 id: upsample_subtract
-doc: Upsample MeasurementSet from low data resolution to high resolution and subtract
+doc: |
+    Upsample the model visibilities in time and frequency from the low-resolution MeasurementSet
+    to the full high-resolution data resolution and subtract these predicted model visibilities
+    from the original high-resolution data.
 
 baseCommand: DP3
 
@@ -26,7 +29,7 @@ outputs:
     doc: Subtracted MeasurementSet
     type: Directory
     outputBinding:
-      glob: "$( inputs.msin_highres.basename + '.sub.ms')"
+      glob: $( inputs.msin_highres.basename + '.sub.ms')
 
   - id: logfile
     type: File[]
@@ -53,7 +56,6 @@ arguments:
   - msin.datacolumn=DATA_DI_CORRECTED
 
 requirements:
-  - class: ShellCommandRequirement
   - class: InlineJavascriptRequirement
 
 hints:
