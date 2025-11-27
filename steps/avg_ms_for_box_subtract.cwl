@@ -1,10 +1,9 @@
 class: CommandLineTool
 cwlVersion: v1.2
 id: avg_ms_for_box_subtract
-doc: Average MeasurementSet in time and frequency for faster prediction for box subtraction
+doc: Average a MeasurementSet in time and frequency for faster prediction for box subtraction
 
-baseCommand:
-  - DP3
+baseCommand: DP3
 
 inputs:
   - id: msin
@@ -17,7 +16,7 @@ inputs:
 
 outputs:
   - id: avg_ms
-    doc: MeasurementSet at lower time/freq resolution
+    doc: MeasurementSet at a lower time/freq resolution
     type: Directory
     outputBinding:
       glob: "$( inputs.msin.basename )"

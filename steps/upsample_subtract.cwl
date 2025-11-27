@@ -3,8 +3,7 @@ cwlVersion: v1.2
 id: upsample_subtract
 doc: Upsample MeasurementSet from low data resolution to high resolution and subtract
 
-baseCommand:
-  - DP3
+baseCommand: DP3
 
 inputs:
   - id: msin_highres
