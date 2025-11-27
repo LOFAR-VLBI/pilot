@@ -41,6 +41,9 @@ arguments:
   - msout.uvwcompression=false
   - msout.scalarflags=false
 
+requirements:
+  - class: InlineJavascriptRequirement
+
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
