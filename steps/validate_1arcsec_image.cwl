@@ -18,7 +18,7 @@ inputs:
 outputs:
     - id: validation_csv
       type: File
-      doc: CSV with 1 arcsecond validation information
+      doc: CSV with 1 arcsecond validation information. Currently this only includes the RMS background noise.
       outputBinding:
         glob: "validation_1arcsec_image.csv"
     - id: logfile
