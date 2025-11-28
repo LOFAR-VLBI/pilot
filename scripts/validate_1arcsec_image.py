@@ -1,9 +1,10 @@
 from argparse import ArgumentParser, Namespace
 from validate_lofar_images import get_rms
-from sys import exit
 import csv
 from pathlib import Path
 
+class ValidationError(Exception):
+    pass
 
 def parse_args() -> Namespace:
     """
@@ -32,8 +33,8 @@ def main():
         writer.writerow([args.widefield_image, f"{rms:.3f}"])
 
     # Validation
-    if rms>minimal_rms_value:
-        exit(f"ERROR: We report an RMS value of {rms} μJy/beam, while we expect a minimal RMS value of {minimal_rms_value} μJy/beam")
+    if rms > minimal_rms_value:
+        raise ValidationError(f"RMS check failed: measured {rms} μJy/beam, but expected ≤ {minimal_rms_value} μJy/beam.")
 
 
 if __name__ == '__main__':
