@@ -1,5 +1,6 @@
 [project]
-name = "VLBI-cwl"
+name = "PILOT"
+description = "PILOT: the VLBI Pipeline for the International LOFAR Telescope"
 version = "0.8.0"
 dependencies = [
     "astropy",
