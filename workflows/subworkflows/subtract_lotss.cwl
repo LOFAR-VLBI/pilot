@@ -33,7 +33,7 @@ inputs:
   - id: ncpu
     type: int?
     doc: Number of cores to use during the subtract. Defaults to 24.
-    default: 24
+    default: 6
   - id: chunkhours
     type: float?
     doc: The range of time to predict the model for at once. Lowering this value reduces memory footprint, but can increase runtime.
@@ -44,15 +44,10 @@ outputs:
     outputSource:
       - makebox/box
     doc: DS9 region file outside of which the LoTSS skymodel has been subtracted.
-  - id: mslist
-    type: File[]
-    outputSource:
-      - makemslist/mslist
-    doc: Text file containing the name of the input MS from which the LoTSS skymodel hase been subtracted.
   - id: msout
     type: Directory[]
     outputSource:
-      - subtract/subms
+      - upsample_subtract/subms
     doc: MS from which the LoTSS skymodel has been subtracted.
 
 steps:
@@ -67,16 +62,6 @@ steps:
       - id: box
     run: ../../steps/makebox.cwl
     doc: Make the box outside which the LoTSS skymodel will be subtracted.
-
-  - id: makemslist
-    in:
-      - id: ms
-        source: msin
-    out:
-      - id: mslist
-    run: ../../steps/make_mslist.cwl
-    scatter: ms
-    doc: Make the list of MSes to subtract.
 
   - id: gather_dds3
     in:
@@ -101,16 +86,35 @@ steps:
       - id: solsdir
     run: ../../steps/fix_symlinks_ddf.cwl
 
+  - id: avg_ms_for_box_subtract
+    in:
+      - id: msin
+        source: msin
+    out:
+      - id: avg_ms
+    run: ../../steps/avg_ms_for_box_subtract.cwl
+    scatter: msin
+
+  - id: makemslist
+    in:
+      - id: ms
+        source: avg_ms_for_box_subtract/avg_ms
+    out:
+      - id: mslist
+    run: ../../steps/make_mslist.cwl
+    scatter: ms
+    doc: Make the list of MSes to subtract.
+
   - id: subtract
     in:
       - id: ms
-        source: msin
+        source: avg_ms_for_box_subtract/avg_ms
       - id: boxfile
         source: makebox/box
       - id: mslist
         source: makemslist/mslist
       - id: column
-        valueFrom: DATA_DI_CORRECTED
+        default: "DATA"
       - id: solsdir
         source: fix_symlinks/solsdir
       - id: dds3sols
@@ -130,15 +134,28 @@ steps:
       - id: chunkhours
         source: chunkhours
     out:
-      - id: subms
-    run: ../../steps/subtract.cwl
+      - id: predictms
+    run: ../../steps/box_predict.cwl
     scatter:
       - ms
       - mslist
     scatterMethod: dotproduct
     doc: Subtract the LoTSS model from the data.
 
+  - id: upsample_subtract
+    in:
+      - id: msin_lowres
+        source: subtract/predictms
+      - id: msin_highres
+        source: msin
+    out:
+      - id: subms
+    run: ../../steps/upsample_subtract.cwl
+    scatter:
+      - msin_lowres
+      - msin_highres
+    scatterMethod: dotproduct
+
 requirements:
   - class: ScatterFeatureRequirement
   - class: StepInputExpressionRequirement
-

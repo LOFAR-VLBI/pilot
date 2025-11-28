@@ -2,7 +2,7 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: subtract-LoTSS
 label: Subtract a LoTSS model from the data.
-doc: Subtract a LoTSS model from the data using the images and DD solutions derived by the ddf-pipeline. This requires DDFacet.
+doc: Predict a LoTSS model using the images and DD solutions derived by the DDF-pipeline. This requires DDFacet.
 
 baseCommand:
   - sub_sources_outside_region
@@ -13,6 +13,8 @@ arguments:
   - --keeplongbaselines
   - --nophaseshift
   - --nofixsym
+  - --nosubtract
+  - --stopafterpredict
 
 inputs:
   - id: ms
@@ -33,12 +35,6 @@ inputs:
     inputBinding:
       position: 1
       prefix: --mslist
-  - id: prefix
-    type: string?
-    doc: Prefix for the output MeasurementSet after subtracting. Defaults to sub6asec.
-    default: sub6asec
-    inputBinding:
-      prefix: --prefix
   - id: column
     type: string?
     doc: Column from which to subtract. Defaults to DATA_DI_CORRECTED.
@@ -63,7 +59,7 @@ inputs:
   - id: ncpu
     type: int?
     doc: Number of cores to use during the subtract. Defaults to 24.
-    default: 24
+    default: 6
     inputBinding:
       position: 5
       prefix: --ncpu
@@ -88,11 +84,17 @@ inputs:
     doc: The facet layout from the ddf-pipeline run.
 
 outputs:
-  - id: subms
+  - id: predictms
     type: Directory
-    doc: MeasurementSet containing the subtracted data.
+    doc: MeasurementSet containing the predicted column.
     outputBinding:
-      glob: $(inputs.prefix)*.ms
+      glob: $(inputs.ms.basename)
+  - id: logfile
+    type: File[]
+    doc: log files corresponding to this step
+    outputBinding:
+      glob: box_predict*.log
+
 
 requirements:
   - class: InlineJavascriptRequirement
@@ -112,3 +114,6 @@ requirements:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
+
+stdout: box_predict.log
+stderr: box_predict_err.log
