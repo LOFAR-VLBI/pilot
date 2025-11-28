@@ -1,7 +1,8 @@
 from argparse import ArgumentParser, Namespace
-from validate_lofar_images import get_rms
 import csv
 from pathlib import Path
+
+from validate_lofar_images import get_rms
 
 class ValidationError(Exception):
     pass
