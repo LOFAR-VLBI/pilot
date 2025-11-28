@@ -1,7 +1,9 @@
 cwlVersion: v1.2
 class: CommandLineTool
 id: validate_1arcsec_image
-doc: Validate 1 arcsecond image quality
+doc: |
+    Validate 1 arcsecond image quality. Current assumption is that
+    the RMS background noise should be below 200 μJy/beam.
 
 baseCommand: validate_1arcsec_image.py
 

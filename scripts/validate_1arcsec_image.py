@@ -14,7 +14,8 @@ def parse_args() -> Namespace:
         Parsed arguments
     """
 
-    parser = ArgumentParser("Validation for 1 arcsec image, using the background RMS.")
+    parser = ArgumentParser("Validation for 1 arcsec image, using the background RMS. "
+                            "Current assumption is that the RMS background noise should be below 200 μJy/beam.")
     parser.add_argument('widefield_image', help='FITS image', default=None)
 
     return parser.parse_args()
