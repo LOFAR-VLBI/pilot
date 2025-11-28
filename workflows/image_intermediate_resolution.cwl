@@ -98,6 +98,17 @@ steps:
 
       run: ../steps/wsclean.cwl
 
+    - id: validate_image
+      label: validation
+      in:
+        - id: image
+          source: make_intermediate_resolution_image/MFS_image_pb
+      out:
+        - id: validation_csv
+
+      run: ../steps/validate_1arcsec_image.cwl
+
+
 outputs:
     - id: facet_region
       outputSource: make_facet_layout/facet_regions
@@ -148,3 +159,8 @@ outputs:
       type: File[]
       doc: |
         Final channel model FITS images of the intermediate resolution image.
+
+    - id: validation_csv
+      outputSource: validate_image/validation_csv
+      type: File
+      doc: 1 arcsecond validation output
