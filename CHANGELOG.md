@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.9.0
+
+### Added
+
+* New workflow `image_intermediate_resolution.cwl`: implements the 1–2" angular resolution imaging workflow (09f7723c, 48d3c07c).
+* New workflow `facet_imaging.cwl`: implements the sub-arcsecond facet imaging (8acb6e71, a874f7f2).
+* New subworkflow `ddcal_validation.cwl`: implements a routine to validate image and calibration solution quality for both direction-dependent and direction-independent effects (3c8d0052, 9c5c9a12).
+* New subworkflow `find_best_calibrator.cwl`: implements a routine to perform delay calibration on several sources in parallel.
+  These sources are chosen based on their ranking according to phasediff score (1f7bc410, 50e5a9b9).
+* New subworkflow `delay_cal_run.cwl`: generates settings for delay calibration dynamically based on an initial phase difference calibration (74fa833).
+* An explicit change log was added to the repository (ea55442c).
+
+### Changed
+
+* The VLBI pipeline has been renamed to `PILOT` (fdafca28, b40bb1fa).
+* `skynet` is now able to construct an initial skymodel if the user supplies a FITS image of a source (36f5aad8, 90f70f67, deab17a9).
+* LINC, lofar_helpers and lofar_facet_selfcal are now pipeline dependencies, and no longer need to be specified as workflow inputs (306360f3, a20bb37b, 0d54ad10).
+* Delay calibration solutions are now automatically applied to the data (5f17d2b9).
+* As a result of the addition of `delay_cal_run.cwl`: users are now required to supply `phaseup_config.txt` for the initial phase difference calibration.
+* The CI runner can now be controlled more precisely via tox (cf4e26f7).
+* The `facet_subtract` workflow has been sped up considerably (1c43ba0e). 
+* The `subtract_lotss` workflow has been sped up considerably (f9ef10d7).
+
+### Fixed
+
+* Users can now specify the number of cores used by `facet_selfcal` (c8adbbe4)
+* Patch names of A-team sources have been aligned with recent skymodels in LINC (42dda818).
+* Target data preparation for A-team clipping now supports `spinifex` rotation measure tables (d704fefc).
+* A duplicate entry in `concat_logfiles_phaseup` has been removed (d704fefc).
+* Config files for facet_selfcal are now optional, circumventing toil issues (98bc5f78).
+* The CI containers have been update after bitnami ceased support (238e9b42).
+
+### Removed
+
+* `generate_input.sh` (ef3a16cb).
+* An unused import in `make_config_dical.py` (884f8c7d).
+* The `finalise` CI workflow (373bc8a9).
+
 ## 0.8.0
 
 ### Added
