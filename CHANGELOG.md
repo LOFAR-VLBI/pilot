@@ -17,7 +17,7 @@
 * The VLBI pipeline has been renamed to `PILOT` (fdafca28, b40bb1fa).
 * `skynet` is now able to construct an initial skymodel if the user supplies a FITS image of a source (36f5aad8, 90f70f67, deab17a9).
 * LINC, lofar_helpers and lofar_facet_selfcal are now pipeline dependencies, and no longer need to be specified as workflow inputs (306360f3, a20bb37b, 0d54ad10).
-* Delay calibration solutions are now automatically applied to LINC-calibrated data (5f17d2b9).
+* Delay calibration solutions are now automatically applied to the data (5f17d2b9).
 * As a result of the addition of `delay_cal_run.cwl`: users are now required to supply `phaseup_config.txt` for the initial phase difference calibration.
 * The CI runner can now be controlled more precisely via tox (cf4e26f7).
 * The `facet_subtract` workflow has been sped up considerably (1c43ba0e). 
