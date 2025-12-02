@@ -46,10 +46,10 @@ inputs:
     - id: ncpu
       type: int?
       doc: Number of cores to use during predict and subtract.
-      default: 6
+      default: 4
       inputBinding:
         prefix: "--ncpu"
-        position: 6
+        position: 4
         separate: true
 
 outputs:
