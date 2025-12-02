@@ -35,7 +35,7 @@ inputs:
       default: 8
       inputBinding:
         prefix: "--ncpu"
-        position: 4
+        position: 1
         separate: true
 
 outputs:
