@@ -50,7 +50,7 @@ def get_data_shape(ms: str) -> tuple[int, int, int]:
         return (t.nrows(), freq, pol)
 
 
-def create_memmap(facetnumber: int | str, shape: tuple[int, int], dtype: np.dtype) -> np.memmap:
+def create_memmap(facetnumber: int | str, shape: tuple[int, int, int], dtype: np.dtype) -> np.memmap:
     """
     Create a zero-initialised memory-mapped array.
 
@@ -158,8 +158,7 @@ def main():
             for facetnumber in range(len(args.model_data_npy))
         )
     else:
-        for facetnumber in range(len(args.model_data_npy)):
-            create_memmap(facetnumber, shape, dtype)
+        memmaps = [create_memmap(facetnumber, shape, dtype) for facetnumber in range(len(args.model_data_npy))]
 
     # Predict facets
     for model_npy in args.model_data_npy:
