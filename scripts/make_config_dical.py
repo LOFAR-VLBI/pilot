@@ -144,7 +144,7 @@ def write_config(filename,configdict):
                         ss.append("'" + aa + "'")
                       case _:
                         raise ValueError(f"Element of unexpected type found in {value}")
-                    f.write(f'{key} = [{','.join(ss)}]\n')
+                f.write(f'{key} = [{','.join(ss)}]\n')
               case _:
                 raise ValueError(f"Value of unexpected type found in {configdict}")
     return filename + ".config.txt"
