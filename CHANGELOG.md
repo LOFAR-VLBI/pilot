@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1
+
+### Fixed
+
+* Fixed an issue where config file entries were written out before all the entries were known (6cca9662).
+
 ## 0.9.0
 
 ### Added
