@@ -51,7 +51,7 @@ inputs:
         separate: true
     - id: ncpu
       type: int?
-      doc: Number of cores to use during predict and subtract.
+      doc: Number of cores to use.
       default: 4
 
 
