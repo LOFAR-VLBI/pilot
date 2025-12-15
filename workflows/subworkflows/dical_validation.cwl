@@ -7,7 +7,9 @@ doc: |
 
 inputs:
   - id: h5parm
-    type: File[]
+    type:
+      - File
+      - File[]
     doc: h5parm calibration solution files
 
 steps:
