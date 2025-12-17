@@ -7,7 +7,9 @@ baseCommand: inspect_di_validated_sols.py
 
 inputs:
     - id: solutions
-      type: File[]
+      type:
+        - File
+        - File[]
       doc: Calibration solutions
       inputBinding:
         position: 1

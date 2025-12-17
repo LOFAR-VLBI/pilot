@@ -7,7 +7,9 @@ baseCommand: validate_lofar_solutions.py
 
 inputs:
     - id: solutions
-      type: File[]
+      type:
+        - File
+        - File[]
       doc: Calibration solutions
       inputBinding:
         position: 2
