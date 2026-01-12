@@ -30,7 +30,7 @@ def main():
     # Return an error if there are sources with bad solutions
     if args.return_error and sum(~validation_csv['accept_solutions'])>0:
         exit(f"ERROR: Following directions have bad solutions and should be inspected: \n"
-             f"{'\n'.join(list(validation_csv[~validation_csv.accept_solutions].Source_id))}")
+             f"{'\n'.join(list(validation_csv[~validation_csv.accept_solutions].source_id))}")
 
 
 if __name__ == '__main__':
