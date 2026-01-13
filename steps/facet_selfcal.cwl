@@ -47,7 +47,7 @@ outputs:
     - id: h5parm
       type: File
       outputBinding:
-        glob: [merged*.h5, merged_addCS*.h5]
+        glob: [merged_selfcalcycle*.h5, merged_addCS_selfcalcycle*.h5]
         outputEval: $(self[self.length - 1])
       doc: |
         The calibration solution files generated
