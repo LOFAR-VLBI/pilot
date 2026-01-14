@@ -271,7 +271,7 @@ def get_phase_score(h5: str):
         phase_table = H.root.sol000.phase000
         freqs = phase_table.freq[:]
         ants = phase_table.ant[:]
-        phase_sols = phase_table.val[:] * phase_table.weight[:]
+        phase_sols = np.where(phase_table.weight[:] > 0, phase_table.val[:] * phase_table.weight[:], np.nan)
         axes = make_utf8(phase_table.val.attrs["AXES"]).split(',')
 
         # Remove polarisation and direction axis
