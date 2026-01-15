@@ -33,7 +33,6 @@ inputs:
     - id: ncpu
       type: int?
       doc: Number of cores to use during predict and subtract.
-      default: 16
     - id: dysco_bitrate
       type: int?
       doc: Number of bits per float used for columns containing visibilities.
@@ -118,7 +117,7 @@ steps:
         - id: parset
           source: make_concat_parset/concat_parsets
         - id: ncpu
-          default: 24
+          default: 8
       out:
         - id: msout
       run: ../steps/dp3_parset.cwl

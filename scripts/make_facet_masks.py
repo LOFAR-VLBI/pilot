@@ -50,7 +50,7 @@ def get_data_shape(ms: str) -> tuple[int, int, int]:
         return (t.nrows(), freq, pol)
 
 
-def create_memmap(facetnumber: int | str, shape: tuple[int, int], dtype: np.dtype) -> np.memmap:
+def create_memmap(facetnumber: int | str, shape: tuple[int, int, int], dtype: np.dtype) -> np.memmap:
     """
     Create a zero-initialised memory-mapped array.
 
@@ -139,7 +139,7 @@ def main():
     args = parse_args()
 
     # Job requirements
-    slurm_ncpu = int(getenv("SLURM_CPUS_PER_TASK", cpu_count() - 1))
+    slurm_ncpu = int(getenv("SLURM_CPUS_PER_TASK", cpu_count()))
     ncpu = min(args.ncpu, slurm_ncpu)
     set_num_threads(ncpu) # For numba
     dtype = np.complex64
@@ -152,19 +152,26 @@ def main():
     shape = get_data_shape(args.msin)
 
     # Create memmaps
-    memmaps = Parallel(n_jobs=ncpu, backend="loky")(
-        delayed(create_memmap)(facetnumber, shape, dtype)
-        for facetnumber in range(len(args.model_data_npy))
-    )
+    if ncpu > 1:
+        memmaps = Parallel(n_jobs=ncpu, backend="loky")(
+            delayed(create_memmap)(facetnumber, shape, dtype)
+            for facetnumber in range(len(args.model_data_npy))
+        )
+    else:
+        memmaps = [create_memmap(facetnumber, shape, dtype) for facetnumber in range(len(args.model_data_npy))]
 
     # Predict facets
     for model_npy in args.model_data_npy:
         # Adding polygon to memmap facet masks
         poly_number = basename(model_npy).replace("POLY_", "").replace(".npy", "")
         poly_data = np.load(model_npy)
-        Parallel(n_jobs=ncpu, backend="loky")(
-            delayed(update_memmap)(dat, poly_number, poly_data) for dat in memmaps
-        )
+        if ncpu > 1:
+            Parallel(n_jobs=ncpu, backend="loky")(
+                delayed(update_memmap)(dat, poly_number, poly_data) for dat in memmaps
+            )
+        else:
+            for dat in memmaps:
+                dat += poly_data
 
     # Add final POLY_* to measurement set
     for dat in memmaps:
