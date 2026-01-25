@@ -103,6 +103,7 @@ requirements:
       - entry: $(inputs.ms)
         writable: true
       - entry: $(inputs.solsdir)
+        writable: true
       - entry: $(inputs.dds3sols)
       - entry: $(inputs.fitsfiles)
       - entry: $(inputs.dicomodels)
@@ -110,6 +111,7 @@ requirements:
   - class: ResourceRequirement
     coresMax: $(inputs.ncpu)
     coresMin: $(inputs.ncpu)
+    ramMin: 50000
 
 hints:
   - class: DockerRequirement
