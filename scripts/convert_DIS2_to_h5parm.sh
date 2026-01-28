@@ -11,4 +11,4 @@ for f in ${SOLSDIR}/*pre-cal.ms/*DIS2*.sols.npz; do
     ((C++))
 done
 
-h5_merger --h5_tables DIS2*.h5 --h5_out DIS2_full.h5 --propagate_flags --merge_diff_freq --add_ms_stations --ms ${MSNAME} --h5_time_freq True
+h5_merger --h5_tables DIS2*.h5 --h5_out DIS2_full.h5 --merge_diff_freq --add_ms_stations --ms ${MSNAME} --h5_time_freq True
