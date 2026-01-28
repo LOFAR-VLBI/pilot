@@ -26,11 +26,14 @@ def parse_args():
 def main():
     args = parse_args()
     validation_csv = pd.read_csv(args.validation_solutions_csv)
+    # Apparently we can encounter both Source_id and source_id for some reason
+    # so we homogenise case here.
+    validation_csv.columns = validation_csv.columns.str.lower()
 
     # Return an error if there are sources with bad solutions
     if args.return_error and sum(~validation_csv['accept_solutions'])>0:
         exit(f"ERROR: Following directions have bad solutions and should be inspected: \n"
-             f"{'\n'.join(list(validation_csv[~validation_csv.accept_solutions].Source_id))}")
+             f"{'\n'.join(list(validation_csv[~validation_csv.accept_solutions].source_id))}")
 
 
 if __name__ == '__main__':
