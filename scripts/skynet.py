@@ -91,7 +91,7 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
     """
     # From phase shifting, the MS's naming scheme should follow something like
     # <name>_L<sasid>_144MHz_uv.dp3concat
-    MS_src = os.path.basename(MS).split('_')[0]
+    MS_src = os.path.basename(MS.rstrip("/")).split('_')[0]
 
     t = Table.read( delayCalFile, format='csv' )
 
@@ -107,24 +107,10 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
         de_col = 'DEC_LOTSS'
     src_ids = t['Source_id']
 
-    src_names = []
-    for src_id in src_ids:
-        if isinstance(src_id, str):
-            # Check if the name comes from the LoTSS catalogue
-            if src_id.startswith('I'):
-                val = str(src_id)
-            # Check if the name is the gaussian ID
-            elif MS_src.startswith('S'):
-                val = 'S'+str(src_id)
-            # In this case the name is the LBCS observation ID
-            # and starts with an 'L'
-            else:
-                val = str(src_id)
-        else:
-            val = src_id
-        src_names.append(val)
+    # MS name will always be a string, so every name should be checked as a string.
+    src_names = list(map(str, src_ids))
     if not src_names:
-        raise RuntimeError("No sources present!")
+        raise RuntimeError(f"Delay calibrator list is empty. Please inspect {delayCalFile}.")
     if not process_all:
         source_indices = [ i for i, val in enumerate(src_names) if MS_src == val ]
     else:
