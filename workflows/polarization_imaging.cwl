@@ -86,7 +86,7 @@ steps:
       out:
         - id: FDF_maxPI
         - id: FDF_peakRM
-        - id: FDF_clean_tot
+        #add outputs for derotated cubes FDF_real/im_dirty.fits
       run: ../steps/rmsynthesis.cwl
 
 outputs:
