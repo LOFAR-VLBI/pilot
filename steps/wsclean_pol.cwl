@@ -1,6 +1,6 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: wsclean_qu
+id: wsclean_pol
 label: WSClean
 doc: Runs WSClean on the input data to produce an image.
 
