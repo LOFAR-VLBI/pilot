@@ -131,17 +131,16 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
             # and starts with an 'L'
             else:
                 val = str(src_id)
-                if MS_src.startswith('S'):
-                    val = 'S'+str(src_id)
-                else:
-                    val = str(src_id)
         else:
             val = src_id
         src_names.append(val)
+    if not src_names:
+        raise RuntimeError("No sources present!")
     if not process_all:
         source_indices = [ i for i, val in enumerate(src_names) if MS_src == val ]
     else:
         source_indices = [ i for i, val in enumerate(src_names) ]
+
 
     for src_idx in source_indices:
         # get the coordinate values and the flux from the skymodel
