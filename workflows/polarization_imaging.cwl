@@ -26,24 +26,26 @@ inputs:
       type: float
       doc: Size (in arcsec) of image. Its syntax follows that of WSClean.
 
-    - id: num_channels
+    - num_channels:
       type: int
       doc: Number of channels to image in Q and U.
+
+    - stokes:
+      type: string[]
+      default: ["Q","U"]
 
 steps:
     - id: image_qu
       label: image_qu
       in:
         - id: msin
-          source: ms_QU
+          source: msin
         - id: pixel_scale
           source: pixel_scale
         - id: resolution
           source: resolution
         - id: image_size
           source: image_size
-        - id: num_channels
-          source: num_channels
       out:
         - id: MFS_image_pb
         - id: MFS_image
@@ -57,29 +59,30 @@ steps:
     - id: make_cubes
       label: Make QU cubes
       in:
-        - id: input_images
-          source: input_images
+        - id: Q_images
+          source: image_qu/Q_channel_images
+        - id: U_images
+          source: image_qu/U_channel_images
       out:
         - id: stokesQcube
-        - source: cubes/stokesQcube
         - id: stokesUcube
-        - source: cubes/stokesUcube
+        - id: frequencies_list
       run: ../steps/concat_QU.cwl
 
     - id: rmsynth
       label: rmsynthesis
       in:
         - id: Qcube
-          source: cubes/stokesQcube
+          source: make_cubes/stokesQcube
         - id: Ucube
-          source: cubes/stokesUcube
+          source: make_cubes/stokesUcube
         - id: frequencies
-          source: cubes/frequencies_list
+          source: make_cubes/frequencies_list
       out:
         - id: FDF_maxPI
         - id: FDF_peakRM
         - id: FDF_clean_tot
-      run: ./steps/rmsynthesis.cwl
+      run: ../steps/rmsynthesis.cwl
 
 outputs:
   - id: MFS_images_pb
@@ -107,4 +110,26 @@ outputs:
     type: File[]
     outputSource: image_qu/MFS_psf
 
-  - id: 
+  - id: stokesQcube
+    type: File[]
+    outputSource: make_cubes/stokesQcube
+
+  - id: stokesUcube
+    type: File[]
+    outputSource: make_cubes/stokesUcube
+
+  - id: FDF_maxPI
+    type: File[]
+    outputSource: rmsynth/FSF_maxPI
+
+  - id: FDF_peakRM
+    type: File[]
+    outputSource: rmsynth/FSF_peakRM
+
+  - id: FDF_clean_tot
+    type: File[]
+    outputSource: rmsynth/FSF_clean_tot
+
+
+
+
