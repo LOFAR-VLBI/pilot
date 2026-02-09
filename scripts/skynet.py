@@ -113,6 +113,8 @@ def main (MS, delayCalFile: str, modelImage: str = '', astroSearchRadius: float 
         raise RuntimeError(f"Delay calibrator list is empty. Please inspect {delayCalFile}.")
     if not process_all:
         source_indices = [ i for i, val in enumerate(src_names) if MS_src == val ]
+        if not source_indices:
+            raise RuntimeError(f"No entry matching Source_id entry for {MS_src} found in {delayCalFile}.")
     else:
         source_indices = [ i for i, val in enumerate(src_names) ]
 
