@@ -87,16 +87,31 @@ steps:
         - id: MFS_model_pb
         - id: MFS_model
         - id: MFS_psf
+        - id: Q_channel_images
+        - id: U_channel_images
       run: ../steps/wsclean_pol.cwl
+
+    - id: make_cubes
+      label: Make QU cubes
+      in:
+        - id: Q_images
+          source: image_qu/Q_channel_images
+        - id: U_images
+          source: image_qu/U_channel_images
+      out:
+        - id: stokesQcube
+        - id: stokesUcube
+        - id: frequencies_list
+      run: ../steps/concat_QU.cwl
     - id: run_rmtools
       label: RM synthesis
       in:
         - id: stokes_q
-          source: stokes_q_cube
+          source: make_cubes/stokesQcube
         - id: stokes_u
-          source: stokes_u_cube
+          source: make_cubes/stokesUcube
         - id: freqs_hz
-          source: freqs_hz
+          source: make_cubes/frequencies_list
         - id: max_lam2
           source: rmtools_max_lam2
         - id: dlam2
@@ -140,6 +155,14 @@ outputs:
   - id: MFS_psfs
     type: File
     outputSource: image_qu/MFS_psf
+
+  - id: stokesQcube
+    type: File
+    outputSource: make_cubes/stokesQcube
+
+  - id: stokesUcube
+    type: File
+    outputSource: make_cubes/stokesUcube
 
   - id: fdf_im_dirty
     type: File
