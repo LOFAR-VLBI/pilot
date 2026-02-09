@@ -8,7 +8,7 @@ from astropy.coordinates import SkyCoord
 from astropy.table import Table
 import bdsf
 
-def write_skymodel(model, outname):
+def write_skymodel(model: str, outname: str):
 
     print(f'writing the skymodel for: {model}')
     with open(outname, 'w') as skymodel:
@@ -37,7 +37,7 @@ def write_skymodel(model, outname):
             )
             skymodel.write( '{:s}\n'.format(ss_to_write) )
 
-def model_from_image(modelImage, smodel, opt_coords, astroSearchRadius=3.0, outdir='.'):
+def model_from_image(modelImage: str, smodel: float, opt_coords: SkyCoord, astroSearchRadius: float = 3.0, outdir: str = '.'):
     img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), outdir=outdir)
     sources = img.sources
     maxval = 0.
@@ -81,7 +81,7 @@ def model_from_image(modelImage, smodel, opt_coords, astroSearchRadius=3.0, outd
 
 ################## skynet ##############################
 
-def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=False, outdir='.', process_all: bool = False):
+def main (MS, delayCalFile: str, modelImage: str = '', astroSearchRadius: float = 3.0, skip_vlass: bool = False, outdir: str = '.', process_all: bool = False):
     """
     Generates a skymodel for sources in delayCalFile for delay calibration.
     Uses modelImage as a base model if provided, otherwise will construct a
@@ -115,7 +115,6 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
         source_indices = [ i for i, val in enumerate(src_names) if MS_src == val ]
     else:
         source_indices = [ i for i, val in enumerate(src_names) ]
-
 
     for src_idx in source_indices:
         # get the coordinate values and the flux from the skymodel
