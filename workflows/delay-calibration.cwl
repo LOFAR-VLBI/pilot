@@ -280,6 +280,8 @@ steps:
           source: image_catalogue
         - id: phaseup_config
           source: phaseup_config
+        - id: configfile
+          source: configfile
         - id: max_dp3_threads
           source: max_dp3_threads
         - id: model_image
