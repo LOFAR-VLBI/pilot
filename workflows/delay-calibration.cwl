@@ -208,7 +208,7 @@ steps:
         - id: delay_calibrator
           source: delay_calibrator
       out:
-        - id: delay_calibrator
+        - id: delay_calibrator_pf
       run: ../steps/plot_field.cwl
       when: $(inputs.delay_calibrator == null)
 
@@ -272,7 +272,7 @@ steps:
         - id: delay_calibrator
           source:
             - delay_calibrator
-            - plot_field/delay_calibrator
+            - plot_field/delay_calibrator_pf
           pickValue: first_non_null
           valueFrom: $(self)
         - id: image_catalogue
@@ -332,7 +332,7 @@ steps:
         - id: delay_calibrator
           source:
             - delay_calibrator
-            - plot_field/delay_calibrator
+            - plot_field/delay_calibrator_pf
           pickValue: first_non_null
           valueFrom: $(self)
         - id: select_best_n_delay_calibrators

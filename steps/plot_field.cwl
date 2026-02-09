@@ -17,7 +17,7 @@ inputs:
       position: 0
 
 outputs:
-  - id: delay_calibrator
+  - id: delay_calibrator_pf
     type: File
     doc: Delay Calibrator CSV
     outputBinding:
