@@ -23,6 +23,7 @@ inputs:
         position: 1
         prefix: --imagecat
         separate: true
+
     - id: model_image
       type: File
       doc: Model image for delay calibrator.
@@ -30,6 +31,7 @@ inputs:
         position: 2
         prefix: --inputmodel
         separate: true
+
     - id: phasediff_output
       type: File
       doc: Phasediff scores and wraps.
@@ -37,6 +39,7 @@ inputs:
         position: 2
         prefix: --phasediff_output
         separate: true
+
     - id: scalarphase_h5out
       type: File
       doc: h5 parm containing scalar phase solutions
