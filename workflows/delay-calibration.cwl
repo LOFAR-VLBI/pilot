@@ -36,8 +36,11 @@ inputs:
         in an HDF5 format.
 
     - id: delay_calibrator
-      type: File
-      doc: A delay calibrator catalogue in CSV format.
+      type: File?
+      doc: |
+        A delay calibrator catalogue in CSV format.
+        If not provided, plot_field will be run to generate the CSV (requires internet access)
+
     - id: image_catalogue
       type: File
       doc: An image catalogue file in CSV format.
@@ -197,6 +200,18 @@ steps:
       run: ./setup.cwl
       when: $(inputs.solset != null)
 
+    - id: plot_field
+      in:
+        - id: msin
+          source: msin
+          valueFrom: $(self[0])
+        - id: delay_calibrator
+          source: delay_calibrator
+      out:
+        - id: delay_calibrator
+      run: ../steps/plot_field.cwl
+      when: $(inputs.delay_calibrator == null)
+
     - id: sort-concatenate-flag
       in:
         - id: msin
@@ -255,7 +270,11 @@ steps:
           pickValue: first_non_null
           valueFrom: $(self)
         - id: delay_calibrator
-          source: delay_calibrator
+          source:
+            - delay_calibrator
+            - plot_field/delay_calibrator
+          pickValue: first_non_null
+          valueFrom: $(self)
         - id: image_catalogue
           source: image_catalogue
         - id: phaseup_config
@@ -311,7 +330,11 @@ steps:
         - id: configfile
           source: configfile
         - id: delay_calibrator
-          source: delay_calibrator
+          source:
+            - delay_calibrator
+            - plot_field/delay_calibrator
+          pickValue: first_non_null
+          valueFrom: $(self)
         - id: select_best_n_delay_calibrators
           source: select_best_n_delay_calibrators
         - id: do_auto_delay_selection
