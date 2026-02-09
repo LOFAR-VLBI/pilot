@@ -5,3 +5,8 @@
 tests/data
 *.egg-info
 venv
+
+# Paper build artefacts
+paper/paper.pdf
+paper/jats
+*.sif
