@@ -1,10 +1,9 @@
 class: Workflow
 cwlVersion: v1.2
-id: image_facet 
-label: Facet imaging
+id: image_polarization 
+label: Polarization imaging
 doc: |
-  This workflow will image the provided MS(es) at the specified angular resolution
-  and trim it using the provided DS9 region file(s).
+  This workflow will image the provided MS in Q and U, and perform Rotation Measure Synthesis to provide linear polarization images.
 
 requirements:
     - class: ScatterFeatureRequirement
@@ -25,41 +24,26 @@ inputs:
 
     - id: image_size
       type: float
-      doc: Size (in arcsec) of image that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
+      doc: Size (in arcsec) of image. Its syntax follows that of WSClean.
 
-    - num_channels:
+    - id: num_channels
       type: int
+      doc: Number of channels to image in Q and U.
 
 steps:
-    - id: sort_mses
-      label: Trim facets
-      in:
-        - id: input_entry
-          source: msin
-      out:
-        - id: sorted_entries
-      run: ../steps/sort_by_name.cwl
-
-    - id: sort_facet_regions
-      label: Trim facets
-      in:
-        - id: input_entry
-          source: facet_polygons
-      out:
-        - id: sorted_entries
-      run: ../steps/sort_by_name.cwl
-
-    - id: image_and_trim
-      label: image_size
+    - id: image_qu
+      label: image_qu
       in:
         - id: msin
-          source: sort_mses/sorted_entries
-        - id: facet_polygon
-          source: sort_facet_regions/sorted_entries
+          source: ms_QU
         - id: pixel_scale
           source: pixel_scale
         - id: resolution
           source: resolution
+        - id: image_size
+          source: image_size
+        - id: num_channels
+          source: num_channels
       out:
         - id: MFS_image_pb
         - id: MFS_image
@@ -68,32 +52,59 @@ steps:
         - id: MFS_model_pb
         - id: MFS_model
         - id: MFS_psf
-      scatter: [msin, facet_polygon]
-      scatterMethod: dotproduct
-      run: ./subworkflows/image_and_trim.cwl
+      run: ./steps/image_qu.cwl
+
+    - id: make_cubes
+      label: Make QU cubes
+      in:
+        - id: input_images
+          source: input_images
+      out:
+        - id: stokesQcube
+        - source: cubes/stokesQcube
+        - id: stokesUcube
+        - source: cubes/stokesUcube
+      run: ../steps/concat_QU.cwl
+
+    - id: rmsynth
+      label: rmsynthesis
+      in:
+        - id: Qcube
+          source: cubes/stokesQcube
+        - id: Ucube
+          source: cubes/stokesUcube
+        - id: frequencies
+          source: cubes/frequencies_list
+      out:
+        - id: FDF_maxPI
+        - id: FDF_peakRM
+        - id: FDF_clean_tot
+      run: ./steps/rmsynthesis.cwl
 
 outputs:
   - id: MFS_images_pb
     type: File[]
-    outputSource: image_and_trim/MFS_image_pb
+    outputSource: image_qu/MFS_image_pb
   - id: MFS_images
     type: File[]
-    outputSource: image_and_trim/MFS_image
+    outputSource: image_qu/MFS_image
 
   - id: MFS_residuals_pb
     type: File[]
-    outputSource: image_and_trim/MFS_residual_pb
+    outputSource: image_qu/MFS_residual_pb
   - id: MFS_residuals
     type: File[]
-    outputSource: image_and_trim/MFS_residual
+    outputSource: image_qu/MFS_residual
 
   - id: MFS_models_pb
     type: File[]
-    outputSource: image_and_trim/MFS_model_pb
+    outputSource: image_qu/MFS_model_pb
   - id: MFS_models
     type: File[]
-    outputSource: image_and_trim/MFS_model
+    outputSource: image_qu/MFS_model
 
   - id: MFS_psfs
     type: File[]
-    outputSource: image_and_trim/MFS_psf
+    outputSource: image_qu/MFS_psf
+
+  - id: 
