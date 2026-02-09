@@ -49,6 +49,12 @@ def test_skynet():
     main_skynet(f"{data_dir}/CustomSource2_L762475_142MHz_uv.dp3concat", catalogue2)
     assert filecmp.cmp(skymodel, "skymodel_CustomSource2.txt", shallow=False)
 
+    main_skynet(f"{data_dir}/5758326_L762475_142MHz_uv.dp3concat", catalogue2)
+    assert filecmp.cmp(skymodel, "skymodel_5758326.txt", shallow=False)
+
+    main_skynet(f"{data_dir}/S235687_L762475_142MHz_uv.dp3concat", catalogue2)
+    assert filecmp.cmp(skymodel, "skymodel_S235687.txt", shallow=False)
+
 
 def test_compare_stations():
     import glob
