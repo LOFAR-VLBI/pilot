@@ -6,7 +6,6 @@ doc: |
   This workflow will image the provided MS in Q and U, and perform Rotation Measure Synthesis to provide linear polarization images.
 
 requirements:
-    - class: ScatterFeatureRequirement
     - class: SubworkflowFeatureRequirement
 
 inputs:
@@ -23,8 +22,8 @@ inputs:
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
     - id: image_size
-      type: float
-      doc: Size (in arcsec) of image. Its syntax follows that of WSClean.
+      type: int
+      doc: Size (in pixels) of image. Its syntax follows that of WSClean.
 
     - num_channels:
       type: int
@@ -46,6 +45,10 @@ steps:
           source: resolution
         - id: image_size
           source: image_size
+        - id: num_channels
+          source: num_channels
+        - id: stokes
+          source: stokes
       out:
         - id: MFS_image_pb
         - id: MFS_image
@@ -111,24 +114,24 @@ outputs:
     outputSource: image_qu/MFS_psf
 
   - id: stokesQcube
-    type: File[]
+    type: File
     outputSource: make_cubes/stokesQcube
 
   - id: stokesUcube
-    type: File[]
+    type: File
     outputSource: make_cubes/stokesUcube
 
   - id: FDF_maxPI
-    type: File[]
-    outputSource: rmsynth/FSF_maxPI
+    type: File
+    outputSource: rmsynth/FDF_maxPI
 
   - id: FDF_peakRM
-    type: File[]
-    outputSource: rmsynth/FSF_peakRM
+    type: File
+    outputSource: rmsynth/FDF_peakRM
 
   - id: FDF_clean_tot
-    type: File[]
-    outputSource: rmsynth/FSF_clean_tot
+    type: File
+    outputSource: rmsynth/FDF_clean_tot
 
 
 
