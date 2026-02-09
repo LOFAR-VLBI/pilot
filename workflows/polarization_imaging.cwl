@@ -25,7 +25,7 @@ inputs:
       type: int
       doc: Size (in pixels) of image. Its syntax follows that of WSClean.
 
-    - num_channels:
+    - id: num_channels
       type: int
       doc: Number of channels to image in Q and U.
 
@@ -57,7 +57,7 @@ steps:
         - id: MFS_model_pb
         - id: MFS_model
         - id: MFS_psf
-      run: ./steps/image_qu.cwl
+      run: ../steps/wsclean_pol.cwl
 
     - id: make_cubes
       label: Make QU cubes
