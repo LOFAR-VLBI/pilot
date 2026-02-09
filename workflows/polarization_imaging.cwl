@@ -29,7 +29,7 @@ inputs:
       type: int
       doc: Number of channels to image in Q and U.
 
-    - stokes:
+    - id: stokes
       type: string[]
       default: ["Q","U"]
 
@@ -57,6 +57,8 @@ steps:
         - id: MFS_model_pb
         - id: MFS_model
         - id: MFS_psf
+        - id: Q_channel_images
+        - id: U_channel_images
       run: ../steps/wsclean_pol.cwl
 
     - id: make_cubes
