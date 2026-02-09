@@ -273,17 +273,15 @@ steps:
         - id: delay_calibrator
           source:
             - delay_calibrator
-<<<<<<< HEAD
             - lofar_vlbi_plot/delay_calibrator_pf
-=======
-            - plot_field/delay_calibrator_pf
->>>>>>> ca3d77d (rename to prevent warning)
           pickValue: first_non_null
           valueFrom: $(self)
         - id: image_catalogue
           source: image_catalogue
         - id: phaseup_config
           source: phaseup_config
+        - id: configfile
+          source: configfile
         - id: max_dp3_threads
           source: max_dp3_threads
         - id: model_image
