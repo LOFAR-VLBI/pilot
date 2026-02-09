@@ -89,20 +89,9 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
     these are available in the catalogue and are within astroSearchRadius of
     the target.
     """
-
-    ## make sure the parameters are the correct format
-    # MS is assumed to be of the form:
-    # /path/to/MS/{observation_id}_*
-    # where observation_id is either the LBCS observation id
-    # or the ILTJ name of the source
-
-    # {observation_id} should start with either 'S', 'L', 'I'
-    # followed by a number of digits
-    if not re.search(r'\/([SLI]\d+)\_', MS):
-        ValueError(f"{MS} does not contain a valid observation ID")
-    MS = MS.rstrip('/')
-    tmp = MS.split('/')[-1]
-    MS_src = tmp.split('_')[0]
+    # From phase shifting, the MS's naming scheme should follow something like
+    # <name>_L<sasid>_144MHz_uv.dp3concat
+    MS_src = os.path.basename(MS).split('_')[0]
 
     t = Table.read( delayCalFile, format='csv' )
 
