@@ -4,7 +4,6 @@ id: run_rmtools
 label: Run RM-Tools rmsynth3d
 doc: |
   Run RM-Tools rmsynth3d on Stokes Q/U cubes and a frequency list.
-  Can run locally or via Apptainer/Singularity when an image is provided.
 
 baseCommand:
   - python3
@@ -15,7 +14,7 @@ inputs:
     type: File
     default:
       class: File
-      path: scripts/run_rmtools.py
+      path: ../scripts/run_rmtools.py
     doc: Internal helper script to run rmsynth3d.
   - id: stokes_q
     type: File
@@ -61,47 +60,27 @@ inputs:
     inputBinding:
       position: 1
       prefix: --extra-args
-  - id: apptainer_bin
-    type: string?
-    default: apptainer
-    doc: Apptainer/Singularity executable name or path.
-    inputBinding:
-      position: 1
-      prefix: --apptainer-bin
-  - id: apptainer_image
-    type: string?
-    doc: Path to an Apptainer/Singularity image (.sif). If set, rmsynth3d runs inside this image.
-    inputBinding:
-      position: 1
-      prefix: --apptainer-image
-  - id: apptainer_bind
-    type: string[]?
-    doc: Bind mount(s) for Apptainer/Singularity, e.g. /data:/mnt
-    inputBinding:
-      position: 1
-      prefix: --apptainer-bind
-
 outputs:
   - id: fdf_im_dirty
     type: File
     outputBinding:
-      glob: $( (inputs.output_prefix && inputs.output_prefix.length > 0) ? inputs.output_prefix + "FDF_im_dirty.fits" : "FDF_im_dirty.fits" )
+      glob: '*FDF_im_dirty.fits'
   - id: fdf_real_dirty
     type: File
     outputBinding:
-      glob: $( (inputs.output_prefix && inputs.output_prefix.length > 0) ? inputs.output_prefix + "FDF_real_dirty.fits" : "FDF_real_dirty.fits" )
+      glob: '*FDF_real_dirty.fits'
   - id: fdf_tot_dirty
     type: File
     outputBinding:
-      glob: $( (inputs.output_prefix && inputs.output_prefix.length > 0) ? inputs.output_prefix + "FDF_tot_dirty.fits" : "FDF_tot_dirty.fits" )
+      glob: '*FDF_tot_dirty.fits'
   - id: fdf_maxpi
     type: File
     outputBinding:
-      glob: $( (inputs.output_prefix && inputs.output_prefix.length > 0) ? inputs.output_prefix + "FDF_maxPI.fits" : "FDF_maxPI.fits" )
+      glob: '*FDF_maxPI.fits'
   - id: fdf_peakrm
     type: File
     outputBinding:
-      glob: $( (inputs.output_prefix && inputs.output_prefix.length > 0) ? inputs.output_prefix + "FDF_peakRM.fits" : "FDF_peakRM.fits" )
+      glob: '*FDF_peakRM.fits'
   - id: rmsynth_stdout
     type: File
     outputBinding:

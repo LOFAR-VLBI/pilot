@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run RM-Tools rmsynth3d locally or in an Apptainer/Singularity container."""
+"""Run RM-Tools rmsynth3d locally."""
 
 import argparse
 import subprocess
@@ -26,22 +26,6 @@ def parse_args() -> argparse.Namespace:
         "--extra-args",
         default="",
         help="Extra arguments passed to rmsynth3d (as a single string).",
-    )
-    parser.add_argument(
-        "--apptainer-bin",
-        default="apptainer",
-        help="Apptainer/Singularity executable name or path.",
-    )
-    parser.add_argument(
-        "--apptainer-image",
-        default="",
-        help="Path to an Apptainer/Singularity image (.sif).",
-    )
-    parser.add_argument(
-        "--apptainer-bind",
-        action="append",
-        default=[],
-        help="Bind mount(s) for Apptainer/Singularity, e.g. /data:/mnt. Can be repeated.",
     )
     return parser.parse_args()
 
@@ -70,16 +54,7 @@ def main() -> int:
     args = parse_args()
     rmsynth_cmd = build_rmsynth_cmd(args)
 
-    if args.apptainer_image:
-        apptainer_cmd = [args.apptainer_bin, "exec"]
-        for bind in args.apptainer_bind:
-            apptainer_cmd += ["--bind", bind]
-        apptainer_cmd.append(args.apptainer_image)
-        cmd = apptainer_cmd + rmsynth_cmd
-    else:
-        cmd = rmsynth_cmd
-
-    return subprocess.call(cmd)
+    return subprocess.call(rmsynth_cmd)
 
 
 if __name__ == "__main__":

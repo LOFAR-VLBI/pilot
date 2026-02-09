@@ -14,24 +14,24 @@ inputs:
       doc: MeasurementSets that will be imaged.
 
     - id: pixel_scale
-      type: float
-      doc: Pixel size in arcseconds.
+      type: string
+      doc: Pixel size (WSClean scale), e.g. "0.75asec".
 
     - id: resolution
       type: string
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
     - id: image_size
-      type: int
-      doc: Size (in pixels) of image. Its syntax follows that of WSClean.
+      type: int[]
+      doc: Size (in pixels) of image, [x, y]. Its syntax follows that of WSClean.
 
     - id: num_channels
       type: int
       doc: Number of channels to image in Q and U.
 
     - id: stokes
-      type: string[]
-      default: ["Q","U"]
+      type: string
+      default: "Q,U"
 
     - id: stokes_q_cube
       type: File
@@ -63,34 +63,21 @@ inputs:
       type: string?
       doc: Extra arguments passed to rmsynth3d.
 
-    - id: apptainer_bin
-      type: string?
-      default: apptainer
-      doc: Apptainer/Singularity executable name or path.
-
-    - id: apptainer_image
-      type: string?
-      doc: Path to an Apptainer/Singularity image (.sif). If set, rmsynth3d runs inside this image.
-
-    - id: apptainer_bind
-      type: string[]?
-      doc: Bind mount(s) for Apptainer/Singularity, e.g. /data:/mnt
-
 steps:
     - id: image_qu
       label: image_qu
       in:
         - id: msin
           source: msin
-        - id: pixel_scale
+        - id: scale
           source: pixel_scale
-        - id: resolution
+        - id: taper-gaussian
           source: resolution
-        - id: image_size
+        - id: size
           source: image_size
-        - id: num_channels
+        - id: channels-out
           source: num_channels
-        - id: stokes
+        - id: pol
           source: stokes
       out:
         - id: MFS_image_pb
@@ -100,38 +87,7 @@ steps:
         - id: MFS_model_pb
         - id: MFS_model
         - id: MFS_psf
-        - id: Q_channel_images
-        - id: U_channel_images
       run: ../steps/wsclean_pol.cwl
-
-    - id: make_cubes
-      label: Make QU cubes
-      in:
-        - id: Q_images
-          source: image_qu/Q_channel_images
-        - id: U_images
-          source: image_qu/U_channel_images
-      out:
-        - id: stokesQcube
-        - id: stokesUcube
-        - id: frequencies_list
-      run: ../steps/concat_QU.cwl
-
-    - id: rmsynth
-      label: rmsynthesis
-      in:
-        - id: Qcube
-          source: make_cubes/stokesQcube
-        - id: Ucube
-          source: make_cubes/stokesUcube
-        - id: frequencies
-          source: make_cubes/frequencies_list
-      out:
-        - id: FDF_maxPI
-        - id: FDF_peakRM
-        #add outputs for derotated cubes FDF_real/im_dirty.fits
-      run: ../steps/rmsynthesis.cwl
-
     - id: run_rmtools
       label: RM synthesis
       in:
@@ -149,12 +105,6 @@ steps:
           source: rmtools_output_prefix
         - id: extra_args
           source: rmtools_extra_args
-        - id: apptainer_bin
-          source: apptainer_bin
-        - id: apptainer_image
-          source: apptainer_image
-        - id: apptainer_bind
-          source: apptainer_bind
       out:
         - id: fdf_im_dirty
         - id: fdf_real_dirty
@@ -167,49 +117,29 @@ steps:
 
 outputs:
   - id: MFS_images_pb
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_image_pb
   - id: MFS_images
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_image
 
   - id: MFS_residuals_pb
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_residual_pb
   - id: MFS_residuals
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_residual
 
   - id: MFS_models_pb
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_model_pb
   - id: MFS_models
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_model
 
   - id: MFS_psfs
-    type: File[]
+    type: File
     outputSource: image_qu/MFS_psf
-
-  - id: stokesQcube
-    type: File
-    outputSource: make_cubes/stokesQcube
-
-  - id: stokesUcube
-    type: File
-    outputSource: make_cubes/stokesUcube
-
-  - id: FDF_maxPI
-    type: File
-    outputSource: rmsynth/FDF_maxPI
-
-  - id: FDF_peakRM
-    type: File
-    outputSource: rmsynth/FDF_peakRM
-
-  - id: FDF_clean_tot
-    type: File
-    outputSource: rmsynth/FDF_clean_tot
 
   - id: fdf_im_dirty
     type: File

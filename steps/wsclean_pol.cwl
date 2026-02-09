@@ -194,19 +194,19 @@ inputs:
       shellQuote: false
       prefix: '-join-channels'
   - id: join-polarizations
-      type: boolean?
-      default: true
-      inputBinding:
-        position: 1
-        shellQuote: false
-        prefix: '-join-polarizations'
+    type: boolean?
+    default: true
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-join-polarizations'
   - id: squared-channel-joining
-      type: boolean?
-      default: true
-      inputBinding:
-        position: 1
-        shellQuote: false
-        prefix: '-squared-channel-joining'
+    type: boolean?
+    default: true
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-squared-channel-joining'
   - id: fit-spectral-pol
     type: int?
     default: 3
