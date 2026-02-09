@@ -46,6 +46,9 @@ def cube_maker(imagename, nchan, imsize):
                 hdu_u = fits.open('' + str(imagename) + str("-{:04d}".format(i))+'-U-image.fits')
                 data_q = hdu_q[0].data[:,:]
                 data_u = hdu_u[0].data[:,:]
+                if np.isnan(data_q).any() or np.isnan(data_u).any():
+                    print("Channel " + str(i) + "is NaN, move to the next one...")
+                    continue
                 header_q = hdu_q[0].header
                 header_u = hdu_u[0].header
                 avgnoise = 0.5 * ( findrms(data_q) + findrms(data_u) )
@@ -64,6 +67,8 @@ def cube_maker(imagename, nchan, imsize):
     hdu_cube_u.writeto('' + str(imagename) + 'polcube_U.fits', overwrite=True)
     print("U cube written")
 
+    # To implement: check on the average QU noise for each channel. If it is more than 5 times the
+    # median noise, then it is required to exclude that channel.
 
 
 def main():
