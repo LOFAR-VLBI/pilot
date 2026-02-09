@@ -46,7 +46,8 @@ affiliations:
         Deparment of Physics,
         Durham University,
         South Road,
-        Durham DH1 3LE, UK
+        Durham DH1 3LE,
+        United Kingdom
   - index: 2
     name: |
         Leiden Observatory,
