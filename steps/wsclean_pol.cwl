@@ -181,7 +181,7 @@ inputs:
       prefix: '-nmiter'
   - id: channels-out
     type: int?
-    default: 6
+    default: 480
     inputBinding:
       position: 1
       shellQuote: false
