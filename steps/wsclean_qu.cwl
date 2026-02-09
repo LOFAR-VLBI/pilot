@@ -33,14 +33,14 @@ inputs:
       prefix: '-j'
   - id: size
     type: int[]?
-    default: [22500, 22500]
+    default: [1024, 1024]
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-size'
   - id: baseline_averaging
     type: float?
-    default: 0.0
+    default: 7.74
     inputBinding:
       position: 1
       shellQuote: false
@@ -97,7 +97,7 @@ inputs:
       prefix: '-auto-threshold'
   - id: pol
     type: string?
-    default: i
+    default: i,q,u,v
     inputBinding:
       position: 1
       shellQuote: false
@@ -111,11 +111,18 @@ inputs:
       prefix: '-name'
   - id: scale
     type: string?
-    default: "0.4asec"
+    default: "0.75asec"
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-scale'
+  - id: beam-size
+    type: float?
+    default: 0.3asec
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-beam-size'
   - id: taper-gaussian
     type: string?
     default: 1.2asec
@@ -186,6 +193,20 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-join-channels'
+  - id: join-polarizations
+      type: boolean?
+      default: true
+      inputBinding:
+        position: 1
+        shellQuote: false
+        prefix: '-join-polarizations'
+  - id: squared-channel-joining
+      type: boolean?
+      default: true
+      inputBinding:
+        position: 1
+        shellQuote: false
+        prefix: '-squared-channel-joining'
   - id: fit-spectral-pol
     type: int?
     default: 3
@@ -299,5 +320,5 @@ requirements:
   - class: ResourceRequirement
     coresMin: $(inputs.cores)
 
-stdout: wsclean.log
-stderr: wsclean_err.log
+stdout: wsclean_qu.log
+stderr: wsclean_qu_err.log
