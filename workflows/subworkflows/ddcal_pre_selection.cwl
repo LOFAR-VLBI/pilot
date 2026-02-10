@@ -1,7 +1,7 @@
 class: Workflow
 cwlVersion: v1.2
-id: ddcal_pre_selection
-label: DD direction selection
+id: phasediff_selection
+label: Source selection based on phasediff score
 doc: |
    This workflow does the following:
         * DP3 prep to average measurement to the same freq/time resolution
@@ -9,9 +9,11 @@ doc: |
         * Get solution scores using the circular standard deviation
         * Select MS with scores below 2.3
    This selection metric is described in Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
+   And the score's relation to S/N is demonstrated in Appendix A from de Jong et al. (2025; https://arxiv.org/pdf/2508.12115)
 
 requirements:
   - class: ScatterFeatureRequirement
+  - class: SubworkflowFeatureRequirement
 
 inputs:
     - id: msin
@@ -34,15 +36,23 @@ steps:
       out:
         - id: phasediff_score_csv
       run: ../../steps/get_phasediff.cwl
-      scatter: msin
+      scatter: phasediff_ms
 
-#TODO concat CSVs!
-#TODO rename ddcal_pre_selection.cwl to phasediff_source_selection.cwl
+    - id: concat_phasediff_csvs
+      in:
+        - id: input_csvs
+          source: calc_phasediff/phasediff_score_csv
+        - id: output_csv
+          default: "phasediff_concat.csv"
+      out:
+        - id: concat_csv
+      run: ../../steps/concat_csv.cwl
 
     - id: select_best_directions
+      label: Select best directions
       in:
         - id: phasediff_csv
-          source: calc_phasediff/phasediff_score_csv
+          source: concat_phasediff_csvs/concat_csv
         - id: msin
           source: msin
         - id: phasediff_score
@@ -56,7 +66,7 @@ steps:
 outputs:
     - id: phasediff_score_csv
       type: File
-      outputSource: calc_phasediff/phasediff_score_csv
+      outputSource: concat_phasediff_csvs/concat_csv
       doc: csv with scores
     - id: best_ms
       type: Directory[]
