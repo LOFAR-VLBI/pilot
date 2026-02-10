@@ -15,7 +15,7 @@ inputs:
 
     - id: pixel_scale
       type: string
-      doc: Pixel size (WSClean scale), e.g. "0.75asec".
+      doc: Pixel size (WSClean scale), e.g. "0.075asec".
 
     - id: resolution
       type: string
@@ -31,19 +31,7 @@ inputs:
 
     - id: stokes
       type: string
-      default: "Q,U"
-
-    - id: stokes_q_cube
-      type: File
-      doc: Stokes Q cube (per-channel) for RM synthesis.
-
-    - id: stokes_u_cube
-      type: File
-      doc: Stokes U cube (per-channel) for RM synthesis.
-
-    - id: freqs_hz
-      type: File
-      doc: Frequency list in Hz (one per channel) for RM synthesis.
+      default: "IQUV"
 
     - id: rmtools_max_lam2
       type: float?
@@ -103,6 +91,7 @@ steps:
         - id: stokesUcube
         - id: frequencies_list
       run: ../steps/concat_pol.cwl
+
     - id: run_rmtools
       label: RM synthesis
       in:
