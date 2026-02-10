@@ -39,7 +39,8 @@ inputs:
       type: File?
       doc: |
         A delay calibrator catalogue in CSV format.
-        If not provided, plot_field will be run to generate the CSV (requires internet access)
+        The input CSV should contain the following columns: Observation,Source_id,RA,DEC,Total_flux,Peak_flux
+        If not provided, plot_field will be run to generate the CSV (requires internet access).
 
     - id: image_catalogue
       type: File
