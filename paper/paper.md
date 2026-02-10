@@ -153,6 +153,10 @@ The data products are FITS formatted images of the stated resolution.
 
 A list of ongoing research projects where PILoT is a central tool is provided in section 4 of reference [@Morabito-2025].
 
+# AI usage disclosure
+
+No generative AI was used in the development of PILoT, the writing of this manuscript, or the preparation of supporting materials.
+
 # Acknowledgements
 
 MvdW is supported by the Science and Technology Facilities Council via LOFAR-U.K. [ST/V002406/1] and UKSRC [ST/T000244/1].
