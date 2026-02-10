@@ -29,11 +29,17 @@ inputs:
         Optional DS9 region file(s) that will be used to trim the facet.
         Its length should match that of `msin`.
 
+    - id: mosaic
+      type: boolean
+      doc: |
+        Combine the individual facet images into a single mosaic using the specified SWarp configuration file.
+
     - id: swarp_config
       type: File?
       doc: |
         Optional configuration file to be passed to SWarp for mosaicing.
-        If given, a final mosaic will be made of the trimmed facet images.
+        If mosaic is true, a final mosaic will be made of the trimmed facet images
+        using this configuration.
 
 
 steps:
@@ -91,7 +97,7 @@ steps:
       out:
         - id: output_image
       run: ../steps/swarp.cwl
-      when: $(inputs.config != null)
+      when: $(inputs.mosaic)
 
 outputs:
   - id: MFS_images_pb
