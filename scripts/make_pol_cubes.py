@@ -49,8 +49,9 @@ def cube_maker(imagename, nchan, imsize):
                 if np.isnan(data_q).any() or np.isnan(data_u).any():
                     print("Channel " + str(i) + "is NaN, move to the next one...")
                     continue
-                header_q = hdu_q[0].header
-                header_u = hdu_u[0].header
+                if i == 0:      # This is required to store the first frequency channel in the header of the final cube, useful for visualization
+                    header_q = hdu_q[0].header
+                    header_u = hdu_u[0].header
                 avgnoise = 0.5 * ( findrms(data_q) + findrms(data_u) )
                 frequ = hdu_q[0].header['CRVAL3']
                 lfr.write(str(frequ)+'\n')
@@ -58,17 +59,41 @@ def cube_maker(imagename, nchan, imsize):
                 cube_q[0,i,:,:] = data_q
                 cube_u[0,i,:,:] = data_u
 
-    # Writing the cubes
-    hdu_cube_q = fits.PrimaryHDU(cube_q,header_q)
-    hdu_cube_q.writeto('' + str(imagename) + 'polcube_Q.fits', overwrite=True)
-    print("Q cube written")
 
-    hdu_cube_u = fits.PrimaryHDU(cube_u,header_u)
-    hdu_cube_u.writeto('' + str(imagename) + 'polcube_U.fits', overwrite=True)
-    print("U cube written")
-
-    # To implement: check on the average QU noise for each channel. If it is more than 5 times the
+    # Check the average QU noise for each channel. If it is more than 5 times the
     # median noise, then it is required to exclude that channel.
+
+    with open('' + str(imagename) + '_avg_qunoise_list.dat','r') as avgqunoise:
+        avgqunoise_values = np.array([float(line.strip()) for line in avgqunoise])
+
+    with open('' + str(imagename) + '_frequency_list.dat','r') as lfr:
+        frequencies = np.array([float(line.strip()) for line in lfr])
+
+    mask = avgqunoise_values <= 5. * np.median(avgqunoise_values)
+
+    correct_frequencies = frequencies[mask]
+    correct_avgqunoise = avgqunoise_values[mask]
+    correct_cube_q = cube_q[:,mask,:,:]
+    correct_cube_u = cube_u[:,mask,:,:]
+
+    with open('' + str(imagename) + '_frequency_list.dat','w') as lfr:
+        for freq in correct_frequencies:
+            lfr.write(str(freq)+'\n')
+    
+    with open('' + str(imagename) + '_avg_qunoise_list.dat','w') as avgqunoise:
+        for noise in correct_avgqunoise:
+            avgqunoise.write(str(noise)+'\n')
+
+    
+    # Writing the cubes
+    hdu_cube_q = fits.PrimaryHDU(correct_cube_q,header_q)
+    hdu_cube_q.writeto('' + str(imagename) + '-polcube-Q.fits', overwrite=True)
+    print("Stokes Q cube written")
+
+    hdu_cube_u = fits.PrimaryHDU(correct_cube_u,header_u)
+    hdu_cube_u.writeto('' + str(imagename) + '-polcube-U.fits', overwrite=True)
+    print("Stokes U cube written")
+
 
 
 def main():
