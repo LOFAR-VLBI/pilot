@@ -1,8 +1,8 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: plot_field
+id: lofar_vlbi_plot
 doc: |
-  Run plot_field on the phase centre from a given MeasurementSet.
+  Run lofar-vlbi-plot on the phase centre from a given MeasurementSet.
   This requires internet access.
 
 baseCommand: lofar-vlbi-plot

@@ -40,7 +40,7 @@ inputs:
       doc: |
         A delay calibrator catalogue in CSV format.
         The input CSV should contain the following columns: Observation,Source_id,RA,DEC,Total_flux,Peak_flux
-        If not provided, plot_field will be run to generate the CSV (requires internet access).
+        If not provided, lofar-vlbi-plot will be run to generate the CSV (requires internet access).
 
     - id: image_catalogue
       type: File
@@ -201,7 +201,7 @@ steps:
       run: ./setup.cwl
       when: $(inputs.solset != null)
 
-    - id: plot_field
+    - id: lofar_vlbi_plot
       in:
         - id: msin
           source: msin
@@ -210,7 +210,7 @@ steps:
           source: delay_calibrator
       out:
         - id: delay_calibrator_pf
-      run: ../steps/plot_field.cwl
+      run: ../steps/lofar_vlbi_plot.cwl
       when: $(inputs.delay_calibrator == null)
 
     - id: sort-concatenate-flag
@@ -273,7 +273,7 @@ steps:
         - id: delay_calibrator
           source:
             - delay_calibrator
-            - plot_field/delay_calibrator_pf
+            - lofar_vlbi_plot/delay_calibrator_pf
           pickValue: first_non_null
           valueFrom: $(self)
         - id: image_catalogue
@@ -333,7 +333,7 @@ steps:
         - id: delay_calibrator
           source:
             - delay_calibrator
-            - plot_field/delay_calibrator_pf
+            - lofar_vlbi_plot/delay_calibrator_pf
           pickValue: first_non_null
           valueFrom: $(self)
         - id: select_best_n_delay_calibrators
