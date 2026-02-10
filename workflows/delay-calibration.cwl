@@ -71,10 +71,6 @@ inputs:
       type: File
       doc: Settings for the delay calibration in delay_solve.
 
-    - id: phaseup_config
-      type: File
-      doc: phaseup_config.txt file for phaseup scores - ideally from root
-
     - id: reference_stationSB
       type: int?
       default: 104
@@ -258,8 +254,6 @@ steps:
           source: delay_calibrator
         - id: image_catalogue
           source: image_catalogue
-        - id: phaseup_config
-          source: phaseup_config
         - id: configfile
           source: configfile
         - id: max_dp3_threads

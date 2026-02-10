@@ -29,10 +29,6 @@ inputs:
     default: null
     doc: If set, reference the grouping of files to this station subband.
 
-  - id: phaseup_config
-    type: File
-    doc: phaseup_config.txt for phaseup scores - ideally from root
-
   - id: max_dp3_threads
     type: int?
     default: 5
@@ -168,8 +164,6 @@ steps:
         source: image_catalogue
       - id: model_image
         source: model_image
-      - id: phaseup_config
-        source: phaseup_config
       - id: number_cores
         source: number_cores
     out:
