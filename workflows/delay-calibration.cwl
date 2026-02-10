@@ -97,14 +97,14 @@ inputs:
     - id: ddf_solsdir
       type: Directory?
       doc: |
-        [Required if subtracting LoTSS] Path to the SOLSDIR directory 
+        [Required if subtracting LoTSS] Path to the SOLSDIR directory
         of the DDF-pipeline run, where most of the calibration solutions
         are stored.
 
     - id: ddf_rundir
       type: Directory?
       doc: |
-        [Required if subtracting LoTSS] Path to the directory of the 
+        [Required if subtracting LoTSS] Path to the directory of the
         DDF-pipeline run where files required for the subtract can be found.
 
     - id: box_size
@@ -295,7 +295,7 @@ steps:
     - id: validation
       in:
         - id: h5parm
-          source: 
+          source:
             - select_best_delay_cal/solutions
             - phaseup/solutions
           linkMerge: merge_flattened
