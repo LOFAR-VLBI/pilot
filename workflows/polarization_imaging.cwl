@@ -102,7 +102,7 @@ steps:
         - id: stokesQcube
         - id: stokesUcube
         - id: frequencies_list
-      run: ../steps/concat_QU.cwl
+      run: ../steps/concat_pol.cwl
     - id: run_rmtools
       label: RM synthesis
       in:
