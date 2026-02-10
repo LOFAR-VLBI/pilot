@@ -12,7 +12,6 @@ doc: |
 
 requirements:
   - class: ScatterFeatureRequirement
-  - class: SubworkflowFeatureRequirement
 
 inputs:
     - id: msin
@@ -28,59 +27,21 @@ inputs:
       doc: Return this number of best sources according to the selection metric.
 
 steps:
-    - id: Phasediff
+    - id: calc_phasediff
       in:
-        - id: msin
+        - id: phasediff_ms
           source: msin
       out:
-        - phasediff_h5out
+        - id: phasediff_score_csv
+      run: ../../steps/get_phasediff.cwl
       scatter: msin
-      run:
-        # start of Phasediff
-        cwlVersion: v1.2
-        class: Workflow
-        inputs:
-          - id: msin
-            type: Directory
-        outputs:
-          - id: phasediff_h5out
-            type: File
-            outputSource: get_phasediff/phasediff_h5out
 
-        steps:
-          - id: dp3_prep_phasediff
-            label: Pre-averaging with DP3
-            in:
-              - id: msin
-                source: msin
-            out:
-              - phasediff_ms
-            run: ../../steps/dp3_prep_phasediff.cwl
-
-          - id: get_phasediff
-            label: Get phase difference with facetselfcal
-            in:
-              - id: phasediff_ms
-                source: dp3_prep_phasediff/phasediff_ms
-            out:
-              - phasediff_h5out
-            run: ../../steps/get_phasediff.cwl
-        # end of Phasediff
-
-    - id: get_selection_scores
-      label: Calculate phase difference score
-      in:
-        - id: phasediff_h5
-          source: Phasediff/phasediff_h5out
-      out:
-        - phasediff_score_csv
-      run: ../../steps/get_selection_scores.cwl
+#TODO concat CSVs!
 
     - id: select_best_directions
-      label: Select best directions
       in:
         - id: phasediff_csv
-          source: get_selection_scores/phasediff_score_csv
+          source: calc_phasediff/phasediff_score_csv
         - id: msin
           source: msin
         - id: phasediff_score
@@ -94,7 +55,7 @@ steps:
 outputs:
     - id: phasediff_score_csv
       type: File
-      outputSource: get_selection_scores/phasediff_score_csv
+      outputSource: calc_phasediff/phasediff_score_csv
       doc: csv with scores
     - id: best_ms
       type: Directory[]
