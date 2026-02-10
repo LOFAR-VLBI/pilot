@@ -18,9 +18,6 @@ inputs:
   - id: model_image
     type: File?
     doc: Input skymodel of delay calibrator
-  - id: phaseup_config
-    type: File
-    doc: Config file defining phasediff score selfcal config.
   - id: number_cores
     type: int?
     default: 12
@@ -47,8 +44,6 @@ steps:
     in:
       - id: phasediff_ms
         source: msin
-      - id: phaseup_config
-        source: phaseup_config
     out:
       - id: phasediff_h5out
       - id: scalarphase_h5out
