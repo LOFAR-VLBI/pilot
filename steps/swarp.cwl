@@ -20,7 +20,7 @@ inputs:
       position: 3
       shellQuote: false
       itemSeparator: ' '
-      prefix: '-imageout_name '
+      prefix: '-imageout_name'
   - id: input_images
     type: File[]
     inputBinding:
