@@ -11,8 +11,7 @@ inputs:
       type: Directory
       doc: Input MeasurementSet
       inputBinding:
-        position: 20
-        valueFrom: $(self.basename)
+        position: 1
 
 outputs:
     - id: phasediff_h5out
@@ -22,9 +21,9 @@ outputs:
         glob: "scalarphasediff*.h5"
     - id: scalarphase_h5out
       type: File
-      doc: h5parm with simple scalarphase solutions.
+      doc: h5parm solution with simple scalarphase solutions
       outputBinding:
-        glob: "scalarphase*.h5"
+        glob: "scalarphase1*.h5"
     - id: phasediff_score
       type: File
       doc: csv with phasediff scores
@@ -42,25 +41,6 @@ requirements:
     listing:
       - entry: $(inputs.phasediff_ms)
         writable: true
-
-arguments:
-  - -i
-  - phasediff
-  - --forwidefield
-  - --phaseupstations=core
-  - --skipbackup
-  - --uvmin=20000
-  - --soltype-list=['scalarphasediff']
-  - --solint-list=['10min']
-  - --nchan-list=[6]
-  - --docircular
-  - --uvminscalarphasediff=0
-  - --stop=1
-  - --soltypecycles-list=[0]
-  - --imsize=1600
-  - --skymodelpointsource=1.0
-  - --stopafterskysolve
-  - --phasediff_only
 
 hints:
   - class: DockerRequirement
