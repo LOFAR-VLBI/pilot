@@ -14,17 +14,12 @@ inputs:
         position: 1
 
 outputs:
-    - id: phasediff_h5out
-      type: File
-      doc: h5parm solution files with scalarphasediff solutions
-      outputBinding:
-        glob: "scalarphasediff*.h5"
     - id: scalarphase_h5out
       type: File
       doc: h5parm solution with simple scalarphase solutions
       outputBinding:
         glob: "scalarphase1*.h5"
-    - id: phasediff_score
+    - id: phasediff_score_csv
       type: File
       doc: csv with phasediff scores
       outputBinding:

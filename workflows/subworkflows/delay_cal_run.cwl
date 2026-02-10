@@ -45,10 +45,9 @@ steps:
       - id: phasediff_ms
         source: msin
     out:
-      - id: phasediff_h5out
       - id: scalarphase_h5out
-      - id: phasediff_score
-    run: ../../steps/get_phasediff_delay.cwl
+      - id: phasediff_score_csv
+    run: ../../steps/get_phasediff.cwl
     label: calc_phasediff
 
   - id: gen_delay_config
@@ -61,7 +60,7 @@ steps:
         source: delay_cal_model/skymodel
         valueFrom: $(self[0])
       - id: phasediff_output
-        source: calc_phasediff/phasediff_score
+        source: calc_phasediff/phasediff_score_csv
       - id: scalarphase_h5out
         source: calc_phasediff/scalarphase_h5out
     out:
