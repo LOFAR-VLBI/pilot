@@ -68,13 +68,6 @@ steps:
         - id: pol
           source: stokes
       out:
-        - id: MFS_image_pb
-        - id: MFS_image
-        - id: MFS_residual_pb
-        - id: MFS_residual
-        - id: MFS_model_pb
-        - id: MFS_model
-        - id: MFS_psf
         - id: Q_channel_images
         - id: U_channel_images
       run: ../steps/wsclean_pol.cwl
@@ -120,31 +113,6 @@ steps:
       run: ../steps/run_rmtools.cwl
 
 outputs:
-  - id: MFS_images_pb
-    type: File
-    outputSource: image_qu/MFS_image_pb
-  - id: MFS_images
-    type: File
-    outputSource: image_qu/MFS_image
-
-  - id: MFS_residuals_pb
-    type: File
-    outputSource: image_qu/MFS_residual_pb
-  - id: MFS_residuals
-    type: File
-    outputSource: image_qu/MFS_residual
-
-  - id: MFS_models_pb
-    type: File
-    outputSource: image_qu/MFS_model_pb
-  - id: MFS_models
-    type: File
-    outputSource: image_qu/MFS_model
-
-  - id: MFS_psfs
-    type: File
-    outputSource: image_qu/MFS_psf
-
   - id: stokesQcube
     type: File
     outputSource: make_cubes/stokesQcube
