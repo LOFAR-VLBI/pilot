@@ -22,11 +22,12 @@ inputs:
       prefix: '--uimages'
       itemSeparator: ','
   - id: image_size
-    type: int
-    doc: Image size in pixels as provided in WSClean.
+    type: int[]
+    doc: Image size in pixels as [x, y], matching WSClean -size.
     inputBinding:
       position: 0
       prefix: '--imsize'
+      itemSeparator: ','
   - id: nchannels
     type: int
     doc: Number of channels as provided in WSClean as -channels-out.
@@ -45,7 +46,7 @@ outputs:
     type: File
     doc: Name of the Stokes U that will be created.
     outputBinding:
-      glob: "*-polcube-Q.fits"
+      glob: "*-polcube-U.fits"
   - id: frequencies_list
     type: File
     doc: List of channels frequencies.

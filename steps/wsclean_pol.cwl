@@ -117,8 +117,8 @@ inputs:
       shellQuote: false
       prefix: '-scale'
   - id: beam-size
-    type: float?
-    default: 0.3asec
+    type: string?
+    default: "0.3asec"
     inputBinding:
       position: 1
       shellQuote: false
