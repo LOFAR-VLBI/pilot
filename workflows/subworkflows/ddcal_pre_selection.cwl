@@ -37,14 +37,23 @@ steps:
       run: ../../steps/get_phasediff.cwl
       scatter: msin
 
-#TODO concat CSVs!
+    - id: concat_phasediff_csvs
+      in:
+        - id: input_csv
+          source: calc_phasediff/phasediff_score_csv
+        - id: output_csv
+          default: "phasediff_concat_csv.csv"
+      out:
+        - id: concat_csv
+      run: ../../steps/concat_csv.cwl
+
 #TODO rename ddcal_pre_selection.cwl to phasediff_source_selection.cwl
 
     - id: select_best_directions
       label: Select best directions
       in:
         - id: phasediff_csv
-          source: calc_phasediff/phasediff_score_csv
+          source: concat_phasediff_csvs/concat_csv
         - id: msin
           source: msin
         - id: phasediff_score
@@ -58,7 +67,7 @@ steps:
 outputs:
     - id: phasediff_score_csv
       type: File
-      outputSource: calc_phasediff/phasediff_score_csv
+      outputSource: concat_phasediff_csvs/concat_csv
       doc: csv with scores
     - id: best_ms
       type: Directory[]
