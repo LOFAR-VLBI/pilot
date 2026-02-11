@@ -12,6 +12,7 @@ doc: |
 
 requirements:
   - class: ScatterFeatureRequirement
+  - class: SubworkflowFeatureRequirement
 
 inputs:
     - id: msin
@@ -40,6 +41,7 @@ steps:
 #TODO rename ddcal_pre_selection.cwl to phasediff_source_selection.cwl
 
     - id: select_best_directions
+      label: Select best directions
       in:
         - id: phasediff_csv
           source: calc_phasediff/phasediff_score_csv
