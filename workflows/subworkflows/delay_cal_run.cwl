@@ -13,7 +13,7 @@ inputs:
     type: File
     doc: delay_calibrators.csv file from plot_field.py
   - id: image_catalogue
-    type: File
+    type: File?
     doc: image_catalogue.csv file from plot_field.py
   - id: model_image
     type: File?

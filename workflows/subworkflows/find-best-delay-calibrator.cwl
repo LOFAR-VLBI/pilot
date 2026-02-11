@@ -18,7 +18,7 @@ inputs:
       doc: The raw data in a MeasurementSet version 2.0 format.
     - id: delay_calibrator
       type: File
-      doc: The raw data in a MeasurementSet version 2.0 format.
+      doc: A delay calibrator catalogue in CSV format.
     - id: configfile
       type: File
       doc: Settings for the delay calibration in delay_solve.
@@ -36,7 +36,6 @@ inputs:
       default: '390.56kHz'
       doc: |
         Frequency resolution to average the split off delay calibrators to.
-
     - id: time_resolution
       type: string?
       default: '32.'
