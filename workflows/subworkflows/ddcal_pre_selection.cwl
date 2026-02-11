@@ -37,6 +37,7 @@ steps:
       scatter: msin
 
 #TODO concat CSVs!
+#TODO rename ddcal_pre_selection.cwl to phasediff_source_selection.cwl
 
     - id: select_best_directions
       in:
