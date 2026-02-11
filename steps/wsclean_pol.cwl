@@ -267,46 +267,16 @@ inputs:
       soltabs: null
 
 outputs:
-  - id: MFS_image_pb
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-image-pb.fits'
-  - id: MFS_image
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-image.fits'
-  - id: MFS_residual_pb
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-residual-pb.fits'
-  - id: MFS_residual
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-residual.fits'
-  - id: MFS_model_pb
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-model-pb.fits'
-  - id: MFS_model
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-model.fits'
-  - id: MFS_psf
-    type: File
-    doc: The final primary beam corrected image.
-    outputBinding:
-      glob: '$(inputs.name)-MFS-psf.fits'
-  - id: channel_model_images
+  - id: Q_channel_images
     type: File[]
-    doc: Per-channel model images required for the facet subtraction.
+    doc: Per-channel Stokes Q images.
     outputBinding:
-      glob: '$(inputs.name)-????-model*.fits'
+      glob: '$(inputs.name)-????-Q-image.fits'
+  - id: U_channel_images
+    type: File[]
+    doc: Per-channel Stokes U images.
+    outputBinding:
+      glob: '$(inputs.name)-????-U-image.fits'
 
 hints:
   - class: DockerRequirement
