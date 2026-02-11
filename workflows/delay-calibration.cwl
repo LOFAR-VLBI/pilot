@@ -309,12 +309,10 @@ steps:
           valueFrom: $(self)
         - id: do_validation
           source: do_validation
-        - id: select_best_n_delay_calibrators
-          source: select_best_n_delay_calibrators
       out:
         - validate_csv
       run: ./subworkflows/dical_validation.cwl
-      when: $(inputs.do_validation && (inputs.select_best_n_delay_calibrators == 1))
+      when: $(inputs.do_validation)
 
     - id: select_best_delay_cal
       in:
