@@ -100,8 +100,6 @@ requirements:
     listing:
       - entry: $(inputs.msin)
         writable: true
-  - class: InplaceUpdateRequirement
-    inplaceUpdate: true
   - class: ResourceRequirement
     coresMax: $(inputs.max_dp3_threads)
     coresMin: $(inputs.max_dp3_threads)
