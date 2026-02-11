@@ -1,40 +1,47 @@
 class: CommandLineTool
 cwlVersion: v1.2
 id: concat_csv
-doc: Concatenate CSV files with the same columns
+doc: Concatenate CSV files with identical columns
 
-baseCommand: concat_csv.py
+baseCommand: bash
 
 inputs:
   - id: input_csvs
     type: File[]
     doc: Input CSVs
     inputBinding:
-      prefix: --input
+      position: 4
+      prefix: ""
       separate: true
-      position: 0
+
   - id: output_csv
     type: string?
     default: "concat.csv"
     doc: Output csv
-    inputBinding:
-      prefix: --output
-      separate: true
-      position: 1
 
 outputs:
   - id: concat_csv
     type: File
-    doc: Concatenated phasediff score concats CSV
+    doc: Concatenated phasediff score CSV
     outputBinding:
       glob: $(inputs.output_csv)
+
   - id: logfile
     type: File[]
     outputBinding:
       glob: concat_csvs*.log
     doc: |
-      The files containing the stdout
-      and stderr from the step.
+      The files containing stdout and stderr from the step.
+
+arguments:
+  - -c
+  - |
+      set -euo pipefail
+      awk 'NR == 1 || FNR > 1' "$@" > "$(inputs.output_csv)"
+  - dummy # fix issue where it doesnt take the first CSV
+
+requirements:
+  - class: InlineJavascriptRequirement
 
 hints:
   - class: DockerRequirement
