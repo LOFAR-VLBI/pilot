@@ -14,6 +14,9 @@ python -m venv venv
 pip install .
 ```
 
+### External dependencies
+- Swarp: https://www.astromatic.net/software/swarp/ -- optional dependency that is required if mosaicing of facet images is enabled.
+
 
 ## Running the test suite
 
