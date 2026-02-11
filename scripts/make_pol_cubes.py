@@ -24,17 +24,11 @@ def findrms(mIn, maskSup=1e-7):
 
 
 
-def cube_maker(imagename, nchan, imsize):
+def cube_maker(q_images, u_images, nchan, imsize):
 
-    # To check whether we can get nchan and imsize from the WSClean command through CWL, otherwise we have to look
-    # for the imsize from an already produced image
-    '''
-    hdu = fits.open('' + str(imagename) + '-0000-I-image.fits')
-    data = hdu[0].data[:,:,:,:]
-    nx = data.shape[2]
-    ny = data.shape[3]
-    hdu.close()
-    '''
+    # Extract the name for the frequency and rms noise files
+    firstq = os.path.basename(q_images[0])
+    imagename = firstq.split('-')[0]
 
     cube_q = np.zeros((1,nchan,imsize,imsize))
     cube_u = np.zeros((1,nchan,imsize,imsize))
@@ -42,8 +36,8 @@ def cube_maker(imagename, nchan, imsize):
     with open('' + str(imagename) + '_frequency_list.dat','w') as lfr:
         with open('' + str(imagename) + '_avg_qunoise_list.dat','w') as avgqunoise:
             for i in range(0,nchan):
-                hdu_q = fits.open('' + str(imagename) + str("-{:04d}".format(i))+'-Q-image.fits')
-                hdu_u = fits.open('' + str(imagename) + str("-{:04d}".format(i))+'-U-image.fits')
+                hdu_q = fits.open(q_images[i])
+                hdu_u = fits.open(u_images[i])
                 data_q = hdu_q[0].data[:,:]
                 data_u = hdu_u[0].data[:,:]
                 if np.isnan(data_q).any() or np.isnan(data_u).any():
@@ -95,15 +89,21 @@ def cube_maker(imagename, nchan, imsize):
     print("Stokes U cube written")
 
 
-
 def main():
     parser = argparse.ArgumentParser(description='Cubes maker from WSClean images for RM-synthesis with RMtools')
-    parser.add_argument('--imagename', help='Image name used in WSClean', default='image', type=str)
-    parser.add_argument('--nchan', help='Channels out as in WSClean', default=500, type=int)
+    parser.add_argument('--qimages', help='List of input Stokes Q channel images', type=str, required=True)
+    parser.add_argument('--uimages', help='List of input Stokes U channel images', type=str, required=True)
+    parser.add_argument('--nchan', help='Channels out as in WSClean', default=480, type=int)
     parser.add_argument('--imsize', help='Image size in pixels as in WSClean', default=1024, type=int)
     args = parser.parse_args()
 
-    cube_maker(args.imagename, args.nchan, args.imsize)
+    q_images = args.qimages.split(',')
+    u_images = args.uimages.split(',')
+
+    q_images = sorted(q_images)
+    u_images = sorted(u_images)
+
+    cube_maker(q_images, u_images, args.nchan, args.imsize)
 
 
 if __name__ == '__main__':

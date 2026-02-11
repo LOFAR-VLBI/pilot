@@ -7,12 +7,20 @@ baseCommand:
   - make_pol_cubes.py
 
 inputs:
-  - id: imagename
-    type: string
-    doc: Image name as provided in WSClean.
+  - id: Q_images
+    type: File[]
+    doc: List of Stokes Q images from /steps/wsclean_pol.cwl.
     inputBinding:
       position: 0
-      prefix: '--imagename'
+      prefix: '--qimages'
+      itemSeparator: ','
+  - id: U_images
+    type: File[]
+    doc: List of Stokes U images from /steps/wsclean_pol.cwl.
+    inputBinding:
+      position: 0
+      prefix: '--uimages'
+      itemSeparator: ','
   - id: image_size
     type: int
     doc: Image size in pixels as provided in WSClean.
@@ -29,17 +37,25 @@ inputs:
 
 outputs:
   - id: stokesQcube
-    type: string
+    type: File
     doc: Name of the Stokes Q that will be created.
+    outputBinding:
+      glob: "*-polcube-Q.fits"
   - id: stokesUcube
-    type: string
+    type: File
     doc: Name of the Stokes U that will be created.
-  - id: freqlist
-    type: string
+    outputBinding:
+      glob: "*-polcube-Q.fits"
+  - id: frequencies_list
+    type: File
     doc: List of channels frequencies.
-  - id: rmslist
-    type: string
+    outputBinding:
+      glob: "*frequency_list.dat"
+  - id: rms_list
+    type: File
     doc: List of average Q and U rms noise per channel.
+    outputBinding:
+      glob: "*avg_qunoise_list.dat"
 
 requirements:
     - class: InlineJavascriptRequirement
