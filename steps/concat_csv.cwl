@@ -14,12 +14,13 @@ inputs:
       separate: true
       position: 0
   - id: output_csv
-    type: File
+    type: string?
+    default: "concat.csv"
     doc: Output csv
     inputBinding:
       prefix: --output
       separate: true
-      position: 0
+      position: 1
 
 outputs:
   - id: concat_csv
