@@ -81,6 +81,7 @@ requirements:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
     coresMin: $(inputs.number_cores)
+    ramMin: 60000
 
 hints:
   - class: DockerRequirement
