@@ -79,10 +79,15 @@ steps:
           source: image_qu/Q_channel_images
         - id: U_images
           source: image_qu/U_channel_images
+        - id: image_size
+          source: image_size
+        - id: nchannels
+          source: num_channels
       out:
         - id: stokesQcube
         - id: stokesUcube
         - id: frequencies_list
+        - id: rms_list
       run: ../steps/concat_pol.cwl
 
     - id: run_rmtools
