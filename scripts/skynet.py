@@ -8,7 +8,7 @@ from astropy.coordinates import SkyCoord
 from astropy.table import Table
 import bdsf
 
-def write_skymodel(model, outname):
+def write_skymodel(model: str, outname: str):
 
     print(f'writing the skymodel for: {model}')
     with open(outname, 'w') as skymodel:
@@ -37,7 +37,7 @@ def write_skymodel(model, outname):
             )
             skymodel.write( '{:s}\n'.format(ss_to_write) )
 
-def model_from_image(modelImage, smodel, opt_coords, astroSearchRadius=3.0, outdir='.'):
+def model_from_image(modelImage: str, smodel: float, opt_coords: SkyCoord, astroSearchRadius: float = 3.0, outdir: str = '.'):
     img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), outdir=outdir)
     sources = img.sources
     maxval = 0.
@@ -81,7 +81,7 @@ def model_from_image(modelImage, smodel, opt_coords, astroSearchRadius=3.0, outd
 
 ################## skynet ##############################
 
-def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=False, outdir='.', process_all: bool = False):
+def main (MS, delayCalFile: str, modelImage: str = '', astroSearchRadius: float = 3.0, skip_vlass: bool = False, outdir: str = '.', process_all: bool = False):
     """
     Generates a skymodel for sources in delayCalFile for delay calibration.
     Uses modelImage as a base model if provided, otherwise will construct a
@@ -89,20 +89,9 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
     these are available in the catalogue and are within astroSearchRadius of
     the target.
     """
-
-    ## make sure the parameters are the correct format
-    # MS is assumed to be of the form:
-    # /path/to/MS/{observation_id}_*
-    # where observation_id is either the LBCS observation id
-    # or the ILTJ name of the source
-
-    # {observation_id} should start with either 'S', 'L', 'I'
-    # followed by a number of digits
-    if not re.search(r'\/([SLI]\d+)\_', MS):
-        ValueError(f"{MS} does not contain a valid observation ID")
-    MS = MS.rstrip('/')
-    tmp = MS.split('/')[-1]
-    MS_src = tmp.split('_')[0]
+    # From phase shifting, the MS's naming scheme should follow something like
+    # <name>_L<sasid>_144MHz_uv.dp3concat
+    MS_src = os.path.basename(MS.rstrip("/")).split('_')[0]
 
     t = Table.read( delayCalFile, format='csv' )
 
@@ -118,28 +107,14 @@ def main (MS, delayCalFile, modelImage='', astroSearchRadius=3.0, skip_vlass=Fal
         de_col = 'DEC_LOTSS'
     src_ids = t['Source_id']
 
-    src_names = []
-    for src_id in src_ids:
-        if isinstance(src_id, str):
-            # Check if the name comes from the LoTSS catalogue
-            if src_id.startswith('I'):
-                val = str(src_id)
-            # Check if the name is the gaussian ID
-            elif MS_src.startswith('S'):
-                val = 'S'+str(src_id)
-            # In this case the name is the LBCS observation ID
-            # and starts with an 'L'
-            else:
-                val = str(src_id)
-                if MS_src.startswith('S'):
-                    val = 'S'+str(src_id)
-                else:
-                    val = str(src_id)
-        else:
-            val = src_id
-        src_names.append(val)
+    # MS name will always be a string, so every name should be checked as a string.
+    src_names = list(map(str, src_ids))
+    if not src_names:
+        raise RuntimeError(f"Delay calibrator list is empty. Please inspect {delayCalFile}.")
     if not process_all:
         source_indices = [ i for i, val in enumerate(src_names) if MS_src == val ]
+        if not source_indices:
+            raise RuntimeError(f"No entry matching Source_id entry for {MS_src} found in {delayCalFile}.")
     else:
         source_indices = [ i for i, val in enumerate(src_names) ]
 

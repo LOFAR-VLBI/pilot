@@ -11,7 +11,9 @@ data_dir = os.environ["VLBI_ROOT_DIR"] + "/tests/data"
 ref_dir = os.environ["VLBI_ROOT_DIR"] + "/tests/reference"
 
 catalogue = f"{ref_dir}/test_sources.csv"
+catalogue2 = f"{ref_dir}/test_custom_sources.csv"
 skymodel = f"{ref_dir}/reference.skymodel"
+skymodel2 = f"{ref_dir}/reference_custom_name.skymodel"
 
 def test_target_delay_calibration():
     mode = "delay_calibration"
@@ -40,6 +42,19 @@ def test_skynet():
 
     main_skynet(f"{data_dir}/ILTJ140815.23+522952.0", catalogue)
     assert filecmp.cmp(skymodel, "skymodel_ILTJ140815.23+522952.0.txt", shallow=False)
+
+    main_skynet(f"{data_dir}/ILTJ140815.23+522952.0_L762475_142MHz_uv.dp3concat", catalogue)
+    assert filecmp.cmp(skymodel, "skymodel_ILTJ140815.23+522952.0.txt", shallow=False)
+
+    main_skynet(f"{data_dir}/CustomSource2_L762475_142MHz_uv.dp3concat", catalogue2)
+    assert filecmp.cmp(skymodel, "skymodel_CustomSource2.txt", shallow=False)
+
+    main_skynet(f"{data_dir}/5758326_L762475_142MHz_uv.dp3concat", catalogue2)
+    assert filecmp.cmp(skymodel, "skymodel_5758326.txt", shallow=False)
+
+    main_skynet(f"{data_dir}/S235687_L762475_142MHz_uv.dp3concat", catalogue2)
+    assert filecmp.cmp(skymodel, "skymodel_S235687.txt", shallow=False)
+
 
 def test_compare_stations():
     import glob
