@@ -34,6 +34,11 @@ inputs:
       doc: |
         Combine the individual facet images into a single mosaic using the specified SWarp configuration file.
 
+    - id: restoring_beam
+      type: float[]?
+      doc: |
+        Restoring beam to use for every facet following the WSClean order of major axis, minor axis, position angle.
+
     - id: swarp_config
       type: File?
       doc: |

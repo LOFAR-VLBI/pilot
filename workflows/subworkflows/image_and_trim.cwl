@@ -31,6 +31,11 @@ inputs:
       type: File
       doc: DS9 region file that will be used to trim the facet.
 
+    - id: restoring_beam
+      type: float[]?
+      doc: |
+        Restoring beam to use for every facet following the WSClean order of major axis, minor axis, position angle.
+
 steps:
     - id: find_image_size
       label: image_size
@@ -65,6 +70,8 @@ steps:
         - id: scale
           source: pixel_scale
           valueFrom: $(self.toString() + "asec")
+        - id: beam-shape
+          source: restoring_beam
       out:
         - id: MFS_image_pb
         - id: MFS_image
