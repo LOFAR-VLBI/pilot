@@ -14,10 +14,6 @@ inputs:
     type: File
     doc: Catalogue file with information on in-field calibrator.
 
-  - id: phaseup_config
-    type: File
-    doc: phaseup_config.txt for phaseup scores - ideally from root.
-
   - id: max_dp3_threads
     type: int?
     default: 5
