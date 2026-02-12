@@ -47,7 +47,7 @@ steps:
     out:
       - id: scalarphase_h5out
       - id: phasediff_score_csv
-    run: ../../steps/get_phasediff.cwl
+    run: ../../steps/get_phasediff_delay.cwl
     label: calc_phasediff
 
   - id: gen_delay_config
