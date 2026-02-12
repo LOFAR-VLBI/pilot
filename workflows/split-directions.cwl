@@ -164,7 +164,7 @@ steps:
       run: ../steps/dp3_parset.cwl
       scatter: parset
 
-    - id: ddcal_pre_selection
+    - id: phasediff_selection
       label: DD direction selection
       in:
         - id: msin
@@ -179,14 +179,14 @@ steps:
         - id: phasediff_score_csv
         - id: best_ms
       when: $(inputs.dd_selection)
-      run: ./subworkflows/ddcal_pre_selection.cwl
+      run: ./subworkflows/phasediff_selection.cwl
 
     - id: target_selfcal
       label: Target Selfcal
       in:
         - id: msin
           source:
-            - ddcal_pre_selection/best_ms
+            - phasediff_selection/best_ms
             - dp3_parset/msout
           pickValue: first_non_null
         - id: configfile
@@ -205,7 +205,7 @@ outputs:
     - id: msout_concat
       type: Directory[]
       outputSource:
-        - ddcal_pre_selection/best_ms
+        - phasediff_selection/best_ms
         - dp3_parset/msout
       pickValue: first_non_null
     - id: images
@@ -219,7 +219,7 @@ outputs:
       pickValue: all_non_null
     - id: phasediff_score_csv
       type: File?
-      outputSource: ddcal_pre_selection/phasediff_score_csv
+      outputSource: phasediff_selection/phasediff_score_csv
     - id: h5parm
       type: 
         - File
