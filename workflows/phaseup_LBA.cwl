@@ -14,23 +14,9 @@ inputs:
     type: File
     doc: Catalogue file with information on in-field calibrator.
 
-  - id: image_catalogue
-    type: File?
-    doc: Catalogue file with information on LoTSS sources in the field
-
-  - id: numbands
-    type: int?
-    default: -1
-    doc: The number of files that have to be grouped together.
-
-  - id: firstSB
-    type: int?
-    default: null
-    doc: If set, reference the grouping of files to this station subband.
-
   - id: phaseup_config
     type: File
-    doc: phaseup_config.txt for phaseup scores - ideally from root
+    doc: phaseup_config.txt for phaseup scores - ideally from root.
 
   - id: max_dp3_threads
     type: int?
@@ -43,10 +29,6 @@ inputs:
     doc: |
       Number of cores to use per job for tasks with
       high I/O or memory.
-
-  - id: model_image
-    type: File?
-    doc: Image to generate an initial delay calibrator model from.
 
 steps:
   - id: prep_delay
@@ -82,29 +64,6 @@ steps:
     scatter: msin
     label: dp3_phaseup
 
-  - id: delay_cal_run
-    in:
-      - id: msin
-        source: phaseup_concatenate/msout
-        valueFrom: $(self[0])
-      - id: delay_calibrator
-        source: delay_calibrator
-      - id: image_catalogue
-        source: image_catalogue
-      - id: model_image
-        source: model_image
-      - id: phaseup_config
-        source: phaseup_config
-      - id: number_cores
-        source: number_cores
-    out:
-      - id: solutions
-      - id: config
-      - id: pictures
-      - id: logfile
-    run: ./subworkflows/delay_cal_run.cwl
-    label: delay_cal_run
-
   - id: summary
     in:
       - id: flagFiles
@@ -131,9 +90,6 @@ steps:
         linkMerge: merge_flattened
         source:
           - prep_delay/logfile
-          - sort_concatenate/logfile
-          - concat_logfiles_phaseup/output
-          - delay_cal_run/logfile
           - summary/logfile
       - id: sub_directory_name
         default: phaseup
@@ -150,26 +106,12 @@ outputs:
         The data in MeasurementSet format after
         phase-shifting to the delay calibrator.
 
-  - id: solutions
-    type: File
-    outputSource: delay_cal_run/solutions
-    doc: |
-        The calibrated solutions for the
-        delay calibrator in HDF5 format.
-
   - id: logdir
     outputSource: save_logfiles/dir
     type: Directory
     doc: |
         The directory containing all the stdin
         and stderr files from the workflow.
-
-  - id: pictures
-    type: File[]
-    outputSource: delay_cal_run/pictures
-    doc: |
-        The inspection plots generated
-        by delay_solve.
 
   - id: summary_file
     type: File
