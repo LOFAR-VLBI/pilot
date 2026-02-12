@@ -52,25 +52,6 @@ arguments:
   - --avgfreqstep="390.56kHz"
   - --avgtimestep="60sec"
 
-arguments:
-  - --imagename=phasediff
-  - --forwidefield
-  - --phaseupstations=core
-  - --skipbackup
-  - --uvmin=20000
-  - --soltype-list=['scalarphasediff','scalarphase']
-  - --solint-list=["10min","32s"]
-  - --nchan-list=[6,1]
-  - --docircular
-  - --uvminscalarphasediff=0
-  - --stop=1
-  - --soltypecycles-list=[0,0]
-  - --imsize=1600
-  - --skymodelpointsource=1.0
-  - --stopafterskysolve
-  - --phasediff_only
-  - --compute-phasediffstat
-
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
