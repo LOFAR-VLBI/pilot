@@ -102,7 +102,7 @@ steps:
       out:
         - id: output_image
       run: ../steps/swarp.cwl
-      when: $(inputs.mosaic)
+      when: $(inputs.mosaic && (config != null))
 
 outputs:
   - id: MFS_images_pb
