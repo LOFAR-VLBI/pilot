@@ -305,7 +305,7 @@ steps:
             - select_best_delay_cal/solutions
             - phaseup/solutions
           linkMerge: merge_flattened
-          pickValue: first_non_null
+          pickValue: all_non_null
           valueFrom: $(self)
         - id: do_validation
           source: do_validation
