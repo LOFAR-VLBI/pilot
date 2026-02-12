@@ -16,7 +16,7 @@ inputs:
 outputs:
     - id: scalarphase_h5out
       type: File
-      doc: h5parm solution with simple scalarphase solutions
+      doc: h5parm with simple scalarphase solutions.
       outputBinding:
         glob: "scalarphase1*.h5"
     - id: phasediff_score_csv
