@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import pandas as pd
-import glob
 import argparse
 import sys
 
@@ -11,6 +10,7 @@ def main():
     )
     parser.add_argument(
         "--input",
+        nargs="+",
         help="Input folder containing CSV files OR a glob pattern (e.g. data/*.csv)"
     )
     parser.add_argument(
@@ -21,7 +21,7 @@ def main():
 
     args = parser.parse_args()
 
-    files = glob.glob(args.input)
+    files = args.input
 
     if not files:
         print("No CSV files found.")
