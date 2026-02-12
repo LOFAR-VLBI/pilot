@@ -4,7 +4,7 @@ id: get_phasediff
 label: Get scalarphasediff and scalarphase solutions
 doc: |
     This step makes scalarphasediff and scalarphase solution files,
-    needed for collecting source selection scores for delay calibration
+    needed for collecting source selection scores and setting parameters for delay calibration.
 
 baseCommand: facetselfcal
 
