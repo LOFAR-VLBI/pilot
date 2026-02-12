@@ -148,7 +148,7 @@ def residuals_brute(a: float,
     return np.sum(chi**2, axis=1)
 
 
-def subtract_parabola(phases: np.ndarray):
+def subtract_parabola(phases: np.ndarray, multiplier: float = 1.0):
     """
     Subtract best-fit parabola from phase solutions.
 
@@ -158,7 +158,7 @@ def subtract_parabola(phases: np.ndarray):
     Returns:
         2D array of phases with parabola removed, wrapped to [-π, π].
     """
-    sample_range = np.linspace(-5e-4,5e-4,314) # TODO: Investigate if these are reasonable numbers for general usage
+    sample_range = np.linspace(-5e-4,5e-4,512) * max(1.0, multiplier)
     new_phases = np.zeros(phases.shape)
     for idx, time_interval in enumerate(phases.T):
         p_0 = [0,0,0]
@@ -223,7 +223,8 @@ def normalise_phases(phase_sols: np.ndarray) -> np.ndarray:
 
 def get_phase_noise_statistic(phase_sols: np.ndarray,
                               idx_ant: int,
-                              freqs: np.ndarray
+                              freqs: np.ndarray,
+                              wrap_count: float,
                               ) -> float:
     """
     Get phase noise statistic, which is the 90th percentile on the circular standard deviation of the phase solutions,
@@ -247,7 +248,7 @@ def get_phase_noise_statistic(phase_sols: np.ndarray,
     deslopvals = np.arange(-len(freqs) // 2, len(freqs) // 2)[:, None] * delay_slope[None, :]
     phases_desloped = normalise_phases(phase_sols_sub + deslopvals)
     phases_desloped = normalise_phases(phases_desloped - np.nanmean(phases_desloped[slice_size:-(slice_size+1)], axis=0))
-    phases_desloped = subtract_parabola(phases_desloped)
+    phases_desloped = subtract_parabola(phases_desloped, multiplier=wrap_count)
     phases_desloped = normalise_phases(phases_desloped - np.nanmean(phases_desloped[slice_size:-(slice_size+1)], axis=0))
 
     # Get phase score
@@ -292,8 +293,7 @@ def get_phase_score(h5: str):
                                   [a for a in axes if a not in ['pol', 'dir']])
 
     # Get 90-percentile scores
-    perc90_scores = [get_phase_noise_statistic(phase_sols, idx_ant, freqs) for idx_ant, _ in enumerate(ants)]
-
+    perc90_scores = [get_phase_noise_statistic(phase_sols, idx_ant, freqs, wrap_count) for idx_ant, _ in enumerate(ants)]
     phase_score = sigmoid(max(perc90_scores), 45, 10, True)
 
     return phase_score, wrap_count
