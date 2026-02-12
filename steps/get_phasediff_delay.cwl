@@ -37,7 +37,6 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.phasediff_ms)
-        writable: true
 
 arguments:
   - --imagename=phasediff
