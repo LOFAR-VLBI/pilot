@@ -30,8 +30,8 @@ def cube_maker(q_images, u_images, nchan, imsize):
     firstq = os.path.basename(q_images[0])
     imagename = firstq.split('-')[0]
 
-    cube_q = np.zeros((1,nchan,imsize,imsize))
-    cube_u = np.zeros((1,nchan,imsize,imsize))
+    cube_q = np.zeros((1,nchan,imsize[1],imsize[0]))
+    cube_u = np.zeros((1,nchan,imsize[1],imsize[0]))
     
     with open('' + str(imagename) + '_frequency_list.dat','w') as lfr:
         with open('' + str(imagename) + '_avg_qunoise_list.dat','w') as avgqunoise:
@@ -94,7 +94,7 @@ def main():
     parser.add_argument('--qimages', help='List of input Stokes Q channel images', type=str, required=True)
     parser.add_argument('--uimages', help='List of input Stokes U channel images', type=str, required=True)
     parser.add_argument('--nchan', help='Channels out as in WSClean', default=480, type=int)
-    parser.add_argument('--imsize', help='Image size in pixels as in WSClean', default=1024, type=int)
+    parser.add_argument('--imsize', help='Image size in pixels as in WSClean (width,height or single value)', default='1024,1024', type=str)
     args = parser.parse_args()
 
     q_images = args.qimages.split(',')
@@ -103,7 +103,14 @@ def main():
     q_images = sorted(q_images)
     u_images = sorted(u_images)
 
-    cube_maker(q_images, u_images, args.nchan, args.imsize)
+    imsize_parts = args.imsize.split(',')
+    if len(imsize_parts) == 2:
+        imsize = [int(imsize_parts[0]), int(imsize_parts[1])]
+    else:
+        single_size = int(imsize_parts[0])
+        imsize = [single_size, single_size]
+
+    cube_maker(q_images, u_images, args.nchan, imsize)
 
 
 if __name__ == '__main__':
