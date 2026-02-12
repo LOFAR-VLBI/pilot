@@ -101,7 +101,7 @@ steps:
 outputs:
   - id: msout
     type: Directory[]
-    outputSource: phaseup_concatenate/msout
+    outputSource: dp3_phaseup/msout
     doc: |
         The data in MeasurementSet format after
         phase-shifting to the delay calibrator.
