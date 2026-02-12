@@ -167,7 +167,7 @@ inputs:
       prefix: '-multiscale'
   - id: multiscale-max-scales
     type: int?
-    default: 9
+    default: 3
     inputBinding:
       position: 1
       shellQuote: false
