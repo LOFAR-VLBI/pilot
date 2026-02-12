@@ -76,7 +76,7 @@ inputs:
       prefix: '-mgain'
   - id: data-column
     type: string?
-    default: DATA
+    default: CORRECTED_DATA
     inputBinding:
       position: 1
       shellQuote: false
