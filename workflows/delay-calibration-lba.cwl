@@ -188,7 +188,6 @@ steps:
         - id: summary_file
       run: ./phaseup-lba.cwl
       label: phaseup
-      when: $(!inputs.do_auto_delay_selection)
 
     - id: store_logs
       in:
@@ -205,6 +204,8 @@ steps:
         - id: dir
       run: ../steps/collectfiles.cwl
       label: store_logs
+
+
 
     # Selection of the concatenated MSs, as pickValue doesn't allow
     # us to do this in the msouts output of the workflow. The reasoning
