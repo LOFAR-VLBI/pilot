@@ -1,7 +1,7 @@
 class: Workflow
 cwlVersion: v1.2
-id: ddcal_pre_selection
-label: DD direction selection
+id: phasediff_selection
+label: Source selection based on phasediff score
 doc: |
    This workflow does the following:
         * DP3 prep to average measurement to the same freq/time resolution
@@ -9,6 +9,7 @@ doc: |
         * Get solution scores using the circular standard deviation
         * Select MS with scores below 2.3
    This selection metric is described in Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
+   And the score's relation to S/N is demonstrated in Appendix A from de Jong et al. (2025; https://arxiv.org/pdf/2508.12115)
 
 requirements:
   - class: ScatterFeatureRequirement
@@ -28,59 +29,30 @@ inputs:
       doc: Return this number of best sources according to the selection metric.
 
 steps:
-    - id: Phasediff
+    - id: calc_phasediff
       in:
-        - id: msin
+        - id: phasediff_ms
           source: msin
       out:
-        - phasediff_h5out
-      scatter: msin
-      run:
-        # start of Phasediff
-        cwlVersion: v1.2
-        class: Workflow
-        inputs:
-          - id: msin
-            type: Directory
-        outputs:
-          - id: phasediff_h5out
-            type: File
-            outputSource: get_phasediff/phasediff_h5out
+        - id: phasediff_score_csv
+      run: ../../steps/get_phasediff.cwl
+      scatter: phasediff_ms
 
-        steps:
-          - id: dp3_prep_phasediff
-            label: Pre-averaging with DP3
-            in:
-              - id: msin
-                source: msin
-            out:
-              - phasediff_ms
-            run: ../../steps/dp3_prep_phasediff.cwl
-
-          - id: get_phasediff
-            label: Get phase difference with facetselfcal
-            in:
-              - id: phasediff_ms
-                source: dp3_prep_phasediff/phasediff_ms
-            out:
-              - phasediff_h5out
-            run: ../../steps/get_phasediff.cwl
-        # end of Phasediff
-
-    - id: get_selection_scores
-      label: Calculate phase difference score
+    - id: concat_phasediff_csvs
       in:
-        - id: phasediff_h5
-          source: Phasediff/phasediff_h5out
+        - id: input_csvs
+          source: calc_phasediff/phasediff_score_csv
+        - id: output_csv
+          default: "phasediff_concat.csv"
       out:
-        - phasediff_score_csv
-      run: ../../steps/get_selection_scores.cwl
+        - id: concat_csv
+      run: ../../steps/concat_csv.cwl
 
     - id: select_best_directions
       label: Select best directions
       in:
         - id: phasediff_csv
-          source: get_selection_scores/phasediff_score_csv
+          source: concat_phasediff_csvs/concat_csv
         - id: msin
           source: msin
         - id: phasediff_score
@@ -94,7 +66,7 @@ steps:
 outputs:
     - id: phasediff_score_csv
       type: File
-      outputSource: get_selection_scores/phasediff_score_csv
+      outputSource: concat_phasediff_csvs/concat_csv
       doc: csv with scores
     - id: best_ms
       type: Directory[]

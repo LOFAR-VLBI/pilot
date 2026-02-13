@@ -75,10 +75,6 @@ inputs:
       type: File
       doc: Settings for the delay calibration in delay_solve.
 
-    - id: phaseup_config
-      type: File
-      doc: phaseup_config.txt file for phaseup scores - ideally from root
-
     - id: reference_stationSB
       type: int?
       default: 104
@@ -101,14 +97,14 @@ inputs:
     - id: ddf_solsdir
       type: Directory?
       doc: |
-        [Required if subtracting LoTSS] Path to the SOLSDIR directory 
+        [Required if subtracting LoTSS] Path to the SOLSDIR directory
         of the DDF-pipeline run, where most of the calibration solutions
         are stored.
 
     - id: ddf_rundir
       type: Directory?
       doc: |
-        [Required if subtracting LoTSS] Path to the directory of the 
+        [Required if subtracting LoTSS] Path to the directory of the
         DDF-pipeline run where files required for the subtract can be found.
 
     - id: box_size
@@ -278,8 +274,6 @@ steps:
           valueFrom: $(self)
         - id: image_catalogue
           source: image_catalogue
-        - id: phaseup_config
-          source: phaseup_config
         - id: max_dp3_threads
           source: max_dp3_threads
         - id: model_image
@@ -301,7 +295,7 @@ steps:
     - id: validation
       in:
         - id: h5parm
-          source: 
+          source:
             - select_best_delay_cal/solutions
             - phaseup/solutions
           linkMerge: merge_flattened

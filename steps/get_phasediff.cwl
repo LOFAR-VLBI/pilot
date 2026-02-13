@@ -1,8 +1,8 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: get_phasediff
-label: Polarization Phase Difference
-doc: This step makes scalarphasediff solution files, needed for collecting source selection scores
+id: get_phasediff_dd
+label: Get scalarphasediff solutions
+doc: This step makes scalarphasediff solution files, needed for collecting source selection scores.
 
 baseCommand: facetselfcal
 
@@ -12,20 +12,9 @@ inputs:
       doc: Input MeasurementSet
       inputBinding:
         position: 20
-        valueFrom: $(self.basename)
 
 outputs:
-    - id: phasediff_h5out
-      type: File
-      doc: h5parm solution files with scalarphasediff solutions
-      outputBinding:
-        glob: "scalarphasediff*.h5"
-    - id: scalarphase_h5out
-      type: File
-      doc: h5parm with simple scalarphase solutions.
-      outputBinding:
-        glob: "scalarphase*.h5"
-    - id: phasediff_score
+    - id: phasediff_score_csv
       type: File
       doc: csv with phasediff scores
       outputBinding:
@@ -41,17 +30,15 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.phasediff_ms)
-        writable: true
 
 arguments:
-  - -i
-  - phasediff
+  - --imagename=phasediff
   - --forwidefield
   - --phaseupstations=core
   - --skipbackup
   - --uvmin=20000
   - --soltype-list=['scalarphasediff']
-  - --solint-list=['10min']
+  - --solint-list=["10min"]
   - --nchan-list=[6]
   - --docircular
   - --uvminscalarphasediff=0
@@ -61,6 +48,9 @@ arguments:
   - --skymodelpointsource=1.0
   - --stopafterskysolve
   - --phasediff_only
+  - --compute-phasediffstat
+  - --avgfreqstep="390.56kHz"
+  - --avgtimestep="60sec"
 
 hints:
   - class: DockerRequirement
