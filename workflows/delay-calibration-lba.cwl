@@ -212,8 +212,8 @@ steps:
         - id: images
         - id: h5parm
         - id: phasediff_score_csv
-      run: ../split-directions.cwl
-      label: select_best_delay_cal
+      run: ../split-directions-lba.cwl
+      label: split-direction
 
     - id: store_logs
       in:
