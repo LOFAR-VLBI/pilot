@@ -4,7 +4,8 @@ id: make_cubes
 doc: Concatenate Q and U images into cubes for RM-synthesis
 
 baseCommand:
-  - make_pol_cubes.py
+  - python3
+  - /home/shane/LOFAR_VLBI/pilot/scripts/make_pol_cubes.py
 
 inputs:
   - id: Q_images
@@ -27,7 +28,6 @@ inputs:
     inputBinding:
       position: 0
       prefix: '--imsize'
-      itemSeparator: ','
   - id: nchannels
     type: int
     doc: Number of channels as provided in WSClean as -channels-out.
@@ -48,15 +48,18 @@ outputs:
     outputBinding:
       glob: "*-polcube-U.fits"
   - id: frequencies_list
-    type: File
+    type: File?
     doc: List of channels frequencies.
     outputBinding:
-      glob: "*frequency_list.dat"
+      glob: "image_frequency_list.dat"
   - id: rms_list
-    type: File
+    type: File?
     doc: List of average Q and U rms noise per channel.
     outputBinding:
-      glob: "*avg_qunoise_list.dat"
+      glob: "image_avg_qunoise_list.dat"
 
 requirements:
-    - class: InlineJavascriptRequirement
+  - class: InlineJavascriptRequirement
+
+stdout: make_cubes_stdout.log
+stderr: make_cubes_stderr.log

@@ -7,15 +7,9 @@ doc: |
 
 baseCommand:
   - python3
-  - run_rmtools.py
+  - /home/shane/LOFAR_VLBI/pilot/scripts/run_rmtools.py
 
 inputs:
-  - id: rmtools_script
-    type: File
-    default:
-      class: File
-      path: ../scripts/run_rmtools.py
-    doc: Internal helper script to run rmsynth3d.
   - id: stokes_q
     type: File
     doc: Stokes Q cube (per-channel).
@@ -54,12 +48,7 @@ inputs:
     inputBinding:
       position: 1
       prefix: --output-prefix
-  - id: extra_args
-    type: string?
-    doc: Extra arguments passed to rmsynth3d.
-    inputBinding:
-      position: 1
-      prefix: --extra-args
+
 outputs:
   - id: fdf_im_dirty
     type: File
@@ -95,6 +84,3 @@ stderr: rmsynth3d_stderr.log
 
 requirements:
   - class: InlineJavascriptRequirement
-  - class: InitialWorkDirRequirement
-    listing:
-      - entry: $(inputs.rmtools_script)
