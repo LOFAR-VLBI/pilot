@@ -171,7 +171,7 @@ steps:
       in:
         - id: msin
           source:
-            - process_ddf/msout
+            - process_lilf/msout
             - msin
           linkMerge: merge_nested
           pickValue: first_non_null
@@ -188,6 +188,32 @@ steps:
         - id: summary_file
       run: ./phaseup-lba.cwl
       label: phaseup
+
+    - id: split_direction
+      in:
+        - id: msin
+          source: phaseup/msout
+        - id: dd_selection
+          default: false
+        - id: do_selfcal
+          default: true
+        - id: image_cat
+          source: delay_calibrator
+        - id: truncateLastSBs
+          default: false
+        - id: configfile
+          source: configfile
+        - id: frequency_resolution
+          source: frequency_resolution
+        - id: time_resolution
+          source: time_resolution
+      out:
+        - id: msout_concat
+        - id: images
+        - id: h5parm
+        - id: phasediff_score_csv
+      run: ../split-directions.cwl
+      label: select_best_delay_cal
 
     - id: store_logs
       in:
