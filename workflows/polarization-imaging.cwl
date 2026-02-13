@@ -19,11 +19,11 @@ inputs:
 
     - id: resolution
       type: string
-      doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
+      doc: Angular resolution that will be passed to WSClean taper argument. Syntax follows that of WSClean.
 
     - id: image_size
       type: int[]
-      doc: Size (in pixels) of image, [x, y]. Its syntax follows that of WSClean.
+      doc: Size (in pixels) of image, [x, y]. Syntax follows that of WSClean.
 
     - id: num_channels
       type: int

@@ -29,11 +29,6 @@ def cube_maker(q_images, u_images, nchan, imsize):
     # Extract the name for the frequency and rms noise files
     firstq = os.path.basename(q_images[0])
     imagename = firstq.split("-")[0]
-    # If you later want the regex version, uncomment:
-    # m = re.match(r"(.+)-\\d{4}-Q-image\\.fits$", firstq)
-    # if not m:
-    #     raise ValueError(f"Unexpected Q filename format: {firstq}")
-    # imagename = m.group(1)
 
     cube_q = np.zeros((1, nchan, imsize, imsize))
     cube_u = np.zeros((1, nchan, imsize, imsize))
