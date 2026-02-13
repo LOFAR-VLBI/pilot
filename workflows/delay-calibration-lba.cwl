@@ -172,34 +172,21 @@ steps:
         - id: msin
           source:
             - process_ddf/msout
-            - sort-concatenate-flag/msout
             - msin
           linkMerge: merge_nested
           pickValue: first_non_null
           valueFrom: $(self)
         - id: delay_calibrator
           source: delay_calibrator
-        - id: image_catalogue
-          source: image_catalogue
-        - id: phaseup_config
-          source: phaseup_config
-        - id: configfile
-          source: configfile
         - id: max_dp3_threads
           source: max_dp3_threads
-        - id: model_image
-          source: model_image
         - id: number_cores
           source: number_cores
-        - id: do_auto_delay_selection
-          source: do_auto_delay_selection
       out:
         - id: msout
-        - id: solutions
-        - id: pictures
         - id: logdir
         - id: summary_file
-      run: ./phaseup-concat.cwl
+      run: ./phaseup-lba.cwl
       label: phaseup
       when: $(!inputs.do_auto_delay_selection)
 
