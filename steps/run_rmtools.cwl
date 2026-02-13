@@ -72,6 +72,14 @@ outputs:
     type: File
     outputBinding:
       glob: '*FDF_peakRM.fits'
+  - id: rmsynth_stdout
+    type: File
+    outputBinding:
+      glob: rmsynth3d_stdout.log
+  - id: rmsynth_stderr
+    type: File
+    outputBinding:
+      glob: rmsynth3d_stderr.log
 
 requirements:
   - class: InlineJavascriptRequirement
