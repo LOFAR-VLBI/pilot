@@ -5,9 +5,7 @@ label: Run RM-Tools rmsynth3d
 doc: |
   Run RM-Tools rmsynth3d on Stokes Q/U cubes and a frequency list.
 
-baseCommand:
-  - python3
-  - ../scripts/run_rmtools.py
+baseCommand: run_rmtools.py
 inputs:
   - id: stokes_q
     type: File
@@ -74,17 +72,14 @@ outputs:
     type: File
     outputBinding:
       glob: '*FDF_peakRM.fits'
-  - id: rmsynth_stdout
-    type: File
-    outputBinding:
-      glob: rmsynth3d_stdout.log
-  - id: rmsynth_stderr
-    type: File
-    outputBinding:
-      glob: rmsynth3d_stderr.log
+
+requirements:
+  - class: InlineJavascriptRequirement
+hints:
+  - class: DockerRequirement
+    dockerPull: vlbi-cwl
+
 
 stdout: rmsynth3d_stdout.log
 stderr: rmsynth3d_stderr.log
 
-requirements:
-  - class: InlineJavascriptRequirement
