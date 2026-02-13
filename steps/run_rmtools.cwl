@@ -7,8 +7,7 @@ doc: |
 
 baseCommand:
   - python3
-  - run_rmtools.py
-
+  - ../scripts/run_rmtools.py
 inputs:
   - id: stokes_q
     type: File
