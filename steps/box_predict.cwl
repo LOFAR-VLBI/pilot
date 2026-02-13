@@ -103,7 +103,6 @@ requirements:
       - entry: $(inputs.ms)
         writable: true
       - entry: $(inputs.solsdir)
-        writable: true
       - entry: $(inputs.dds3sols)
       - entry: $(inputs.fitsfiles)
       - entry: $(inputs.dicomodels)
