@@ -245,6 +245,14 @@ inputs:
       facet-solutions: null
       soltabs: null
 
+  - id: beam-shape
+    type: float[]?
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-beam-shape'
+      itemSeparator: ' '
+
 outputs:
   - id: MFS_image_pb
     type: File
