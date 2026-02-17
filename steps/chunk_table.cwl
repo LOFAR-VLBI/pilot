@@ -1,13 +1,13 @@
 class: CommandLineTool
 cwlVersion: v1.2
 id: chunk_table
-doc: Split CSV or FITS table into smaller chunks
+doc: Split source table into chunks
 
 baseCommand:
   - chunk_table.sh
 
 inputs:
-  - id: csv
+  - id: table
     type: File
     doc: Input CSV or FITS table
     inputBinding:

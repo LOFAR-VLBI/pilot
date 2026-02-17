@@ -95,16 +95,25 @@ steps:
       when: $(inputs.peak_flux_cut > 0.0)
       run: ../steps/select_bright_sources.cwl
 
+    - id: chunk_table
+      label: Split source table into chunks
+      in:
+        - id: table
+          source:
+            - select_bright_sources/bright_cat
+            - image_cat
+          pickValue: first_non_null
+      out:
+        - csv_chunked
+      run: ../steps/chunk_table.cwl
+
     - id: target_phaseup
       label: Target Phaseup
       in:
         - id: msin
           source: msin
         - id: image_cat
-          source:
-            - select_bright_sources/bright_cat
-            - image_cat
-          pickValue: first_non_null
+          source: chunk_table/csv_chunked
         - id: delay_solutions
           source: delay_solset
         - id: time_resolution
@@ -114,7 +123,8 @@ steps:
       out:
         - id: parset
       run: ./subworkflows/split_parset.cwl
-      scatter: msin
+      scatter: [msin, image_cat]
+      scatterMethod: #TODO: HOW?
 
     - id: dp3_target_phaseup
       label: DP3 Target Phaseup
