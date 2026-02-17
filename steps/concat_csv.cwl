@@ -37,7 +37,7 @@ arguments:
   - -c
   - |
       set -euo pipefail
-      awk 'NR == 1 || FNR > 1' "$@" > "$(inputs.output_csv)"
+      awk 'NR == 1 || FNR > 1' '$@' > '$(inputs.output_csv)'
   - dummy # fix issue where it doesnt take the first CSV
 
 requirements:
