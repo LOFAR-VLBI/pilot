@@ -33,7 +33,7 @@ arguments:
   - msin.datacolumn=DATA
   - msout.storagemanager=dysco
   - avg.type=averager
-  - avg.freqresolution=1562.24kHz
+  - avg.freqresolution=1221kHz
   - avg.timeresolution=120
   - msout=$(inputs.msin.basename+".phasediff.ms")
 
