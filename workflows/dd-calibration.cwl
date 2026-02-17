@@ -71,6 +71,15 @@ inputs:
       doc: Neural network cache directory.
 
 steps:
+    - id: chunk_table
+      label: Split source CSV list into chunks
+      in:
+        - id: csv
+          source: select_bright_sources/bright_cat
+      out:
+        - csv_chunked
+      run: ../steps/chunk_table.cwl
+
     - id: split_directions
       label: Split out calibrator sources in separate measurement sets
       in:
