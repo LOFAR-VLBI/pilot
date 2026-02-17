@@ -45,9 +45,5 @@ requirements:
           set -euo pipefail
           awk 'NR == 1 || FNR > 1' "$@" > "$1"
 
-hints:
-  - class: DockerRequirement
-    dockerPull: vlbi-cwl
-
 stdout: concat_csvs.log
 stderr: concat_csvs_err.log
