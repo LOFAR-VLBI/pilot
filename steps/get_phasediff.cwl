@@ -50,8 +50,6 @@ arguments:
   - --stopafterskysolve
   - --phasediff_only
   - --compute-phasediffstat
-  - --avgfreqstep="390.56kHz"
-  - --avgtimestep="60sec"
 
 hints:
   - class: DockerRequirement
