@@ -90,7 +90,7 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
   - class: ResourceRequirement
-    coresMin: 12
+    coresMin: 6
 
 stdout: facet_selfcal.log
 stderr: facet_selfcal_err.log
