@@ -30,6 +30,7 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.phasediff_ms)
+        writable: true
 
 arguments:
   - --imagename=phasediff
@@ -38,7 +39,7 @@ arguments:
   - --skipbackup
   - --uvmin=20000
   - --soltype-list=['scalarphasediff']
-  - --solint-list=["10min"]
+  - --solint-list=['10min']
   - --nchan-list=[6]
   - --docircular
   - --uvminscalarphasediff=0
@@ -49,14 +50,10 @@ arguments:
   - --stopafterskysolve
   - --phasediff_only
   - --compute-phasediffstat
-  - --avgfreqstep="390.56kHz"
-  - --avgtimestep="60sec"
 
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
-  - class: ResourceRequirement
-    coresMin: 2
 
 stdout: phasediff.log
 stderr: phasediff_err.log

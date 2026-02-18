@@ -3,14 +3,14 @@ cwlVersion: v1.2
 id: concat_csv
 doc: Concatenate CSV files with identical columns
 
-baseCommand: bash
+baseCommand: [bash, concat.sh]
 
 inputs:
   - id: input_csvs
     type: File[]
     doc: Input CSVs
     inputBinding:
-      position: 4
+      position: 2
       prefix: ""
       separate: true
 
@@ -18,6 +18,8 @@ inputs:
     type: string?
     default: "concat.csv"
     doc: Output csv
+    inputBinding:
+      position: 1
 
 outputs:
   - id: concat_csv
@@ -33,19 +35,15 @@ outputs:
     doc: |
       The files containing stdout and stderr from the step.
 
-arguments:
-  - -c
-  - |
-      set -euo pipefail
-      awk 'NR == 1 || FNR > 1' "$@" > "$(inputs.output_csv)"
-  - dummy # fix issue where it doesnt take the first CSV
-
 requirements:
   - class: InlineJavascriptRequirement
-
-hints:
-  - class: DockerRequirement
-    dockerPull: vlbi-cwl
+  - class: InitialWorkDirRequirement
+    listing:
+      - entryname: concat.sh
+        entry: |
+          #!/bin/bash
+          set -euo pipefail
+          awk 'NR == 1 || FNR > 1' "$@" > "$1"
 
 stdout: concat_csvs.log
 stderr: concat_csvs_err.log

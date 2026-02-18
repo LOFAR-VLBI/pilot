@@ -37,6 +37,7 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.phasediff_ms)
+        writable: true
 
 arguments:
   - --imagename=phasediff
@@ -45,7 +46,7 @@ arguments:
   - --skipbackup
   - --uvmin=20000
   - --soltype-list=['scalarphasediff','scalarphase']
-  - --solint-list=["10min","32s"]
+  - --solint-list=['10min','32s']
   - --nchan-list=[6,1]
   - --docircular
   - --uvminscalarphasediff=0
