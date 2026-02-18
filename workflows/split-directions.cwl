@@ -121,34 +121,16 @@ steps:
         - id: frequency_resolution
           source: frequency_resolution
       out:
-        - id: parset
-      run: ./subworkflows/split_parset.cwl
+        - id: output_ms
+      run: ./subworkflows/split_direction_per_subband.cwl
       scatter: [msin, image_cat]
-      scatterMethod: #TODO: HOW?
-
-    - id: dp3_target_phaseup
-      label: DP3 Target Phaseup
-      in:
-        - id: msin
-          source: msin
-        - id: parset
-          source: target_phaseup/parset
-          linkMerge: merge_flattened
-        - id: delay_solset
-          source: delay_solset
-        - id: max_dp3_threads
-          source: max_dp3_threads
-      out:
-        - id: msout
-      run: ../steps/dp3_target_phaseup.cwl
-      scatter: [msin, parset]
-      scatterMethod: dotproduct
+      scatterMethod: flat_crossproduct
 
     - id: flatten_msout
       label: Flatten msout
       in:
         - id: nestedarray
-          source: dp3_target_phaseup/msout
+          source: target_phaseup/output_ms
       out:
         - id: flattenedarray
       run: ../steps/flatten.cwl
@@ -158,6 +140,7 @@ steps:
       in:
          - id: msin
            source: flatten_msout/flattenedarray
+           linkMerge: merge_flattened
       out:
          - id: concat_parsets
       run: ../steps/make_concat_parsets.cwl
@@ -209,7 +192,6 @@ steps:
       when: $(inputs.do_selfcal)
       run: ../steps/facet_selfcal.cwl
       scatter: msin
-      scatterMethod: dotproduct
 
 outputs:
     - id: msout_concat

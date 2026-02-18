@@ -42,15 +42,6 @@ inputs:
       doc: |
         Time resolution in seconds for the split off datasets.
 
-outputs:
-    - id: parset
-      type: File
-      doc: The parameterset file for DP3.
-      outputSource:
-        - generate_parset/parset
-        - generate_parset_nosol/parset
-      pickValue: first_non_null
-
 steps:
     - id: get_coordinates
       label: get_coordinates
@@ -149,3 +140,26 @@ steps:
         - id: parset
       run: ../../steps/generate_parset_split_nosol.cwl
       when: $(inputs.delay_solutions == null)
+
+    - id: dp3_target_phaseup
+      label: DP3 Target Phaseup
+      in:
+        - id: msin
+          source: msin
+        - id: parset
+          source:
+            - generate_parset/parset
+            - generate_parset_nosol/parset
+          pickValue: first_non_null
+          linkMerge: merge_flattened
+        - id: delay_solset
+          source: delay_solutions
+      out:
+        - id: msout
+      run: ../../steps/dp3_target_phaseup.cwl
+
+outputs:
+    - id: output_ms
+      type: Directory[]
+      doc: Output MeasurementSets per sub frequency band
+      outputSource: dp3_target_phaseup/msout
