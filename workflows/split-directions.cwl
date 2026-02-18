@@ -67,18 +67,22 @@ inputs:
       type: File?
       default: null
       doc: The configuration file to be used to run facetselfcal.py during the target_selfcal step.
-
     - id: frequency_resolution
       type: string?
       default: '390.56kHz'
       doc: |
         Frequency resolution for the split off datasets.
-
     - id: time_resolution
       type: string?
       default: '32.'
       doc: |
         Time resolution in seconds for the split off datasets.
+    - id: chunk_size
+      type: int?
+      default: 10
+      doc: |
+        Chunk size for splitting of directions
+        (enhances parallelisation and optimises the DP3 explode step)
 
 steps:
     - id: select_bright_sources
@@ -103,6 +107,8 @@ steps:
             - select_bright_sources/bright_cat
             - image_cat
           pickValue: first_non_null
+        - id: chunk_size
+          source: chunk_size
       out:
         - csv_chunked
       run: ../steps/chunk_table.cwl

@@ -8,7 +8,8 @@ else
     input_file="$1"
 fi
 
-chunk_size=10
+chunk_size=$2
+
 output_prefix="source_list_chunk"
 chunk_counter=1
 line_counter=0
