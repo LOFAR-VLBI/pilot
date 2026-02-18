@@ -110,6 +110,7 @@ requirements:
   - class: ResourceRequirement
     coresMax: $(inputs.ncpu)
     coresMin: $(inputs.ncpu)
+    ramMin: 128000
 
 hints:
   - class: DockerRequirement
