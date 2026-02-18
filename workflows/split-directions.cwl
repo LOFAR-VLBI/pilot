@@ -108,7 +108,7 @@ steps:
       run: ../steps/chunk_table.cwl
 
     - id: split_direction_for_ms
-      label: Split direction for a given MeasurementSet
+      label: Split direction with a catalogue and a given MeasurementSet
       in:
         - id: msin
           source: msin
