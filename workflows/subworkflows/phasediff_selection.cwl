@@ -29,10 +29,19 @@ inputs:
       doc: Return this number of best sources according to the selection metric.
 
 steps:
+    - id: dp3_prep_phasediff
+      in:
+        - id: msin
+          source: msin
+      out:
+        - id: phasediff_ms
+      run: ../../steps/dp3_prep_phasediff.cwl
+      scatter: msin
+
     - id: calc_phasediff
       in:
         - id: phasediff_ms
-          source: msin
+          source: dp3_prep_phasediff/phasediff_ms
       out:
         - id: phasediff_score_csv
       run: ../../steps/get_phasediff.cwl
