@@ -35,3 +35,5 @@ outputs:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
+  - class: ResourceRequirement
+    ramMin: 100000
