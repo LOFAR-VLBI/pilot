@@ -54,8 +54,6 @@ arguments:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
-  - class: ResourceRequirement
-    coresMin: 2
 
 stdout: phasediff.log
 stderr: phasediff_err.log

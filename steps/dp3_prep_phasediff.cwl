@@ -44,7 +44,7 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
   - class: ResourceRequirement
-    coresMin: 6
+    coresMin: 2
 
 
 stdout: dp3_prephasediff.log
