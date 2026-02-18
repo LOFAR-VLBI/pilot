@@ -107,8 +107,8 @@ steps:
         - csv_chunked
       run: ../steps/chunk_table.cwl
 
-    - id: target_phaseup
-      label: Target Phaseup
+    - id: split_direction_for_ms
+      label: Split direction for a given MeasurementSet
       in:
         - id: msin
           source: msin
@@ -122,7 +122,7 @@ steps:
           source: frequency_resolution
       out:
         - id: output_ms
-      run: ./subworkflows/split_direction_per_subband.cwl
+      run: ./subworkflows/split_direction_for_ms.cwl
       scatter: [msin, image_cat]
       scatterMethod: flat_crossproduct
 
@@ -130,7 +130,7 @@ steps:
       label: Flatten msout
       in:
         - id: nestedarray
-          source: target_phaseup/output_ms
+          source: split_direction_for_ms/output_ms
       out:
         - id: flattenedarray
       run: ../steps/flatten.cwl

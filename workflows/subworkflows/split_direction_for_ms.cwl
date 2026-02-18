@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 class: Workflow
-id: split_parset
-label: Create parset split directions
+id: split_direction_for_ms
+label: Split direction for a given MeasurementSet
 doc: |
     This workflow does the following:
 
@@ -10,8 +10,9 @@ doc: |
     * It creates a parameter set file for DP3 to phase shift the
       target data to each direction, and to store that phase-shifted
       data in a MeasurementSet with the name generated before.
+    * Splits out the final MeasurementSet with DP3
 
-    The output is a DP3 parameter set file.
+    The output is a MeasurementSet
 
 inputs:
     - id: msin
