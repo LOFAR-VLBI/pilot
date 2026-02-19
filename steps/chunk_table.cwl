@@ -26,3 +26,7 @@ outputs:
     doc: Chunked output CSVs
     outputBinding:
       glob: source_list_chunk*.csv
+
+hints:
+  - class: DockerRequirement
+    dockerPull: vlbi-cwl
