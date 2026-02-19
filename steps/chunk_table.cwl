@@ -19,7 +19,6 @@ inputs:
     inputBinding:
       position: 2
 
-
 outputs:
   - id: csv_chunked
     type: File[]

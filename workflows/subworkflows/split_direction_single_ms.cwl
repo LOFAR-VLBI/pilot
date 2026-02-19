@@ -1,6 +1,6 @@
 cwlVersion: v1.2
 class: Workflow
-id: split_direction_for_ms
+id: split_direction_single_ms
 label: Split direction with a catalogue and a given MeasurementSet
 doc: |
     This workflow does the following:

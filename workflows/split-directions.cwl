@@ -113,7 +113,7 @@ steps:
         - csv_chunked
       run: ../steps/chunk_table.cwl
 
-    - id: split_direction_for_ms
+    - id: split_direction_single_ms
       label: Split direction with a catalogue and a given MeasurementSet
       in:
         - id: msin
@@ -128,7 +128,7 @@ steps:
           source: frequency_resolution
       out:
         - id: output_ms
-      run: ./subworkflows/split_direction_for_ms.cwl
+      run: ./subworkflows/split_direction_single_ms.cwl
       scatter: [msin, image_cat]
       scatterMethod: flat_crossproduct
 
@@ -136,7 +136,7 @@ steps:
       label: Flatten msout
       in:
         - id: nestedarray
-          source: split_direction_for_ms/output_ms
+          source: split_direction_single_ms/output_ms
       out:
         - id: flattenedarray
       run: ../steps/flatten.cwl
@@ -146,7 +146,6 @@ steps:
       in:
          - id: msin
            source: flatten_msout/flattenedarray
-           linkMerge: merge_flattened
       out:
          - id: concat_parsets
       run: ../steps/make_concat_parsets.cwl
