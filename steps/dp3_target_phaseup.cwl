@@ -33,7 +33,7 @@ inputs:
         shellQuote: false
     - id: max_dp3_threads
       type: int?
-      default: 2
+      default: 4
       doc: Maximum number of threads to use for DP3.
       inputBinding:
         position: 3
