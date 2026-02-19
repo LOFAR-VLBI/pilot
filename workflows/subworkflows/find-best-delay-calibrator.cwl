@@ -69,8 +69,6 @@ steps:
           source: delay_calibrator
         - id: select_best_n
           source: select_best_n_delay_calibrators
-        - id: configfile
-          source: configfile
         - id: frequency_resolution
           source: frequency_resolution
         - id: time_resolution
