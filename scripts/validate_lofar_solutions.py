@@ -394,7 +394,7 @@ def sol_quality(csv_table: str,
 
     # 'bad' qualifications
     if mode == 'DD':
-        mask = ((df['amp_score'] < 0.9) |(df['phase_score'] < 0.8))
+        mask = ((df['amp_score'] < 0.85) |(df['phase_score'] < 0.75))
     elif mode == 'DI':
         mask = ((df['amp_score'] < 0.85) |(df['phase_score'] < 0.5))
     else:
