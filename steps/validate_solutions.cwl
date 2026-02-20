@@ -14,17 +14,6 @@ inputs:
       inputBinding:
         position: 2
         separate: true
-    - id: mode
-      type:
-        - type: enum
-          name: Mode
-          symbols: [DI, DD]
-        - string
-      doc: Validation mode (DI or DD)
-      inputBinding:
-        prefix: --mode
-        separate: true
-        position: 1
 
 outputs:
     - id: validation_csv

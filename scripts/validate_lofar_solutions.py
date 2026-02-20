@@ -373,8 +373,7 @@ def get_validation_scores(solutions: list[str]):
             writer.writerow(scores)
 
 
-def sol_quality(csv_table: str,
-                mode: Literal["DI", "DD"]):
+def sol_quality(csv_table: str):
     """
     Make solution quality acceptance column based on a combination of calibration solution quality criteria.
     The new column has a boolean to accept calibration solutions (True) or not (False).
@@ -384,7 +383,6 @@ def sol_quality(csv_table: str,
 
     Args:
         csv_table: CSV with image-based scores
-        mode: DI or DD mode
 
     """
 
@@ -393,12 +391,7 @@ def sol_quality(csv_table: str,
     df['accept_solutions'] = True
 
     # 'bad' qualifications
-    if mode == 'DD':
-        mask = ((df['amp_score'] < 0.85) |(df['phase_score'] < 0.75))
-    elif mode == 'DI':
-        mask = ((df['amp_score'] < 0.85) |(df['phase_score'] < 0.5))
-    else:
-        raise ValueError(f"Unsupported mode '{mode}'. Only 'DI' and 'DD' are allowed.")
+    mask = ((df['amp_score'] < 0.85) |(df['phase_score'] < 0.5))
 
     # Flag sources with accept_solutions=False if scores below threshold
     df.loc[mask, 'accept_solutions'] = False
@@ -416,8 +409,7 @@ def parse_args() -> Namespace:
     parser = ArgumentParser("Get validation scores for calibration solutions.")
     parser.add_argument('h5parms', nargs='+', help='h5parm calibration solution files with amplitude '
                         'and phase solutions.', default=None)
-    parser.add_argument('--mode', help='choices=["DI" and "DD"]. The DI-mode is for '
-                        'direction-independent calibration and DD-mode is for direction-dependent calibration.', default=None)
+
 
     return parser.parse_args()
 
@@ -425,7 +417,7 @@ def parse_args() -> Namespace:
 def main():
     args = parse_args()
     get_validation_scores(args.h5parms)
-    sol_quality("validation_solutions.csv", args.mode)
+    sol_quality("validation_solutions.csv")
 
 
 if __name__ == '__main__':

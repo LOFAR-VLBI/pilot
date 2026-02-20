@@ -18,8 +18,6 @@ steps:
     in:
        - id: solutions
          source: h5parm
-       - id: mode
-         default: "DI"
     out:
        - validation_csv
     run: ../../steps/validate_solutions.cwl
