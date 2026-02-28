@@ -53,7 +53,7 @@ steps:
           source: dd_solutions
         - id: imsize
           source: image_size
-          valueFrom: $(inputs.image_size[0])
+          valueFrom: $(self[0])
         - id: pixelscale
           source: pixel_scale
         - id: regionfile
