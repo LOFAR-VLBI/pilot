@@ -34,6 +34,10 @@ inputs:
       default: 0.4
       doc: Pixel size in arcseconds.
 
+    - id: facet_region_file
+      type: File?
+      doc: Optional user-provided facet layout file
+
 steps:
     - id: average_data
       label: average
@@ -61,6 +65,7 @@ steps:
       out:
         - id: facet_regions
       run: ../steps/get_facet_layout.cwl
+      when: $(inputs.facet_region_file == null)
 
     - id: make_intermediate_resolution_image
       label: intermediate_resolution_image
@@ -77,7 +82,11 @@ steps:
         - id: taper-gaussian
           valueFrom: $(1.5.toString() + "asec")
         - id: facet-regions
-          source: make_facet_layout/facet_regions
+          source:
+            - make_facet_layout/facet_regions
+            - facet_region_file
+          pickValue: first_non_null
+          valueFrom: $(self)
         - id: dd_solutions
           source: dd_solutions
         - id: facet-options
@@ -112,7 +121,7 @@ steps:
 outputs:
     - id: facet_region
       outputSource: make_facet_layout/facet_regions
-      type: File
+      type: File?
       doc: |
         DS9 region file containing the facet layout.
 
