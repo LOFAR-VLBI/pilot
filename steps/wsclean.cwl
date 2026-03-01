@@ -40,7 +40,6 @@ inputs:
       prefix: '-size'
   - id: baseline_averaging
     type: float?
-    default: 0.0
     inputBinding:
       position: 1
       shellQuote: false
