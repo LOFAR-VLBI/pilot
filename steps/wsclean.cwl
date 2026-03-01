@@ -52,8 +52,7 @@ inputs:
       shellQuote: false
       prefix: '-minuv-l'
   - id: weight
-    type:
-      - string?
+    type: string?
     default: briggs -1.5
     inputBinding:
       position: 1
@@ -123,7 +122,7 @@ inputs:
       shellQuote: false
       prefix: '-taper-gaussian'
   - id: niter
-    type: int
+    type: int?
     default: 150000
     inputBinding:
       position: 1
@@ -226,7 +225,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-facet-regions'
-
   - id: facet-options
     type:
       type: record
@@ -243,7 +241,6 @@ inputs:
     default:
       facet-solutions: null
       soltabs: null
-
   - id: beam-shape
     type: float[]?
     inputBinding:
