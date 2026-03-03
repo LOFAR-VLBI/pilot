@@ -122,8 +122,11 @@ steps:
 
 outputs:
     - id: facet_region
-      outputSource: make_facet_layout/facet_regions
       type: File?
+      outputSource:
+        - make_facet_layout/facet_regions
+        - facet_region_file
+      pickValue: first_non_null
       doc: |
         DS9 region file containing the facet layout.
 
