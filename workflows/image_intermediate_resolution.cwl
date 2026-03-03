@@ -62,6 +62,8 @@ steps:
           source: pixel_scale
         - id: regionfile
           valueFrom: "facets_1p5asec.reg"
+        - id: facet_region_file
+          source: facet_region_file
       out:
         - id: facet_regions
       run: ../steps/get_facet_layout.cwl
