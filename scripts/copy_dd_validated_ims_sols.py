@@ -77,10 +77,10 @@ def main():
     if args.copy_selected:
         copy_to_local_directory(validation_csv, args.images, args.h5parms)
 
+    sources_with_bad_solutions = validation_csv[(validation_csv['accept_image']) & (~validation_csv['accept_solutions'])]
     # Reject when images accepted but bad solutions, as that indicates unstable calibration on good high S/N calibrators
-    if args.error_on_bad_solutions and len(validation_csv[(validation_csv['accept_image']) & (~validation_csv['accept_solutions'])])>0:
-        exit("ERROR: Following directions should be inspected: \n"
-             f"{'\n'.join(list(validation_csv[(validation_csv['accept_image']) & ~(validation_csv['accept_solutions'])].source_id))}")
+    if args.error_on_bad_solutions and len(sources_with_bad_solutions)>0:
+        exit(f"ERROR: Following directions should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
 
 
 if __name__ == '__main__':
