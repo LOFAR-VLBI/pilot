@@ -60,7 +60,7 @@ steps:
           valueFrom: $(Math.round(self[0] * 1.1))
         - id: pixelscale
           source: pixel_scale
-        - id: regionfile
+        - id: output_region_file
           valueFrom: "facets_1p5asec.reg"
         - id: facet_region_file
           source: facet_region_file
