@@ -128,12 +128,19 @@ PILoT addresses several critical issues the original reference implementation ha
 
 In addition, PILoT includes expanded functionality featuring implementations of state-of-the-art advances in imaging techniques such as improvements in imaging resolution [@Ye-2024; @Sweijen-2022], source selection [@Sweijen-2022; @DeJong-2024], and wide-field imaging techniques [@Sweijen-2022; @DeJong-2025b].
 
-PILoT forms a natural part of the LOFAR software landscape and is designed to be used on data that has been corrected for various instrumental and ionospheric effects [@deGasperin-2019] and calibrated for directional effects using the data obtained by the Dutch stations using pipelines such as DDF-pipeline [@DDF-calibration; @DDF-pipeline] or Rapthor [@rapthor].
-It uses DP3 [@DP3], WSclean [@WSclean], AOflagger [@AOflagger], and the LOFAR Initial Calibration (LINC) pipeline [@LINC], which are developed by the ILT host institute ASTRON, as well as various codebases developed by researchers in the LOFAR community such as the DDF-pipeline [@DDF-calibration] for direction-dependent calibration, LOFAR facet-selfcal [@VanWeeren-2021;@lofar-facet-selfcal] for self-calibration, and the LOFAR Helpers [@DeJong-2022; @lofar-helpers] auxiliary library.
 
-PILoT embeds the software tools above into a single cohesive framework and provides several complementary modes with the aim of being a modular and fully automated imaging pipeline.
+# State of the field
+
+Many software tools have been developed in order to process LOFAR data.
+Some of these are designed specifically for LOFAR; these allow for correcting for various instrumental and ionospheric effects [@deGasperin-2019] and calibrating for directional effects using the data obtained by the Dutch stations using pipelines such as DDF-pipeline [@DDF-calibration; @DDF-pipeline] or Rapthor [@rapthor].
+This class also includes the LOFAR Initial Calibration (LINC) pipeline [@LINC], which performs image calibration using the Dutch stations.
+Other tools are more widely applicable in radio astronomy, such as DP3 [@DP3], WSclean [@WSclean], AOflagger [@AOflagger], which are developed by the ILT host institute ASTRON, as well as various codebases developed by researchers in the LOFAR community such as the DDF-pipeline [@DDF-calibration] for direction-dependent calibration, LOFAR facet-selfcal [@VanWeeren-2021;@lofar-facet-selfcal] for self-calibration, and the LOFAR Helpers [@DeJong-2022; @lofar-helpers] auxiliary library.
+
+As these tools were designed either as general-purpose tools in radio astronomy or for calibration of the Dutch LOFAR array, none of these tools are particularly suited to high-resolution imaging.
+Instead, PILoT was developed to form a natural bridge to the full ILT and is designed from the ground up to produce high-resolution images of radio sources.
+
+As a result, PILoT embeds the software tools above into a single cohesive framework and provides several complementary modes with the aim of being a modular and fully automated imaging pipeline.
 It is able to determine when intermediate results are no longer needed, and disposes of intermediate results once they are no longer required.
-Furthermore, since the pipeline is optimised to work with toil, processing steps can easily be resumed should the execution of a mode be interrupted for any reason.
 
 The pipeline provides the following main modes of operation:
 
