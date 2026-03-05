@@ -130,7 +130,6 @@ In addition, PILoT includes expanded functionality featuring implementations of 
 
 PILoT forms a natural part of the LOFAR software landscape and is designed to be used on data that has been corrected for various instrumental and ionospheric effects [@deGasperin-2019] and calibrated for directional effects using the data obtained by the Dutch stations using pipelines such as DDF-pipeline [@DDF-calibration; @DDF-pipeline] or Rapthor [@rapthor].
 It uses DP3 [@DP3], WSclean [@WSclean], AOflagger [@AOflagger], and the LOFAR Initial Calibration (LINC) pipeline [@LINC], which are developed by the ILT host institute ASTRON, as well as various codebases developed by researchers in the LOFAR community such as the DDF-pipeline [@DDF-calibration] for direction-dependent calibration, LOFAR facet-selfcal [@VanWeeren-2021;@lofar-facet-selfcal] for self-calibration, and the LOFAR Helpers [@DeJong-2022; @lofar-helpers] auxiliary library.
-Finally, it has been adapted and integrated into the FLoCs LOFAR containers [@flocs] to ensure portability across computing facilities.
 
 PILoT embeds the software tools above into a single cohesive framework and provides several complementary modes with the aim of being a modular and fully automated imaging pipeline.
 It is able to determine when intermediate results are no longer needed, and disposes of intermediate results once they are no longer required.
@@ -151,7 +150,20 @@ High-resolution imaging supports a resolution of 0.6 or 0.3 arcseconds, of which
 Intermediate resolution imaging speeds up the imaging time by a factor of 16 compared to the 0.3 arcsecond imaging.
 The data products are FITS formatted images of the stated resolution.
 
-A list of ongoing research projects where PILoT is a central tool is provided in section 4 of reference [@Morabito-2025].
+
+# Research impact statement
+
+Since its initial release, PILoT has been integrated into the FLoCs LOFAR containers [@flocs].
+FLoCs are the standard software containers used for data processing in the LOFAR astronomy community.
+
+In addition, the majority of the 15 LOFAR2.0 Large Programs have requested to use PILoT, as they require high-resolution imaging in order to achieve their science goals.
+These projects fall in four different themes of research which are described in section 4 of reference [@Morabito-2025].
+
+Furthermore, ASTRON has committed to support development of PILoT as part of the LOFAR Enhanced Network for Sharp Surveys (LENSS).
+As part of this project PILoT will be incorporated into the ASTRON's operational environment.
+
+Finally, PILoT is used to test and benchmark the computing resources of the SKA Regional Centre (SRC) in the United Kingdom as part of the LOFARINT demonstrator case.
+
 
 # AI usage disclosure
 
