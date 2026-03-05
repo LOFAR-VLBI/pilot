@@ -142,6 +142,18 @@ Instead, PILoT was developed to form a natural bridge to the full ILT and is des
 As a result, PILoT embeds the software tools above into a single cohesive framework and provides several complementary modes with the aim of being a modular and fully automated imaging pipeline.
 It is able to determine when intermediate results are no longer needed, and disposes of intermediate results once they are no longer required.
 
+
+# Software design
+
+PILoT's principle requirements are that the processing of LOFAR data must be portable, reproducible, and scalable, while keeping a uniform API.
+It uses CWL to ensure that its workflows are logically consistent.
+Furthermore, the pipeline is optimised to work with the CWL runner toil, which is the most mature CWL implementation available.
+Individual  processing steps can easily be resumed should the execution of a mode be interrupted for any reason.
+
+CWL also allowed for PILoT's API to be agnostic of the underlying software tools, which are written in Python or C++.
+It also allowed for an intuitive and straigtforward integration with queueing systems common in HPC systems.
+
+For convenience, the pipeline has been structured into several workflows, which are grouped according to different modes.
 The pipeline provides the following main modes of operation:
 
 ## Postage stamp imaging
