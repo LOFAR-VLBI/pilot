@@ -37,7 +37,7 @@ inputs:
       prefix: "--pixelscale"
       position: 5
 
-  - id: regionfile
+  - id: output_region_file
     type: string
     doc: Name of the output DS9 region file.
     default: "facets.reg"
@@ -50,7 +50,7 @@ outputs:
     type: File
     doc: The output DS9 region file.
     outputBinding:
-      glob: $(inputs.regionfile)
+      glob: $(inputs.output_region_file)
   - id: logfile
     type: File[]
     doc: log files from get_facet_layout
