@@ -137,10 +137,8 @@ def image_quality(csv_table: str):
 
     # Filter for weak self-calibration sources
     mask = ~((df.Dyn_range > 0.04) |
-                   ((df.NN_score>0.5) & (df.Peak_flux<0.03)) |
-                   ((df.Dyn_range/df.Peak_flux>1) & (df.Peak_flux<0.01)) |
-                   (df.Dyn_range/df.Peak_flux>5) |
-                   (df.Peak_flux/df.RMS<100))
+           ((df.NN_score>0.5) & (df.Peak_flux<0.03)) |
+           (df.Peak_flux<0.008))
 
     # Flag sources with accept_solutions=False if scores below threshold
     df.loc[mask, 'accept_image'] = True
