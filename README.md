@@ -14,6 +14,17 @@ python -m venv venv
 pip install .
 ```
 
+## Using the pipeline
+
+It currently is strongly recommended to run PILoT through [FLoCs](https://tikk3r.github.io/flocs/).
+In this case it is not necessary to install PILoT.
+The most straightforward way to run PILoT through FLoCs requires the following steps:
+
+1. Clone the PILoT repository.
+2. Download the [latest FLoCs container](https://tikk3r.github.io/flocs/#latest-containers).
+3. [Install the FloCs runners](https://tikk3r.github.io/flocs/docs/using-flocs.html#installing-flocs).
+4. [Set up and run the FLoCs runners](https://github.com/LOFAR-VLBI/lofar-vlbi-pipeline/wiki/Running-the-pipeline).
+
 ### External dependencies
 - Swarp: https://www.astromatic.net/software/swarp/ -- optional dependency that is required if mosaicing of facet images is enabled.
 
