@@ -3,7 +3,7 @@
 The Pipeline for the International LOFAR Telscope (PILOT) is a calibration and imaging pipeline that includes all of LOFAR’s international stations to achieve sub-arcsecond resolution.
 It is implemented in [Common Workflow Language](https://commonwl.org) and we recommend the use of [Toil](https://toil.readthedocs.io/en/latest/cwl/running.html) for running it.
 
-Instruction on setting up, configuration and usage of the pipeline can be found in the dedicated [wiki](https://git.astron.nl/RD/VLBI-cwl/-/wikis/home).
+Instructions on downloading data, setting up, configuration and usage of the pipeline in combination with high-performance computing clusters can be found in the [LOFAR-VLBI pipeline wiki](https://github.com/LOFAR-VLBI/lofar-vlbi-pipeline/wiki).
 
 ## Installing the pipeline
 
