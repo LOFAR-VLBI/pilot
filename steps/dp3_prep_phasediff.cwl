@@ -36,6 +36,7 @@ arguments:
   - avg.freqresolution=1953.6kHz
   - avg.timeresolution=120
   - msout=$(inputs.msin.basename+".phasediff.ms")
+  - numthreads=2
 
 requirements:
   - class: InlineJavascriptRequirement
