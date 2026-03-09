@@ -240,6 +240,13 @@ outputs:
         The inspection plots generated
         by delay_solve.
 
+  - id: facetselfcal_config
+    type: File
+    outputSource: delay_cal_run/config
+    doc: |
+        The configuration file for facetselfcal that was
+        used in the delay solve.
+
   - id: summary_file
     type: File
     outputSource: summary/summary_file
