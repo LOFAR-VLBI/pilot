@@ -450,9 +450,7 @@ outputs:
   - id: facetselfcal_config
     outputSource: 
       - phaseup/facetselfcal_config
-    type: File[]
-    pickValue: all_non_null
-    linkMerge: merge_flattened
+    type: File
     doc: Config file with settings used for the delay calibration.
 
   - id: solutions
