@@ -168,6 +168,7 @@ steps:
         source: number_cores
     out:
       - id: solutions
+      - id: starting_skymodel
       - id: config
       - id: pictures
       - id: logfile
@@ -225,6 +226,12 @@ outputs:
     doc: |
         The calibrated solutions for the
         delay calibrator in HDF5 format.
+
+  - id: starting_skymodel
+    type: File
+    outputSource: delay_cal_run/starting_skymodel
+    doc: |
+        The starting model used to kick start the delay calibration.
 
   - id: logdir
     outputSource: save_logfiles/dir

@@ -454,6 +454,14 @@ outputs:
     pickValue: all_non_null
     doc: Config file with settings used for the delay calibration.
 
+  - id: facetselfcal_starting_model
+    outputSource: 
+      - phaseup/starting_skymodel
+    type: File
+    pickValue: all_non_null
+    doc: |
+        The starting model used to kick start the delay calibration.
+
   - id: solutions
     outputSource:
       - select_best_delay_cal/solutions
