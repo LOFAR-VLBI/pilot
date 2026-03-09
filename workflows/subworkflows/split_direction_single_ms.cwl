@@ -12,7 +12,7 @@ doc: |
       data in a MeasurementSet with the name generated before.
     * Splits out the final MeasurementSet with DP3
 
-    The output is a MeasurementSet
+    The output is one or more MeasurementSets
 
 inputs:
     - id: msin
