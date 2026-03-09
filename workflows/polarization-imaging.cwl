@@ -17,7 +17,7 @@ inputs:
       type: string
       doc: Pixel size (WSClean scale), e.g. "0.075asec".
 
-    - id: resolution
+    - id: taper
       type: string
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
@@ -60,7 +60,7 @@ steps:
         - id: scale
           source: pixel_scale
         - id: taper-gaussian
-          source: resolution
+          source: taper
         - id: size
           source: image_size
         - id: channels-out
