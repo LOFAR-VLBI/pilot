@@ -81,7 +81,7 @@ inputs:
       type: int?
       default: 10
       doc: |
-        Chunk size for splitting of directions
+        Sets the number of directions to split off per DP3 call
         (enhances parallelisation and optimises the DP3 explode step)
 
 steps:
