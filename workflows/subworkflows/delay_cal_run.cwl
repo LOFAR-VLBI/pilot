@@ -96,8 +96,8 @@ outputs:
         The calibrated solutions for the
         delay calibrator in HDF5 format.
   - id: starting_skymodel
-    type: File
-    outputSource: delay_model/skymodel
+    type: File[]
+    outputSource: delay_cal_model/skymodel
     doc: |
         The starting model used to kick start the delay calibration.
   - id: config

@@ -287,6 +287,7 @@ steps:
         - id: solutions
         - id: pictures
         - id: facetselfcal_config
+        - id: starting_skymodel
         - id: logdir
         - id: summary_file
       run: ./phaseup-concat.cwl
@@ -457,7 +458,7 @@ outputs:
   - id: facetselfcal_starting_model
     outputSource: 
       - phaseup/starting_skymodel
-    type: File
+    type: File[]
     pickValue: all_non_null
     doc: |
         The starting model used to kick start the delay calibration.
