@@ -451,6 +451,7 @@ outputs:
     outputSource: 
       - phaseup/facetselfcal_config
     type: File
+    pickValue: all_non_null
     doc: Config file with settings used for the delay calibration.
 
   - id: solutions
