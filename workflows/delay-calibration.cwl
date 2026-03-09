@@ -341,6 +341,7 @@ steps:
           valueFrom: $(self)
       out:
         - id: msout
+        - id: starting_skymodels
         - id: pictures
         - id: phasediff_score_csv
         - id: solutions
@@ -458,10 +459,12 @@ outputs:
   - id: facetselfcal_starting_model
     outputSource: 
       - phaseup/starting_skymodel
+      - select_best_delay_cal/starting_skymodels
     type: File[]
     pickValue: all_non_null
+    linkMerge: merge_flattened
     doc: |
-        The starting model used to kick start the delay calibration.
+        The starting model(s) that were used to kick start the delay calibration.
 
   - id: solutions
     outputSource:
