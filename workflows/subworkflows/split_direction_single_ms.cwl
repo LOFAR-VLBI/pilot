@@ -162,5 +162,5 @@ steps:
 outputs:
     - id: output_ms
       type: Directory[]
-      doc: Output MeasurementSets per sub frequency band
+      doc: Output MeasurementSets for all given directions from catalogue
       outputSource: dp3_target_phaseup/msout
