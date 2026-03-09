@@ -1,7 +1,7 @@
 class: CommandLineTool
 cwlVersion: v1.2
 id: chunk_table
-doc: Split source table into chunks
+doc: Split source table into chunks of N sources
 
 baseCommand:
   - chunk_table.sh
