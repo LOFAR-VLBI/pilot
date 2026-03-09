@@ -77,11 +77,11 @@ inputs:
       default: '32.'
       doc: |
         Time resolution in seconds for the split off datasets.
-    - id: chunk_size
+    - id: chunk_size_directions
       type: int?
       default: 10
       doc: |
-        Sets the number of directions to split off per DP3 call
+        Sets the number of directions to split off per DP3 explode call
         (enhances parallelisation and optimises the DP3 explode step)
 
 steps:
@@ -108,7 +108,7 @@ steps:
             - image_cat
           pickValue: first_non_null
         - id: chunk_size
-          source: chunk_size
+          source: chunk_size_directions
       out:
         - csv_chunked
       run: ../steps/chunk_table.cwl
