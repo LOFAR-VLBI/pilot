@@ -27,6 +27,10 @@ inputs:
     type: int?
     doc: Number of cores to use.
     default: 4
+    inputBinding:
+      position: 2
+      prefix: numthreads=
+      separate: false
 
 outputs:
   - id: subms
@@ -58,7 +62,6 @@ arguments:
   - msout.uvwcompression=false
   - msout.scalarflags=false
   - msin.datacolumn=DATA_DI_CORRECTED
-  - numthreads=$(inputs.ncpu)
 
 requirements:
   - class: InlineJavascriptRequirement
