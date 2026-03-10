@@ -23,6 +23,10 @@ inputs:
       position: 1
       prefix: transfer.source_ms=
       separate: false
+  - id: ncpu
+    type: int?
+    doc: Number of cores to use.
+    default: 4
 
 outputs:
   - id: subms
@@ -54,6 +58,7 @@ arguments:
   - msout.uvwcompression=false
   - msout.scalarflags=false
   - msin.datacolumn=DATA_DI_CORRECTED
+  - numthreads=$(inputs.ncpu)
 
 requirements:
   - class: InlineJavascriptRequirement
@@ -66,7 +71,7 @@ hints:
       - entry: $(inputs.msin_lowres)
         writable: false
   - class: ResourceRequirement
-    coresMin: 4
+    coresMin: $(inputs.ncpu)
 
 stdout: upsample_subtract.log
 stderr: upsample_subtract_err.log

@@ -28,7 +28,8 @@ def run_dp3(
     freqavg: str | None = None,
     timeres: str | None = None,
     applycal_h5: str | None = None,
-    dirname: str | None = None) -> str:
+    dirname: str | None = None,
+    ncpu: int | None = None) -> str:
     """
     Run DP3 to upsample from low- to high-resolution data and split out a facet.
 
@@ -54,6 +55,8 @@ def run_dp3(
         Path to H5Parm file with calibration solutions to apply.
     dirname
         Direction name from the H5Parm.
+    ncpu
+        Number of CPUs for DP3
 
     Returns
     -------
@@ -78,7 +81,8 @@ def run_dp3(
                 f'transfer.datacolumn={facet_column}',
                 'combine.type=combine',
                 'combine.operation=subtract',
-                f'combine.buffername={facet_column}_BUFFER']
+                f'combine.buffername={facet_column}_BUFFER',
+                f'numthreads={ncpu}']
 
     steps += ['transfer', 'combine']
 
@@ -308,6 +312,7 @@ def parse_args():
     parser.add_argument('--polygon_info', help='Polygon information.')
     parser.add_argument('--cleanup', action='store_true', help='Delete input MeasurementSets and .dat files to save disk space.')
     parser.add_argument('--tmp', type=str, help='Temporary directory to run I/O heavy jobs.', default='.')
+    parser.add_argument('--ncpu', help='Number of CPUs for job', default=8, type=int)
 
     return parser.parse_args()
 
@@ -333,7 +338,7 @@ def main():
 
     # Make facet data
     print("Running DP3")
-    msout = run_dp3(args.low_ms, high_ms, facet_column, phasecentre, freqavg, timeres, args.h5parm, dirname)
+    msout = run_dp3(args.low_ms, high_ms, facet_column, phasecentre, freqavg, timeres, args.h5parm, dirname, args.ncpu)
     if args.tmp != '.':
         copy_data(msout, outdir)
 
