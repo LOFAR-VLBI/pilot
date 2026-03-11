@@ -23,6 +23,14 @@ inputs:
       position: 1
       prefix: transfer.source_ms=
       separate: false
+  - id: ncpu
+    type: int?
+    doc: Number of cores to use.
+    default: 4
+    inputBinding:
+      position: 2
+      prefix: numthreads=
+      separate: false
 
 outputs:
   - id: subms
@@ -66,7 +74,7 @@ hints:
       - entry: $(inputs.msin_lowres)
         writable: false
   - class: ResourceRequirement
-    coresMin: 4
+    coresMin: $(inputs.ncpu)
 
 stdout: upsample_subtract.log
 stderr: upsample_subtract_err.log

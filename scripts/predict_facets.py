@@ -123,7 +123,7 @@ def repack(h5):
     rename(tmph5, h5)
 
 
-def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
+def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str, ncpu: int):
     """
     Run WSClean prediction for a facet and update facet masks.
 
@@ -137,6 +137,8 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
         Path to H5Parm file containing calibration solutions.
     facet_region
         DS9 region file (.reg) defining the facet polygon.
+    ncpu
+        Number of CPUs used for WSClean
     """
     f = fits.open(model_images[0])
     comparse = str(f[0].header['HISTORY']).replace('\n', '').split()
@@ -144,6 +146,7 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str):
     model_column = basename(facet_region).replace(".reg","").upper()
     command = ['wsclean',
                '-predict',
+               f'-j {ncpu}',
                f'-model-column {model_column}',
                f'-name {prefix_name}',
                '-parallel-gridding 6']
@@ -302,7 +305,7 @@ def main():
     # Predict facet
     poly_number = basename(args.polygon).replace("poly_", "").replace(".reg", "")
     h5 = split_facet_h5(args.h5, f"Dir{int(float(poly_number)):02d}")
-    predict(msin, model_images, h5, args.polygon)
+    predict(msin, model_images, h5, args.polygon, args.ncpu)
 
     # Saving polygon data in Stokes I format
     with (table(msin, ack=False) as t):
