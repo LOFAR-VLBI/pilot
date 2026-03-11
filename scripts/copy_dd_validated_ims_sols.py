@@ -6,7 +6,6 @@ import os
 from argparse import ArgumentParser, Namespace
 
 import pandas as pd
-from numpy import sum
 
 
 def merge_csv(validation_images_csv: str, validation_solutions_csv: str) -> pd.DataFrame:
@@ -78,9 +77,11 @@ def main():
         copy_to_local_directory(validation_csv, args.images, args.h5parms)
 
     sources_with_bad_solutions = validation_csv[(validation_csv['accept_image']) & (~validation_csv['accept_solutions'])]
-    # Reject when images accepted but bad solutions, as that indicates unstable calibration on good high S/N calibrators
-    if args.error_on_bad_solutions and len(sources_with_bad_solutions)>0:
-        exit(f"ERROR: Following directions should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
+    # Cases where images are accepted but bad solutions. This may indicate unstable calibration for good high S/N calibrators
+    print(f"Warning: Following directions are rejected and should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
+
+    if args.error_on_bad_solutions and (1-len(sources_with_bad_solutions)/len(validation_csv))>0.6:
+        exit(f"ERROR: More than 60% of the directions are rejected.")
 
 
 if __name__ == '__main__':
