@@ -111,6 +111,7 @@ steps:
 
 requirements:
   - class: InlineJavascriptRequirement
+  - class: StepInputExpressionRequirement
 
 outputs:
   - id: merged_h5
