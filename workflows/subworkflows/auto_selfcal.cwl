@@ -132,3 +132,7 @@ outputs:
   - id: solution_inspection_images
     type: Directory[]
     outputSource: run_facetselfcal/solution_inspection_images
+
+  - id: config_file
+    type: File
+    outputSource: make_dd_config/dd_config

@@ -36,6 +36,7 @@ steps:
         - fits_images
         - selfcal_inspection_images
         - solution_inspection_images
+        - config_file
       run: ./auto_selfcal.cwl
       scatter: msin
 
@@ -79,3 +80,8 @@ outputs:
     type: Directory[]
     outputSource: flatten_solutions/flattenedarray
     doc: LoSoTo solution inspection images
+
+  - id: config_files
+    type: File[]
+    outputSource: ddcal/config_file
+    doc: Automatically generated configuration files for facetselfcal
