@@ -57,6 +57,7 @@ arguments:
   - --stopafterskysolve
   - --phasediff_only
   - --compute-phasediffstat
+  - --ncpu-max-DP3solve=2
 
 hints:
   - class: DockerRequirement

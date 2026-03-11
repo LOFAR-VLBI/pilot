@@ -1,7 +1,7 @@
 cwlVersion: v1.2
 class: Workflow
-id: split_parset
-label: Create parset split directions
+id: split_direction_single_ms
+label: Split direction with a catalogue and a given MeasurementSet
 doc: |
     This workflow does the following:
 
@@ -10,8 +10,9 @@ doc: |
     * It creates a parameter set file for DP3 to phase shift the
       target data to each direction, and to store that phase-shifted
       data in a MeasurementSet with the name generated before.
+    * Splits out the final MeasurementSet with DP3
 
-    The output is a DP3 parameter set file.
+    The output is one or more MeasurementSets
 
 inputs:
     - id: msin
@@ -41,15 +42,6 @@ inputs:
       default: '32.'
       doc: |
         Time resolution in seconds for the split off datasets.
-
-outputs:
-    - id: parset
-      type: File
-      doc: The parameterset file for DP3.
-      outputSource:
-        - generate_parset/parset
-        - generate_parset_nosol/parset
-      pickValue: first_non_null
 
 steps:
     - id: get_coordinates
@@ -149,3 +141,26 @@ steps:
         - id: parset
       run: ../../steps/generate_parset_split_nosol.cwl
       when: $(inputs.delay_solutions == null)
+
+    - id: dp3_target_phaseup
+      label: DP3 Target Phaseup
+      in:
+        - id: msin
+          source: msin
+        - id: parset
+          source:
+            - generate_parset/parset
+            - generate_parset_nosol/parset
+          pickValue: first_non_null
+          linkMerge: merge_flattened
+        - id: delay_solset
+          source: delay_solutions
+      out:
+        - id: msout
+      run: ../../steps/dp3_target_phaseup.cwl
+
+outputs:
+    - id: output_ms
+      type: Directory[]
+      doc: Output MeasurementSets for all given directions from catalogue
+      outputSource: dp3_target_phaseup/msout

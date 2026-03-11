@@ -67,18 +67,22 @@ inputs:
       type: File?
       default: null
       doc: The configuration file to be used to run facetselfcal.py during the target_selfcal step.
-
     - id: frequency_resolution
       type: string?
       default: '390.56kHz'
       doc: |
         Frequency resolution for the split off datasets.
-
     - id: time_resolution
       type: string?
       default: '32.'
       doc: |
         Time resolution in seconds for the split off datasets.
+    - id: chunk_size_directions
+      type: int?
+      default: 10
+      doc: |
+        Sets the number of directions to split off per DP3 explode call
+        (enhances parallelisation and optimises the DP3 explode step)
 
 steps:
     - id: select_bright_sources
@@ -95,16 +99,27 @@ steps:
       when: $(inputs.peak_flux_cut > 0.0)
       run: ../steps/select_bright_sources.cwl
 
-    - id: target_phaseup
-      label: Target Phaseup
+    - id: chunk_table
+      label: Split source table into chunks
       in:
-        - id: msin
-          source: msin
-        - id: image_cat
+        - id: table
           source:
             - select_bright_sources/bright_cat
             - image_cat
           pickValue: first_non_null
+        - id: chunk_size
+          source: chunk_size_directions
+      out:
+        - csv_chunked
+      run: ../steps/chunk_table.cwl
+
+    - id: split_direction_single_ms
+      label: Split direction with a catalogue and a given MeasurementSet
+      in:
+        - id: msin
+          source: msin
+        - id: image_cat
+          source: chunk_table/csv_chunked
         - id: delay_solutions
           source: delay_solset
         - id: time_resolution
@@ -112,33 +127,16 @@ steps:
         - id: frequency_resolution
           source: frequency_resolution
       out:
-        - id: parset
-      run: ./subworkflows/split_parset.cwl
-      scatter: msin
-
-    - id: dp3_target_phaseup
-      label: DP3 Target Phaseup
-      in:
-        - id: msin
-          source: msin
-        - id: parset
-          source: target_phaseup/parset
-          linkMerge: merge_flattened
-        - id: delay_solset
-          source: delay_solset
-        - id: max_dp3_threads
-          source: max_dp3_threads
-      out:
-        - id: msout
-      run: ../steps/dp3_target_phaseup.cwl
-      scatter: [msin, parset]
-      scatterMethod: dotproduct
+        - id: output_ms
+      run: ./subworkflows/split_direction_single_ms.cwl
+      scatter: [msin, image_cat]
+      scatterMethod: flat_crossproduct
 
     - id: flatten_msout
       label: Flatten msout
       in:
         - id: nestedarray
-          source: dp3_target_phaseup/msout
+          source: split_direction_single_ms/output_ms
       out:
         - id: flattenedarray
       run: ../steps/flatten.cwl
@@ -159,6 +157,8 @@ steps:
           source: make_concat_parset/concat_parsets
         - id: msin
           source: flatten_msout/flattenedarray
+        - id: ncpu
+          default: 4
       out:
         - id: msout
       run: ../steps/dp3_parset.cwl
@@ -199,7 +199,6 @@ steps:
       when: $(inputs.do_selfcal)
       run: ../steps/facet_selfcal.cwl
       scatter: msin
-      scatterMethod: dotproduct
 
 outputs:
     - id: msout_concat
