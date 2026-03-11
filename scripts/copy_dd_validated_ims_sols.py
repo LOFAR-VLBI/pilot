@@ -83,7 +83,7 @@ def main():
     print(f"Warning: Following directions are rejected and should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
 
     if args.error_on_bad_solutions and (1-len(sources_with_bad_solutions)/len(validation_csv))>0.6:
-        exit(f"ERROR: More than 60% of the directions are rejected.")
+        exit(f"ERROR: More than 40% of the directions are rejected.")
 
 
 if __name__ == '__main__':
