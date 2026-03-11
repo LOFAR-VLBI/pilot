@@ -76,7 +76,9 @@ def main():
     if args.copy_selected:
         copy_to_local_directory(validation_csv, args.images, args.h5parms)
 
-    sources_with_bad_solutions = validation_csv[(validation_csv['accept_image']) & (~validation_csv['accept_solutions'])]
+    # Continue with only selected directions based on image quality, since this selection includes S/N selection
+    validation_csv = validation_csv[validation_csv['accept_image']]
+    sources_with_bad_solutions = validation_csv[~validation_csv['accept_solutions']]
     # Cases where images are accepted but bad solutions. This may indicate unstable calibration for good high S/N calibrators
     print(f"Warning: Following directions are rejected and should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
 
