@@ -38,7 +38,7 @@ inputs:
       type: float?
       doc: |
          Accepted fraction of bad solutions. Lower value is stricter.
-         Workflow crashes if more than these are rejected.
+         Workflow crashes if fraction is exceeded.
       inputBinding:
         position: 5
         prefix: "--frac_bad_solutions"

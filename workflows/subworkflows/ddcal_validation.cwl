@@ -24,7 +24,7 @@ inputs:
     default: 0.3
     doc: |
        Accepted fraction of bad solutions. Lower value is stricter.
-       Workflow crashes if more than these are rejected.
+       Workflow crashes if fraction is exceeded.
 
 steps:
   - id: validate_images
