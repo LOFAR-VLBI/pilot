@@ -19,6 +19,13 @@ inputs:
     type: string?
     doc: Neural network cache directory
 
+  - id: frac_bad_solutions
+    type: float?
+    default: 0.3
+    doc: |
+       Accepted fraction of bad solutions. Lower value is stricter.
+       Workflow crashes if more than these are rejected.
+
 steps:
   - id: validate_images
     in:
@@ -48,6 +55,8 @@ steps:
          source: h5parm
        - id: images
          source: images
+       - id: frac_bad_solutions
+         source: frac_bad_solutions
     out:
        - output_images
        - output_solutions

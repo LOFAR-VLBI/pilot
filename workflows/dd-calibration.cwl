@@ -70,6 +70,14 @@ inputs:
       type: string?
       doc: Neural network cache directory.
 
+    - id: frac_bad_solutions
+      type: float?
+      default: 0.3
+      doc: |
+         Accepted fraction of bad solutions. Lower value is stricter.
+         Workflow crashes if more than these are rejected.
+
+
 steps:
     - id: split_directions
       label: Split out calibrator sources in separate measurement sets
@@ -124,6 +132,8 @@ steps:
           source: model_cache
         - id: dd_selection
           source: dd_selection
+        - id: frac_bad_solutions
+          source: frac_bad_solutions
       out:
         - h5parm_selected
         - images_selected

@@ -65,7 +65,7 @@ def parse_args() -> Namespace:
     parser.add_argument('--validation_images_csv', help='CSV with image validation information', default='validation_images.csv')
     parser.add_argument('--validation_solutions_csv', help='CSV with calibration solutions validation information', default='validation_solutions.csv')
     parser.add_argument('--copy_selected', action='store_true', help='Copy selected images to local directory')
-    parser.add_argument('--error_on_bad_solutions', action='store_true', help='Return error if there are sources with bad solutions according to metrics')
+    parser.add_argument('--frac_bad_solutions', type=float, help='Accepted fraction of bad solutions. Lower value is stricter.', default=0.3)
 
     return parser.parse_args()
 
@@ -82,8 +82,9 @@ def main():
     # Cases where images are accepted but bad solutions. This may indicate unstable calibration for good high S/N calibrators
     print(f"Warning: Following directions are rejected and should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
 
-    if args.error_on_bad_solutions and (1-len(sources_with_bad_solutions)/len(validation_csv))>0.6:
-        exit(f"ERROR: More than 40% of the directions are rejected.")
+    if len(sources_with_bad_solutions)/len(validation_csv)>args.frac_bad_solutions:
+        exit(f"ERROR: {int(len(sources_with_bad_solutions)/len(validation_csv)*100)}% directions are rejected, which exceeds the "
+             f"provided --frac_bad_solutions={args.frac_bad_solutions} value.")
 
 
 if __name__ == '__main__':

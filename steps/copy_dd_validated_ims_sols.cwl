@@ -34,10 +34,18 @@ inputs:
         position: 4
         prefix: "--validation_solutions_csv"
         separate: true
+    - id: frac_bad_solutions
+      type: float?
+      doc: |
+         Accepted fraction of bad solutions. Lower value is stricter.
+         Workflow crashes if more than these are rejected.
+      inputBinding:
+        position: 5
+        prefix: "--frac_bad_solutions"
+        separate: true
 
 arguments:
   - --copy_selected
-  - --error_on_bad_solutions
 
 outputs:
     - id: output_images
