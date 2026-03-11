@@ -1,9 +1,9 @@
 # Pipeline for the International LOFAR Telescope (PILOT)
 
 The Pipeline for the International LOFAR Telscope (PILOT) is a calibration and imaging pipeline that includes all of LOFAR’s international stations to achieve sub-arcsecond resolution.
-It is implemented in Common Workflow Language and we recommend the use of Toil for running it.
+It is implemented in [Common Workflow Language](https://commonwl.org) and we recommend the use of [Toil](https://toil.readthedocs.io/en/latest/cwl/running.html) for running it.
 
-Instruction on setting up, configuration and usage of the pipeline can be found in the dedicated [wiki](https://git.astron.nl/RD/VLBI-cwl/-/wikis/home).
+Instructions on downloading data, setting up, configuration and usage of the pipeline in combination with high-performance computing clusters can be found in the [LOFAR-VLBI pipeline wiki](https://github.com/LOFAR-VLBI/lofar-vlbi-pipeline/wiki).
 
 ## Installing the pipeline
 
@@ -13,6 +13,17 @@ python -m venv venv
 . venv/bin/activate
 pip install .
 ```
+
+## Using the pipeline
+
+It currently is strongly recommended to run PILoT through [FLoCs](https://tikk3r.github.io/flocs/).
+In this case it is not necessary to install PILoT.
+The most straightforward way to run PILoT through FLoCs requires the following steps:
+
+1. Clone the PILoT repository.
+2. Download the [latest FLoCs container](https://tikk3r.github.io/flocs/#latest-containers).
+3. [Install the FloCs runners](https://tikk3r.github.io/flocs/docs/using-flocs.html#installing-flocs).
+4. [Set up and run the FLoCs runners](https://github.com/LOFAR-VLBI/lofar-vlbi-pipeline/wiki/Running-the-pipeline).
 
 ### External dependencies
 - Swarp: https://www.astromatic.net/software/swarp/ -- optional dependency that is required if mosaicing of facet images is enabled.

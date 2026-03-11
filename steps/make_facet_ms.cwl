@@ -53,7 +53,10 @@ inputs:
       type: int?
       doc: Number of cores to use.
       default: 4
-
+      inputBinding:
+        prefix: "--ncpu"
+        position: 6
+        separate: true
 
 outputs:
     - id: facet_ms
