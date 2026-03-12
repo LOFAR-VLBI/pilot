@@ -42,6 +42,7 @@ def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
     configdict['solint_list'] = [4, 1, 4, "1h"]
     configdict['nchan_list'] = [1, 1, 1, 1]
     configdict['smoothnessconstraint_list'] = [40.0 , 2.0, 40.0, 40.0]
+    configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 120.0, 0.0]
     configdict['antennaconstraint_list'] = ['alldutch', None, None, None]
     configdict['resetsols_list'] = [None, 'alldutch', None, None]
     configdict['docircular'] = 'True'
@@ -84,6 +85,7 @@ def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
         configdict['soltypecycles_list'].append(configdict['stop'] - 2)
         configdict['nchan_list'].append(1)
         configdict['smoothnessconstraint_list'].append(0)
+        configdict['smoothnessreffrequency_list'].append(0)
         configdict['antennaconstraint_list'].append(None)
         configdict['resetsols_list'].append(None)
 
@@ -96,6 +98,7 @@ def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
         configdict['soltypecycles_list'].insert(reset_idx,0)
         configdict['nchan_list'].insert(reset_idx,1)
         configdict['smoothnessconstraint_list'].insert(reset_idx,40.0)
+        configdict['smoothnessreffrequency_list'].append(120.0)
         configdict['antennaconstraint_list'].insert(reset_idx,None)
         configdict['resetsols_list'].insert(reset_idx,'core')
         configdict['robust'] = -1.5
@@ -322,6 +325,7 @@ def update_smoothness( smoothness, cfgdict ):
         reset = cfgdict['resetsols_list'][i]
         if reset == 'alldutch':
             cfgdict['smoothnessconstraint_list'][i] = smoothness
+            cfgdict['smoothnessreffrequency_list'][i] = 120.0
     return cfgdict
 
 def parse_args():
