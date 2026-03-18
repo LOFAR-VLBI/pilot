@@ -19,11 +19,11 @@ inputs:
     type: string?
     doc: Neural network cache directory
 
-  - id: frac_bad_solutions
+  - id: max_rejected_fraction
     type: float?
     default: 0.3
     doc: |
-       Accepted fraction of bad solutions. Lower value is stricter.
+       Maximum fraction of bad solutions. Lower value is stricter.
        Workflow crashes if fraction is exceeded.
 
 steps:
@@ -55,8 +55,8 @@ steps:
          source: h5parm
        - id: images
          source: images
-       - id: frac_bad_solutions
-         source: frac_bad_solutions
+       - id: max_rejected_fraction
+         source: max_rejected_fraction
     out:
        - output_images
        - output_solutions

@@ -34,14 +34,14 @@ inputs:
         position: 4
         prefix: "--validation_solutions_csv"
         separate: true
-    - id: frac_bad_solutions
+    - id: max_rejected_fraction
       type: float?
       doc: |
-         Accepted fraction of bad solutions. Lower value is stricter.
+         Maximum fraction of bad solutions. Lower value is stricter.
          Workflow crashes if fraction is exceeded.
       inputBinding:
         position: 5
-        prefix: "--frac_bad_solutions"
+        prefix: "--max_rejected_fraction"
         separate: true
 
 arguments:
