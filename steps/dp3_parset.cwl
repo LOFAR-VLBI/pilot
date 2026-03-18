@@ -19,6 +19,11 @@ inputs:
     type: int?
     doc: Number of cores to use.
     default: 6
+    inputBinding:
+      position: 1
+      prefix: numthreads=
+      separate: false
+      shellQuote: false
 
 outputs:
   - id: msout
