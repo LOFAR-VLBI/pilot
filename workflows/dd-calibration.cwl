@@ -70,6 +70,14 @@ inputs:
       type: string?
       doc: Neural network cache directory.
 
+    - id: max_rejected_fraction
+      type: float?
+      default: 0.3
+      doc: |
+         Maximum fraction of bad solutions. Lower value is stricter.
+         Workflow crashes if fraction is exceeded.
+
+
 steps:
     - id: split_directions
       label: Split out calibrator sources in separate measurement sets
@@ -124,6 +132,8 @@ steps:
           source: model_cache
         - id: dd_selection
           source: dd_selection
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
       out:
         - h5parm_selected
         - images_selected

@@ -6,7 +6,6 @@ import os
 from argparse import ArgumentParser, Namespace
 
 import pandas as pd
-from numpy import sum
 
 
 def merge_csv(validation_images_csv: str, validation_solutions_csv: str) -> pd.DataFrame:
@@ -66,7 +65,7 @@ def parse_args() -> Namespace:
     parser.add_argument('--validation_images_csv', help='CSV with image validation information', default='validation_images.csv')
     parser.add_argument('--validation_solutions_csv', help='CSV with calibration solutions validation information', default='validation_solutions.csv')
     parser.add_argument('--copy_selected', action='store_true', help='Copy selected images to local directory')
-    parser.add_argument('--error_on_bad_solutions', action='store_true', help='Return error if there are sources with bad solutions according to metrics')
+    parser.add_argument('--max_rejected_fraction', type=float, help='Maximum fraction of bad solutions. Lower value is stricter.', default=0.3)
 
     return parser.parse_args()
 
@@ -77,10 +76,15 @@ def main():
     if args.copy_selected:
         copy_to_local_directory(validation_csv, args.images, args.h5parms)
 
-    sources_with_bad_solutions = validation_csv[(validation_csv['accept_image']) & (~validation_csv['accept_solutions'])]
-    # Reject when images accepted but bad solutions, as that indicates unstable calibration on good high S/N calibrators
-    if args.error_on_bad_solutions and len(sources_with_bad_solutions)>0:
-        exit(f"ERROR: Following directions should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
+    # Continue with only selected directions based on image quality, since this selection includes S/N selection
+    validation_csv = validation_csv[validation_csv['accept_image']]
+    sources_with_bad_solutions = validation_csv[~validation_csv['accept_solutions']]
+    # Cases where images are accepted but bad solutions. This may indicate unstable calibration for good high S/N calibrators
+    print(f"Warning: Following directions are rejected and should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
+
+    if len(sources_with_bad_solutions)/len(validation_csv)>args.max_rejected_fraction:
+        exit(f"ERROR: {int(len(sources_with_bad_solutions)/len(validation_csv)*100)}% directions are rejected, which exceeds the "
+             f"provided --max_rejected_fraction={args.max_rejected_fraction} value.")
 
 
 if __name__ == '__main__':
