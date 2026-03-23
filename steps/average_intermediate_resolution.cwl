@@ -34,7 +34,7 @@ outputs:
         data in MeasurementSet format.
     type: Directory
     outputBinding:
-      glob: $( 'avg_bda_' + inputs.msin.basename )
+      glob: concat_1asec.ms
 
   - id: logfile
     type: File[]
@@ -49,7 +49,7 @@ arguments:
   - avg.type=averager
   - avg.timeresolution=4
   - avg.freqresolution=48.82kHz
-  - msout=$( 'avg_bda_' + inputs.msin.basename )
+  - msout=concat_1asec.ms
   - bdaaverager.timebase=70e3
   - bdaaverager.maxinterval=32
   - numthreads=$(inputs.ncpu)
