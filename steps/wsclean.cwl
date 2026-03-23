@@ -16,15 +16,15 @@ inputs:
       position: 2
       shellQuote: false
       itemSeparator: ' '
-  - id: tempdir
-    type: string
+  - id: tmpdir
+    type: string?
     default: '.'
     inputBinding:
       position: 1
       shellQuote: false
       itemSeparator: ' '
       prefix: '-temp-dir'
-  - id: cores
+  - id: ncpu
     type: int?
     default: 24
     inputBinding:
@@ -301,7 +301,7 @@ requirements:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: $(inputs.cores)
+    coresMin: $(inputs.ncpu)
 
 stdout: wsclean.log
 stderr: wsclean_err.log

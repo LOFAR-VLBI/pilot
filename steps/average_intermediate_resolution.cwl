@@ -19,6 +19,14 @@ inputs:
       itemSeparator: ','
       valueFrom: "[$(self.map(function(d) { return d.path || d.location; }).join(','))]"
 
+  - id: ncpu
+    type: int?
+    default: 24
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: 'numthreads='
+
 outputs:
   - id: ms_avg
     doc: |
@@ -26,7 +34,7 @@ outputs:
         data in MeasurementSet format.
     type: Directory
     outputBinding:
-      glob: concat_1asec.ms
+      glob: $( 'avg_bda_' + inputs.msin.basename )
 
   - id: logfile
     type: File[]
@@ -41,9 +49,10 @@ arguments:
   - avg.type=averager
   - avg.timeresolution=4
   - avg.freqresolution=48.82kHz
-  - msout=concat_1asec.ms
+  - msout=$( 'avg_bda_' + inputs.msin.basename )
   - bdaaverager.timebase=70e3
   - bdaaverager.maxinterval=32
+  - numthreads=$(inputs.ncpu)
 
 requirements:
   - class: ShellCommandRequirement
@@ -56,7 +65,7 @@ hints:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: 12
+    coresMin: $(inputs.ncpu)
 
 stdout: dp3_intermediate_avg.log
 stderr: dp3_intermediate_avg_err.log
