@@ -98,7 +98,7 @@ def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
         configdict['soltypecycles_list'].insert(reset_idx,0)
         configdict['nchan_list'].insert(reset_idx,1)
         configdict['smoothnessconstraint_list'].insert(reset_idx,40.0)
-        configdict['smoothnessreffrequency_list'].append(120.0)
+        configdict['smoothnessreffrequency_list'].insert(reset_idx,120.0)
         configdict['antennaconstraint_list'].insert(reset_idx,None)
         configdict['resetsols_list'].insert(reset_idx,'core')
         configdict['robust'] = -1.5
