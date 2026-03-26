@@ -139,11 +139,8 @@ outputs:
         format, phase-shifted to the delay calibrator.
 
   - id: starting_skymodels
-    outputSource: 
-      - generate_skymodels/skymodel
+    outputSource: generate_skymodels/skymodel
     type: File[]
-    pickValue: all_non_null
-    linkMerge: merge_flattened
     doc: Starting models that were used to kickstart the delay calibration.
 
   - id: pictures
