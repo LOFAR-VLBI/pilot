@@ -138,6 +138,11 @@ outputs:
         The fully concatenated data in MeasurementSet
         format, phase-shifted to the delay calibrator.
 
+  - id: starting_skymodels
+    outputSource: generate_skymodels/skymodel
+    type: File[]
+    doc: Starting models that were used to kickstart the delay calibration.
+
   - id: pictures
     outputSource: 
       - flatten_delay_images/flattenedarray
