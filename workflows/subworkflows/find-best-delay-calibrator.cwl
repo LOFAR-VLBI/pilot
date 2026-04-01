@@ -19,14 +19,19 @@ inputs:
     - id: delay_calibrator
       type: File
       doc: A delay calibrator catalogue in CSV format.
+    - id: image_catalogue
+      type: File
+      doc: A catalogue with other sources in the field (e.g. a LoTSS catalogue).
     - id: configfile
       type: File
       doc: Settings for the delay calibration in delay_solve.
     - id: starting_skymodel
       type:
-        - File[]?
+        - File[]
+      # This default avoids validation warnings for the starting_skymodels output.
+      default: []
       doc: |
-        Optional starting models in BBS-compatible text format used to kickstart the delay calibration. If given, the number of skymodels must be equal to `select_best_n_delay_calibrators`. Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
+        Optional starting models in FITS format used to kickstart the delay calibration. If given, the number of skymodels must be equal to `select_best_n_delay_calibrators`. Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
     - id: select_best_n_delay_calibrators
       type: int?
       default: 1
@@ -52,10 +57,13 @@ steps:
           source: delay_calibrator
         - id: process_all
           default: true
+        - id: starting_skymodel
+          default: starting_skymodel
       out: 
         - id: skymodel
         - id: logfile
       run: ../../steps/delay_cal_model.cwl
+      when: $(inputs.starting_skymodel.length == 0)
 
     - id: select_best_delay_cal
       in:
@@ -84,7 +92,7 @@ steps:
     - id: sort_skymodels
       in:
         - id: input_entry
-          source: 
+          source:
             - starting_skymodel
             - generate_skymodels/skymodel
           pickValue: all_non_null
@@ -106,21 +114,26 @@ steps:
       in:
         - id: msin
           source: sort_ms/sorted_entries
-        - id: configfile
-          source: configfile
-        - id: skymodel
+        - id: delay_calibrator
+          source: delay_calibrator
+        - id: image_catalogue
+          source: image_catalogue
+        - id: model_image
           source: sort_skymodels/sorted_entries
       out:
-        - id: images
-        - id: h5parm
-      run: ../../steps/facet_selfcal.cwl
-      scatter: [msin, skymodel]
+        - id: solutions
+        - id: starting_skymodel
+        - id: config
+        - id: pictures
+        - id: logfile
+      run: ./delay_cal_run.cwl
+      scatter: [msin, model_image]
       scatterMethod: dotproduct
 
     - id: flatten_delay_images
       in:
         - id: nestedarray
-          source: delay_selfcal/images
+          source: delay_selfcal/pictures
       out:
         - id: flattenedarray
       run: ../../steps/flatten.cwl
@@ -137,7 +150,11 @@ outputs:
         format, phase-shifted to the delay calibrator.
 
   - id: starting_skymodels
-    outputSource: generate_skymodels/skymodel
+    outputSource: 
+      - starting_skymodel
+      - generate_skymodels/skymodel
+    pickValue: all_non_null
+    linkMerge: merge_flattened
     type: File[]
     doc: Starting models that were used to kickstart the delay calibration.
 
@@ -157,7 +174,7 @@ outputs:
       A CSV file containing the phasediff scores for each of the calibrators that were split out.
 
   - id: solutions
-    outputSource: delay_selfcal/h5parm
+    outputSource: delay_selfcal/solutions
     type:
       - File
       - File[]

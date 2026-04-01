@@ -206,6 +206,7 @@ steps:
           source: delay_calibrator
       out:
         - id: delay_calibrator_pf
+        - id: image_catalogue_pf
       run: ../steps/lofar_vlbi_plot.cwl
       when: $(inputs.delay_calibrator == null)
 
@@ -326,6 +327,12 @@ steps:
           source:
             - delay_calibrator
             - lofar_vlbi_plot/delay_calibrator_pf
+          pickValue: first_non_null
+          valueFrom: $(self)
+        - id: image_catalogue
+          source:
+            - image_catalogue
+            - lofar_vlbi_plot/image_catalogue_pf
           pickValue: first_non_null
           valueFrom: $(self)
         - id: select_best_n_delay_calibrators
