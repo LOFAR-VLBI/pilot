@@ -72,7 +72,7 @@ steps:
         - id: dd_selection
           default: true
         - id: do_selfcal
-          default: true
+          default: false
         - id: image_cat
           source: delay_calibrator
         - id: select_best_n
