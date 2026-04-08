@@ -467,9 +467,9 @@ outputs:
     outputSource: 
       - phaseup/starting_skymodel
       - select_best_delay_cal/starting_skymodels
-    type: File[]
-    pickValue: all_non_null
-    linkMerge: merge_flattened
+    type: File[]?
+    pickValue: first_non_null
+    linkMerge: merge_nested
     doc: |
         The starting model(s) that were used to kick start the delay calibration.
 

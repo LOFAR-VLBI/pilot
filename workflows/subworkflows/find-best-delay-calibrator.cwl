@@ -27,9 +27,7 @@ inputs:
       doc: Settings for the delay calibration in delay_solve.
     - id: starting_skymodel
       type:
-        - File[]
-      # This default avoids validation warnings for the starting_skymodels output.
-      default: []
+        - File[]?
       doc: |
         Optional starting models in FITS format used to kickstart the delay calibration. If given, the number of skymodels must be equal to `select_best_n_delay_calibrators`. Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
     - id: select_best_n_delay_calibrators
@@ -63,7 +61,7 @@ steps:
         - id: skymodel
         - id: logfile
       run: ../../steps/delay_cal_model.cwl
-      when: $(inputs.starting_skymodel.length == 0)
+      when: $(inputs.starting_skymodel == null)
 
     - id: select_best_delay_cal
       in:
@@ -153,9 +151,11 @@ outputs:
     outputSource: 
       - starting_skymodel
       - generate_skymodels/skymodel
-    pickValue: all_non_null
-    linkMerge: merge_flattened
-    type: File[]
+    pickValue: first_non_null
+    linkMerge: merge_nested
+    #pickValue: all_non_null
+    #linkMerge: merge_flattened
+    type: File[]?
     doc: Starting models that were used to kickstart the delay calibration.
 
   - id: pictures
