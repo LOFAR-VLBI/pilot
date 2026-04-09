@@ -2,9 +2,13 @@
 """Run RM-Tools rmsynth3d locally."""
 
 import argparse
+import glob
+import os
+import shutil
 import subprocess
 import sys
 from typing import List
+
 
 
 def parse_args() -> argparse.Namespace:
