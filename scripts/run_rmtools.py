@@ -50,11 +50,30 @@ def build_rmsynth_cmd(args: argparse.Namespace) -> List[str]:
     return cmd
 
 
+def move_outputs(stokes_q_path: str) -> None:
+    # RM-Tools writes outputs into the same directory as the staged input FITS.
+    input_dir = os.path.dirname(stokes_q_path)
+    moved = []
+
+    for path in glob.glob(os.path.join(input_dir, "*FDF_*.fits")):
+        dest = os.path.basename(path)
+        shutil.move(path, dest)
+        moved.append(dest)
+
+    if moved:
+        print("Moved outputs to workdir:")
+        for name in moved:
+            print(f"  {name}")
+    else:
+        print("No staged outputs found to move.")
+
+
 def main() -> int:
     args = parse_args()
     rmsynth_cmd = build_rmsynth_cmd(args)
-
-    return subprocess.call(rmsynth_cmd)
+    rc = subprocess.call(rmsynth_cmd)
+    move_outputs(args.stokes_q)
+    return rc
 
 
 if __name__ == "__main__":
