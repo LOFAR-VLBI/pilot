@@ -62,7 +62,7 @@ outputs:
     - id: solution_inspection_images
       type: Directory[]
       outputBinding:
-         glob: 'plotlosoto*'
+         glob: 'plotlosoto*/h5_solutions'
       doc: Solution inspection plots
 
     - id: fits_image
@@ -74,7 +74,7 @@ outputs:
     - id: logfile
       type: File[]
       outputBinding:
-         glob: [facet_selfcal*.log, selfcal.log]
+         glob: [facet_selfcal*.log, logs/selfcal.log]
       doc: |
         The files containing the stdout
         and stderr from the step.
