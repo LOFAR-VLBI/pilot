@@ -193,3 +193,8 @@ outputs:
       type: File[]
       outputSource: ddcal_int/selfcal_inspection_images
       doc: Self-calibration images in PNG format
+
+    - id: msout
+      type: Directory[]
+      outputSource: split_directions/msout_concat
+      doc: MeasurementSets of all (selected) directions

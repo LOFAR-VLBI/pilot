@@ -168,6 +168,7 @@ steps:
         source: number_cores
     out:
       - id: solutions
+      - id: starting_skymodel
       - id: config
       - id: pictures
       - id: logfile
@@ -226,6 +227,12 @@ outputs:
         The calibrated solutions for the
         delay calibrator in HDF5 format.
 
+  - id: starting_skymodel
+    type: File[]
+    outputSource: delay_cal_run/starting_skymodel
+    doc: |
+        The starting model used to kick start the delay calibration.
+
   - id: logdir
     outputSource: save_logfiles/dir
     type: Directory
@@ -239,6 +246,13 @@ outputs:
     doc: |
         The inspection plots generated
         by delay_solve.
+
+  - id: facetselfcal_config
+    type: File
+    outputSource: delay_cal_run/config
+    doc: |
+        The configuration file for facetselfcal that was
+        used in the delay solve.
 
   - id: summary_file
     type: File

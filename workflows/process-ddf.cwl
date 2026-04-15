@@ -51,7 +51,7 @@ outputs:
     type: File?
     outputSource:
       - subtract_lotss/regionbox
-    pickValue: all_non_null
+    pickValue: the_only_non_null
     doc: DS9 region file outside of which the LoTSS skymodel has been subtracted.
   - id: msout
     type: Directory[]

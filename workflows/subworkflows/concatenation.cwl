@@ -135,7 +135,7 @@ outputs:
   - id: aoflag_logfile
     outputSource:
         - concat_logfiles_aoflagging/output
-    pickValue: all_non_null
+    pickValue: the_only_non_null
     type: File
     doc: |
         The file containing the stdout and
