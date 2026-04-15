@@ -215,7 +215,7 @@ outputs:
           items: File
       outputSource:
         - target_selfcal/images
-      pickValue: all_non_null
+      pickValue: the_only_non_null
     - id: phasediff_score_csv
       type: File?
       outputSource: phasediff_selection/phasediff_score_csv
@@ -225,4 +225,4 @@ outputs:
         - File[]
       outputSource:
         - target_selfcal/h5parm
-      pickValue: all_non_null
+      pickValue: the_only_non_null

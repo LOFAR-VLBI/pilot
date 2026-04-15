@@ -214,7 +214,7 @@ steps:
         - id: msin
           source:
            - setup/msout
-          pickValue: all_non_null
+          pickValue: the_only_non_null
         - id: firstSB
           source: reference_stationSB
         - id: max_dp3_threads
@@ -453,7 +453,7 @@ outputs:
     outputSource: 
       - phaseup/facetselfcal_config
     type: File
-    pickValue: all_non_null
+    pickValue: the_only_non_null
     doc: Config file with settings used for the delay calibration.
 
   - id: facetselfcal_starting_model
@@ -488,7 +488,7 @@ outputs:
       - select_best_delay_cal/phasediff_score_csv
     type:
       - File?
-    pickValue: all_non_null
+    pickValue: the_only_non_null
     doc: |
         A CSV file containing the phasediff scores for each of the calibrators that were split out.
 
