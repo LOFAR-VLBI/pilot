@@ -23,11 +23,20 @@ inputs:
         prefix: msin=
         separate: false
         shellQuote: false
+    - id: msout_names
+      type: string
+      doc: |
+        A string of names, one for each direction to image.
+      inputBinding:
+        position: 2
+        prefix: msout.name=
+        separate: false
+        shellQuote: false
     - id: delay_solset
       type: File?
       doc: Input delay solution set.
       inputBinding:
-        position: 2
+        position: 3
         prefix: applycal.parmdb=
         separate: false
         shellQuote: false
@@ -36,7 +45,7 @@ inputs:
       default: 8
       doc: Maximum number of threads to use for DP3.
       inputBinding:
-        position: 3
+        position: 4
         prefix: numthreads=
         separate: false
         shellQuote: false

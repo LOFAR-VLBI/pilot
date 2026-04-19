@@ -16,8 +16,8 @@ doc: |
 
 inputs:
     - id: msin
-      type: Directory
-      doc: The input data in MeasurementSet format.
+      type: Directory[]
+      doc: Input MeasurementSets for individual frequency subbands covering the target directions.
 
     - id: image_cat
       type: File
@@ -71,6 +71,7 @@ steps:
       out:
         - id: msout_names
       run: ../../steps/generate_filenames.cwl
+      scatter: msin
 
     - id: get_delay_cal_dir
       label: get_delay_cal_direction
@@ -107,8 +108,6 @@ steps:
       doc: |
         Generate direction parset.
       in:
-        - id: msout_names
-          source: generate_filenames/msout_names
         - id: phase_centers
           source: get_coordinates/coordinates
         - id: beamdir_delay_cal
@@ -127,8 +126,6 @@ steps:
       doc: |
         Generate direction parset without applying solutions
       in:
-        - id: msout_names
-          source: generate_filenames/msout_names
         - id: phase_centers
           source: get_coordinates/coordinates
         - id: delay_solutions
@@ -147,6 +144,8 @@ steps:
       in:
         - id: msin
           source: msin
+        - id: msout_names
+          source: generate_filenames/msout_names
         - id: parset
           source:
             - generate_parset/parset
@@ -158,9 +157,46 @@ steps:
       out:
         - id: msout
       run: ../../steps/dp3_target_phaseup.cwl
+      scatter: [msin, msout_names]
+      scatterMethod: dotproduct
+
+    - id: flatten_msout
+      label: Flatten msout
+      in:
+        - id: nestedarray
+          source: dp3_target_phaseup/msout
+      out:
+        - id: flattenedarray
+      run: ../../steps/flatten.cwl
+
+    - id: make_concat_parset
+      label: Make parsets
+      in:
+         - id: msin
+           source: flatten_msout/flattenedarray
+      out:
+         - id: concat_parsets
+      run: ../../steps/make_concat_parsets.cwl
+
+    - id: dp3_parset
+      label: dp3_parset
+      in:
+        - id: parset
+          source: make_concat_parset/concat_parsets
+        - id: msin
+          source: flatten_msout/flattenedarray
+        - id: ncpu
+          default: 4
+      out:
+        - id: msout
+      run: ../../steps/dp3_parset.cwl
+      scatter: parset
+
+requirements:
+  - class: ScatterFeatureRequirement
 
 outputs:
     - id: output_ms
       type: Directory[]
       doc: Output MeasurementSets for all given directions from catalogue
-      outputSource: dp3_target_phaseup/msout
+      outputSource: dp3_parset/msout
