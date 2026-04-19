@@ -44,10 +44,10 @@ inputs:
       default: true
       doc: Whether to truncate the last subbands of the MSs to the same length.
 
-    - id: dd_selection
+    - id: validate
       type: boolean?
       default: true
-      doc: If set to true the pipeline will perform direction-dependent calibrator selection.
+      doc: If set to true the pipeline will perform validation of the direction-dependent calibrator selection.
 
     - id: phasediff_score
       type: float
@@ -55,7 +55,6 @@ inputs:
       doc: |
          Phasediff-score to select good calibrators. See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
          For calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators. If no selection set on for example value >5.
-         Only used when dd_selection==true.
 
     - id: custom_phasediff_score_csv
       type: File?
@@ -77,6 +76,12 @@ inputs:
          Maximum fraction of bad solutions. Lower value is stricter.
          Workflow crashes if fraction is exceeded.
 
+    - id: chunk_size_directions
+      type: int?
+      default: 10
+      doc: |
+        Sets the number of directions to split off per DP3 explode call
+        (enhances parallelisation and optimises the DP3 explode step)
 
 steps:
     - id: split_directions
@@ -94,8 +99,12 @@ steps:
           source: phasediff_score
         - id: peak_flux_cut
           source: peak_flux_cut
+        - id: custom_phasediff_score_csv
+          source: custom_phasediff_score_csv
         - id: dd_selection
-          source: dd_selection
+          valueFrom: "${ return inputs.custom_phasediff_score_csv != null ? false : self }"
+        - id: chunk_size_directions
+          source: chunk_size_directions
       out:
         - msout_concat
         - phasediff_score_csv
@@ -130,15 +139,15 @@ steps:
           source: ddcal_int/h5parms
         - id: model_cache
           source: model_cache
-        - id: dd_selection
-          source: dd_selection
+        - id: validate
+          source: validate
         - id: max_rejected_fraction
           source: max_rejected_fraction
       out:
         - h5parm_selected
         - images_selected
         - validate_csv
-      when: $(inputs.dd_selection)
+      when: $(inputs.validate)
       run: ./subworkflows/ddcal_validation.cwl
 
     - id: multidir_merge
