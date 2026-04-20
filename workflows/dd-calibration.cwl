@@ -11,7 +11,7 @@ doc: |
 requirements:
   - class: SubworkflowFeatureRequirement
   - class: MultipleInputFeatureRequirement
-  - class: InlineJavascriptRequirement.
+  - class: InlineJavascriptRequirement
 
 inputs:
     - id: msin
@@ -103,7 +103,7 @@ steps:
         - id: custom_phasediff_score_csv
           source: custom_phasediff_score_csv
         - id: dd_selection
-          valueFrom: "${ return inputs.custom_phasediff_score_csv != null ? false : self }"
+          valueFrom: ${ return inputs.custom_phasediff_score_csv == null; }
         - id: chunk_size_directions
           source: chunk_size_directions
       out:
