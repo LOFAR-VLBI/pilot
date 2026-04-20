@@ -11,6 +11,7 @@ doc: |
 requirements:
   - class: SubworkflowFeatureRequirement
   - class: MultipleInputFeatureRequirement
+  - class: InlineJavascriptRequirement.
 
 inputs:
     - id: msin
