@@ -137,7 +137,7 @@ inputs:
       prefix: '-niter'
   - id: multiscale-scale-bias
     type: float?
-    default: 0.65
+    default: 0.7
     inputBinding:
       position: 1
       shellQuote: false
@@ -227,11 +227,25 @@ inputs:
       prefix: '-gridder'
   - id: apply-primary-beam
     type: boolean?
-    default: true
+    default: false
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-apply-primary-beam'
+  - id: apply-facet-beam
+    type: boolean?
+    default: true
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-apply-facet-beam'
+  - id: facet-beam-update
+    type: int?
+    default: 600
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-facet-beam-update'
   - id: dd-psf-grid
     type: int[]?
     default: [3, 3]
