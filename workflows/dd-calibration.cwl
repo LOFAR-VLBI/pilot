@@ -30,21 +30,6 @@ inputs:
       type: File?
       doc: Provide already obtained direction-dependent h5parm solutions for the Dutch LOFAR array to pre-apply before international LOFAR calibration.
 
-    - id: max_dp3_threads
-      type: int?
-      default: 4
-      doc: Number of cores to use per job for tasks with high I/O or memory.
-
-    - id: numbands
-      type: int?
-      default: -1
-      doc: The number of bands to group. -1 means all bands.
-
-    - id: truncateLastSBs
-      type: boolean?
-      default: true
-      doc: Whether to truncate the last subbands of the MSs to the same length.
-
     - id: validate
       type: boolean?
       default: true
@@ -94,8 +79,6 @@ steps:
           source: delay_solset
         - id: image_cat
           source: source_catalogue
-        - id: max_dp3_threads
-          source: max_dp3_threads
         - id: phasediff_score
           source: phasediff_score
         - id: peak_flux_cut

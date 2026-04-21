@@ -27,20 +27,6 @@ inputs:
       type: File
       doc: The image catalogue (in FITS or CSV format) containing the target directions.
       default: lotss_catalogue.csv
-    - id: max_dp3_threads
-      type: int?
-      default: 4
-      doc: Number of cores to use per job for
-        tasks with high I/O or memory.
-    - id: numbands
-      type: int?
-      default: -1
-      doc: The number of bands to group. -1 means all bands.
-    - id: truncateLastSBs
-      type: boolean?
-      default: true
-      doc: Whether to truncate the last subbands of the
-        MSs to the same length.
     - id: do_selfcal
       type: boolean?
       default: false
@@ -164,7 +150,7 @@ steps:
         - id: msin
           source:
             - phasediff_selection/best_ms
-            - dp3_parset/msout
+            - flatten_msout/flattenedarray
           pickValue: first_non_null
         - id: configfile
           source: configfile
@@ -182,7 +168,7 @@ outputs:
       type: Directory[]
       outputSource:
         - phasediff_selection/best_ms
-        - dp3_parset/msout
+        - flatten_msout/flattenedarray
       pickValue: first_non_null
     - id: images
       type:
