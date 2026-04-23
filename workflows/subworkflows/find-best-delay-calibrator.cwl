@@ -137,6 +137,15 @@ steps:
       run: ../../steps/flatten.cwl
       label: flatten_delay_images
 
+    - id: flatten_delay_models
+      in:
+        - id: nestedarray
+          source: delay_selfcal/starting_skymodel
+      out:
+        - id: flattenedarray
+      run: ../../steps/flatten.cwl
+      label: flatten_delay_images
+
 outputs:
   - id: msout
     outputSource:
@@ -149,12 +158,12 @@ outputs:
 
   - id: starting_skymodels
     outputSource: 
-      - starting_skymodel
+      - flatten_delay_models/flattenedarray
       - generate_skymodels/skymodel
     pickValue: first_non_null
     linkMerge: merge_nested
     type: File[]?
-    doc: Starting models that were used to kickstart the delay calibration.
+    doc: Starting skymodels that were used to kickstart the delay calibration.
 
   - id: pictures
     outputSource: 
