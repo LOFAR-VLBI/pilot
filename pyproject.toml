@@ -10,6 +10,7 @@ dependencies = [
     "LINC @ git+https://git.astron.nl/RD/LINC",
     "lofar_facet_selfcal @ git+https://github.com/rvweeren/lofar_facet_selfcal",
     "lofar_helpers @ git+https://github.com/jurjen93/lofar_helpers",
+    "lofar-vlbi-plot",
     "losoto",
     "numpy",
     "pandas",
