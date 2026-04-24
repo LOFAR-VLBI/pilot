@@ -71,10 +71,6 @@ inputs:
       default: TGSSphase
       doc: The name of the target solution table to use from the solset input.
 
-    - id: configfile
-      type: File
-      doc: Settings for the delay calibration in delay_solve.
-
     - id: reference_stationSB
       type: int?
       default: 104
@@ -321,8 +317,6 @@ steps:
           linkMerge: merge_nested
           pickValue: first_non_null
           valueFrom: $(self)
-        - id: configfile
-          source: configfile
         - id: delay_calibrator
           source:
             - delay_calibrator

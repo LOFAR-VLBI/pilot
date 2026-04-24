@@ -158,7 +158,6 @@ outputs:
       - flatten_delay_models/flattenedarray
       - generate_skymodels/skymodel
     pickValue: first_non_null
-    linkMerge: merge_nested
     type: File[]
     doc: Starting skymodels that were used to kickstart the delay calibration.
 
