@@ -22,9 +22,6 @@ inputs:
     - id: image_catalogue
       type: File
       doc: A catalogue with other sources in the field (e.g. a LoTSS catalogue).
-    - id: configfile
-      type: File
-      doc: Settings for the delay calibration in delay_solve.
     - id: starting_skymodel
       type:
         - File[]?
