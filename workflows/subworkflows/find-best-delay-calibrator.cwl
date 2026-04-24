@@ -162,7 +162,7 @@ outputs:
       - generate_skymodels/skymodel
     pickValue: first_non_null
     linkMerge: merge_nested
-    type: File[]?
+    type: File[]
     doc: Starting skymodels that were used to kickstart the delay calibration.
 
   - id: pictures
