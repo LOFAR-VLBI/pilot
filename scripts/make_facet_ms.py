@@ -113,8 +113,7 @@ def run_dp3(
             command += [f'ac{ac_count}.type=applycal',
                         f'ac{ac_count}.parmdb={applycal_h5}',
                         f'ac{ac_count}.correction={corr}',
-                        f'ac{ac_count}.missingantennabehavior=flag',
-                        f'ac{ac_count}.updateweights=True']
+                        f'ac{ac_count}.missingantennabehavior=flag']
             if phaseshift is not None and dirname is not None:
                 command += [f'ac{ac_count}.direction=' + dirname]
             steps.append(f'ac{ac_count}')
