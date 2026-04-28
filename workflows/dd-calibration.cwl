@@ -119,6 +119,7 @@ steps:
         - h5parms
         - selfcal_images
         - selfcal_inspection_images
+        - selfcal_statistics
         - solution_inspection_images
       run: ./subworkflows/ddcal_calibrators.cwl
 
@@ -193,6 +194,11 @@ outputs:
       type: File[]
       outputSource: ddcal_int/selfcal_inspection_images
       doc: Self-calibration images in PNG format
+
+    - id: selfcal_statistics
+      type: File[]
+      outputSource: ddcal_int/selfcal_statistics
+      doc: Self-calibration statistics plots
 
     - id: msout
       type: Directory[]

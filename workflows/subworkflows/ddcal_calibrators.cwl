@@ -36,9 +36,18 @@ steps:
         - fits_images
         - selfcal_inspection_images
         - solution_inspection_images
+        - selfcal_statistics
         - config_file
       run: ./auto_selfcal.cwl
       scatter: msin
+
+    - id: flatten_selfcal_statistics
+      in:
+        - id: nestedarray
+          source: ddcal/selfcal_statistics
+      out:
+        - flattenedarray
+      run: ../../steps/flatten.cwl
 
     - id: flatten_images
       in:
@@ -80,6 +89,11 @@ outputs:
     type: Directory[]
     outputSource: flatten_solutions/flattenedarray
     doc: LoSoTo solution inspection images
+
+  - id: selfcal_statistics
+    type: File[]
+    outputSource: flatten_selfcal_statistics/flattenedarray
+    doc: Self-calibration statistics plots
 
   - id: config_files
     type: File[]

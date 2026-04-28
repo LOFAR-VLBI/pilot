@@ -84,6 +84,7 @@ steps:
         - h5_facetselfcal
         - selfcal_images
         - solution_inspection_images
+        - selfcal_statistics
         - fits_image
       run: ../../steps/facet_selfcal_auto.cwl
 
@@ -132,6 +133,10 @@ outputs:
   - id: solution_inspection_images
     type: Directory[]
     outputSource: run_facetselfcal/solution_inspection_images
+
+  - id: selfcal_statistics
+    type: File[]
+    outputSource: run_facetselfcal/selfcal_statistics
 
   - id: config_file
     type: File

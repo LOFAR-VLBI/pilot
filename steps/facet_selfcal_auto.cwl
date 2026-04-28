@@ -65,6 +65,12 @@ outputs:
          glob: 'plotlosoto*'
       doc: Solution inspection plots
 
+    - id: selfcal_statistics
+      type: File[]
+      outputBinding:
+          glob: "selfcal_quality_plots/*.png"
+      doc: Self-calibration statistics plots
+
     - id: fits_image
       type: File
       outputBinding:
