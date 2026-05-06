@@ -26,7 +26,7 @@ inputs:
     - id: msout_names
       type: string
       doc: |
-        A string of names, one for each direction to image.
+        A string of comma-separated MeasurementSet names, one for each direction to image.
       inputBinding:
         position: 2
         prefix: msout.name=
