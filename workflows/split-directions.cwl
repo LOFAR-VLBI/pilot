@@ -34,7 +34,7 @@ inputs:
     - id: dd_selection
       type: boolean?
       default: false
-      doc: If set to true the pipeline will perform direction-dependent calibrator selection.
+      doc: If set to true the pipeline will generate phasediff scores for direction-dependent calibrator selection.
     - id: phasediff_score
       type: float
       default: 2.3
