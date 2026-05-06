@@ -86,7 +86,7 @@ steps:
         - id: custom_phasediff_score_csv
           source: custom_phasediff_score_csv
         - id: dd_selection
-          valueFrom: ${ return inputs.custom_phasediff_score_csv == null; }
+          valueFrom: $(inputs.custom_phasediff_score_csv == null)
         - id: chunk_size_directions
           source: chunk_size_directions
       out:
