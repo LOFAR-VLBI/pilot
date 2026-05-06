@@ -39,8 +39,10 @@ inputs:
       type: float
       default: 2.3
       doc: |
-         Phasediff-score to select good calibrators. See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
-         For calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators. If no selection set on for example value >5.
+         Phasediff-score to select good calibrators and control the DD calibrator selection.
+         See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
+         For calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+         If no selection set on for example value >5.
 
     - id: custom_phasediff_score_csv
       type: File?
