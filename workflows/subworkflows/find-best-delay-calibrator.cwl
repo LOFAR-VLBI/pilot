@@ -52,7 +52,7 @@ steps:
           source: delay_calibrator
         - id: process_all
           default: true
-        - id: starting_skymodel
+        - id: model_image
           default: starting_skymodel
       out: 
         - id: skymodel
