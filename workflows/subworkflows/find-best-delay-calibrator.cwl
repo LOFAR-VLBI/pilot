@@ -143,15 +143,6 @@ steps:
       run: ../../steps/flatten.cwl
       label: flatten_delay_models
 
-    - id: flatten_delay_configs
-      in:
-        - id: nestedarray
-          source: delay_selfcal/config
-      out:
-        - id: flattenedarray
-      run: ../../steps/flatten.cwl
-      label: flatten_delay_configs
-
 outputs:
   - id: msout
     outputSource:
@@ -180,7 +171,7 @@ outputs:
 
   - id: configs
     outputSource: 
-      - flatten_delay_configs/flattenedarray
+      - delay_selfcal/config
     type: File[]
     pickValue: all_non_null
     linkMerge: merge_flattened
