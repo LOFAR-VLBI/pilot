@@ -43,23 +43,6 @@ inputs:
         Time resolution to average the split off delay calibrators to.
 
 steps:
-    - id: generate_skymodels
-      in:
-        - id: msin
-          source: msin
-          valueFrom: $(self[0])
-        - id: delay_calibrator
-          source: delay_calibrator
-        - id: process_all
-          default: true
-        - id: model_image
-          default: starting_skymodel
-      out: 
-        - id: skymodel
-        - id: logfile
-      run: ../../steps/delay_cal_model.cwl
-      when: $(inputs.starting_skymodel == null)
-
     - id: select_best_delay_cal
       in:
         - id: msin
@@ -89,7 +72,6 @@ steps:
         - id: input_entry
           source:
             - starting_skymodel
-            - generate_skymodels/skymodel
           pickValue: all_non_null
           linkMerge: merge_flattened
       out:
@@ -156,7 +138,6 @@ outputs:
   - id: starting_skymodels
     outputSource: 
       - flatten_delay_models/flattenedarray
-      - generate_skymodels/skymodel
     pickValue: first_non_null
     type: File[]
     doc: Starting skymodels that were used to kickstart the delay calibration.
