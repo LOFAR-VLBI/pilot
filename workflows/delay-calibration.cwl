@@ -43,7 +43,7 @@ inputs:
         If not provided, lofar-vlbi-plot will be run to generate the CSV (requires internet access).
 
     - id: image_catalogue
-      type: File
+      type: File?
       doc: An image catalogue file in CSV format.
 
     - id: Ateam_skymodel
