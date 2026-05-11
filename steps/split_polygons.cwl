@@ -39,7 +39,7 @@ outputs:
       glob: split_polygons*.log
 
 arguments:
-  - --extra_boundary=0.0
+  - --extra_boundary=0.001
 
 requirements:
   - class: InlineJavascriptRequirement
