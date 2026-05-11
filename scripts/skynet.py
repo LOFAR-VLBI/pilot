@@ -38,12 +38,16 @@ def write_skymodel(model: str, outname: str):
             skymodel.write( '{:s}\n'.format(ss_to_write) )
 
 def model_from_image(modelImage: str, smodel: float, opt_coords: SkyCoord, astroSearchRadius: float = 3.0, outdir: str = '.'):
-    img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), outdir=outdir)
+    # ncores=1 is set to disable multiprocessing as this sometimes triggers an
+    # issue with socket path lengths cause by deeply nested temporary directories
+    # that can occur during a pipeline run.
+    # The images processed here are small, so it shouldn't affect performance meaningfully.
+    img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), outdir=outdir, ncores=1)
     sources = img.sources
     maxval = 0.
     for src in sources:
         maxval = np.max( (maxval, src.total_flux) )
-    img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), advanced_opts=True, blank_limit=0.01*maxval, outdir=outdir)
+    img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), advanced_opts=True, blank_limit=0.01*maxval, outdir=outdir, ncores=1)
     sources = img.sources
     # Scale model flux density to the provided value.
     tot_flux = 0.
