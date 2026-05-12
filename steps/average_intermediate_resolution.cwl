@@ -52,7 +52,6 @@ arguments:
   - msout=concat_1asec.ms
   - bdaaverager.timebase=70e3
   - bdaaverager.maxinterval=32
-  - numthreads=$(inputs.ncpu)
 
 requirements:
   - class: ShellCommandRequirement
