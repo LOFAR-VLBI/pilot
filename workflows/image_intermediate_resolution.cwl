@@ -83,7 +83,7 @@ steps:
         - id: msin
           source: average_data/ms_avg
         - id: ncpu
-          source: ncpu
+          source: number_cores
         - id: tmpdir
           source: tmpdir_wsclean
         - id: size
