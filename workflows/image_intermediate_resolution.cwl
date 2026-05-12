@@ -50,7 +50,7 @@ steps:
         - id: msin
           source: msin
         - id: ncpu
-          source: ncpu
+          source: number_cores
       out:
         - id: ms_avg
       run: ../steps/average_intermediate_resolution.cwl
