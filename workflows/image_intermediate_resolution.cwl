@@ -15,7 +15,7 @@ inputs:
       type: Directory[]
       doc: MeasurementSets that will be imaged.
 
-    - id: ncpu
+    - id: number_cores
       type: int?
       default: 24
       doc: The minimum number of cores that should be available for steps that require high I/O.
