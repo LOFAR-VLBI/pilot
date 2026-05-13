@@ -46,7 +46,7 @@ inputs:
     - id: ncpu
       type: int?
       doc: Number of cores to use.
-      default: 4
+      default: 8
       inputBinding:
         prefix: "--ncpu"
         position: 4
