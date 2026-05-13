@@ -42,7 +42,7 @@ def make_utf8(inp: str | bytes) -> str:
         return inp
 
 
-def split_facet_h5(h5parm: str, dirname: str):
+def split_facet_h5(h5parm: str, dirname: str) -> str:
     """
     Split a multi-facet H5Parm file into per-direction solutions.
 
@@ -107,7 +107,7 @@ def split_facet_h5(h5parm: str, dirname: str):
     return outputh5
 
 
-def repack(h5):
+def repack(h5: str):
     """
     Repack h5parm
 
@@ -184,8 +184,8 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str, nc
     freqboundary = []
     for model_image in sorted(model_images)[:-1]:
         with fits.open(model_image) as fts:
-            # CRVAL3   -- centre frequency of the output channel
-            # CDELT3   -- width of the output channel
+            # CRVAL3 -- centre frequency of the output channel
+            # CDELT3 -- width of the output channel
             # e.g. https://wsclean.readthedocs.io/en/latest/fits_keywords.html#meaning-of-frequency-keywords
             fdelt, fcent = fts[0].header['CDELT3'] / 2, fts[0].header['CRVAL3']
             freqboundary.append(str(int(fcent + fdelt)))
@@ -236,7 +236,7 @@ def copy_data(dat: str, to: str):
     ) 
 
 
-def remove_dir(msin):
+def remove_dir(msin: str):
     """
     Remove or unlink directory
 
