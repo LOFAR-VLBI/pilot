@@ -154,10 +154,11 @@ inputs:
 
     - id: starting_skymodel
       type:
-        - File?
         - File[]?
       doc: |
-        Optional starting model(s) in BBS-compatible text format used to kickstart the delay calibration. If given and `do_auto_delay_selection` is enabled, the number of skymodels must be equal to `select_best_n_delay_calibrators`. Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
+        Optional starting model(s) in FITS format used to kickstart the delay calibration when automatic selection from multiple delay candidates is used.
+        If given and `do_auto_delay_selection` is enabled, the number of skymodels must be equal to `select_best_n_delay_calibrators`.
+        Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
 
     - id: do_auto_delay_selection
       type: boolean?
