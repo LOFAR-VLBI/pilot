@@ -149,7 +149,7 @@ def predict(ms: str, model_images: list[str], h5parm: str, facet_region: str, nc
                f'-j {ncpu}',
                f'-model-column {model_column}',
                f'-name {prefix_name}',
-               '-parallel-gridding 6']
+               '-parallel-gridding 4']
 
     for n, argument in enumerate(comparse):
         if argument in [

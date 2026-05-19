@@ -17,7 +17,7 @@ inputs:
   - id: ncpu
     type: int?
     doc: Number of cores to use.
-    default: 6
+    default: 4
     inputBinding:
       position: 0
       prefix: numthreads=
