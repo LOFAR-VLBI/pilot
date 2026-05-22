@@ -347,6 +347,7 @@ steps:
         - id: pictures
         - id: phasediff_score_csv
         - id: solutions
+        - id: configs
       run: ./subworkflows/find-best-delay-calibrator.cwl
       when: $(inputs.do_auto_delay_selection)
 
@@ -454,7 +455,10 @@ outputs:
   - id: facetselfcal_config
     outputSource: 
       - phaseup/facetselfcal_config
-    type: File
+      - select_best_delay_cal/configs
+    type:
+      - File
+      - File[]
     pickValue: the_only_non_null
     doc: Config file with settings used for the delay calibration.
 
