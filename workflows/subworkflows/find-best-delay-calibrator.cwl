@@ -138,7 +138,6 @@ outputs:
   - id: starting_skymodels
     outputSource: 
       - flatten_delay_models/flattenedarray
-    pickValue: first_non_null
     type: File[]
     doc: Starting skymodels that were used to kickstart the delay calibration.
 
