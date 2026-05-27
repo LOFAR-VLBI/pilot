@@ -24,7 +24,7 @@ inputs:
       shellQuote: false
       itemSeparator: ' '
       prefix: '-temp-dir'
-  - id: ncpu
+  - id: cores
     type: int?
     default: 24
     inputBinding:
@@ -349,7 +349,7 @@ requirements:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: $(inputs.ncpu)
+    coresMin: $(inputs.cores)
 
 stdout: wsclean.log
 stderr: wsclean_err.log
