@@ -41,7 +41,12 @@ inputs:
     - id: tmpdir_wsclean
       type: string?
       default: '.'
-      doc: Temporary directory for wsclean reordering
+      doc: |
+         Path to the directory where wsclean will perform the data reordering
+         required for imaging. Can be absolute or relative to the working directory.
+         Intended for fast scratch space local to the compute node. By default
+         this the step's working directory. See wsclean documentation for more
+         details.
 
 steps:
     - id: average_data
