@@ -7,8 +7,7 @@ doc: |
     * Splits a LOFAR MeasurementSet into various target directions
     * Applies delay calibrator solutions
     * Optionally (for wide-field imaging) performs direction-dependent calibrator selection
-    * Optionally performs self-calibration on the target directions
-  This step should be run after the delay calibration workflow.
+  This step should be run after the delay calibration workflow if run manually, but is typically run automatically by dd-calibration.
 
 requirements:
   - class: SubworkflowFeatureRequirement
