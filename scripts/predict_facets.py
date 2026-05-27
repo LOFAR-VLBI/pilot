@@ -52,6 +52,11 @@ def split_facet_h5(h5parm: str, dirname: str) -> str:
         Path to the multi-facet H5Parm file.
     dirname
         Name of the direction to extract.
+    
+    Returns
+    -------
+    str
+        Path to the new H5Parm file containing only the solutions for the specified direction.
     """
     outputh5 = f'{basename(h5parm)}.{dirname}.h5'
     run(f'cp {h5parm} {outputh5}', shell=True, stderr=STDOUT, encoding="utf-8", text=True)
