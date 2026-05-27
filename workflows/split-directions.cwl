@@ -26,10 +26,6 @@ inputs:
       type: File
       doc: The image catalogue (in FITS or CSV format) containing the target directions.
       default: lotss_catalogue.csv
-    - id: do_selfcal
-      type: boolean?
-      default: false
-      doc: Whether to do selfcal on the direction concat MSs.
     - id: dd_selection
       type: boolean?
       default: false
