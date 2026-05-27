@@ -61,8 +61,6 @@ steps:
           source: time_resolution
       out:
         - id: msout_concat
-        - id: images
-        - id: h5parm
         - id: phasediff_score_csv
       run: ../split-directions.cwl
       label: select_best_delay_cal
