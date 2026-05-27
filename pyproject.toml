@@ -2,6 +2,7 @@
 name = "PILOT"
 description = "PILOT: the VLBI Pipeline for the International LOFAR Telescope"
 version = "0.9.1"
+requires-python = ">3.10"
 dependencies = [
     "astropy",
     "bdsf",
@@ -30,7 +31,7 @@ packages = []
 
 [tool.tox]
 requires = ["tox>=4.22"]
-envlist = ["py310", "py311", "py312", "py313"]
+envlist = ["py311", "py312", "py313"]
 
 [tool.tox.env_run_base]
 change_dir = "{tox_root}/tests"
