@@ -14,6 +14,15 @@ inputs:
       position: 0
       prefix: msin=
       separate: false
+  - id: ncpu
+    type: int?
+    doc: Number of cores to use.
+    default: 4
+    inputBinding:
+      position: 0
+      prefix: numthreads=
+      separate: false
+
 
 outputs:
   - id: ms_avg
@@ -33,8 +42,8 @@ outputs:
 arguments:
   - steps=[avg]
   - avg.type=averager
-  - avg.timeresolution=6
-  - avg.freqresolution='61.05kHz'
+  - avg.timeresolution=4
+  - avg.freqresolution='48.84kHz'
   - msout.storagemanager='dysco'
   - msout=$( inputs.msin.basename + '.avg.ms')
   - msout.antennacompression=false
@@ -52,7 +61,7 @@ hints:
       - entry: $(inputs.msin)
         writable: false
   - class: ResourceRequirement
-    coresMin: 4
+    coresMin: $(inputs.ncpu)
 
 stdout: predict_avg.log
 stderr: predict_avg.log
