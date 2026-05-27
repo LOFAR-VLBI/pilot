@@ -49,10 +49,6 @@ inputs:
       type: float
       default: 0.0
       doc: Peak flux (Jy/beam) cut to pre-select sources from catalogue. Default at 0.0 is no peak flux selection.
-    - id: configfile
-      type: File?
-      default: null
-      doc: The configuration file to be used to run facetselfcal.py during the target_selfcal step.
     - id: frequency_resolution
       type: string?
       default: '390.56kHz'
@@ -144,25 +140,6 @@ steps:
       when: $(inputs.dd_selection)
       run: ./subworkflows/phasediff_selection.cwl
 
-    - id: target_selfcal
-      label: Target Selfcal
-      in:
-        - id: msin
-          source:
-            - phasediff_selection/best_ms
-            - flatten_msout/flattenedarray
-          pickValue: first_non_null
-        - id: configfile
-          source: configfile
-        - id: do_selfcal
-          source: do_selfcal
-      out:
-        - id: images
-        - id: h5parm
-      when: $(inputs.do_selfcal)
-      run: ../steps/facet_selfcal.cwl
-      scatter: msin
-
 outputs:
     - id: msout_concat
       type: Directory[]
@@ -170,22 +147,6 @@ outputs:
         - phasediff_selection/best_ms
         - flatten_msout/flattenedarray
       pickValue: first_non_null
-    - id: images
-      type:
-        type: array
-        items:
-          type: array
-          items: File
-      outputSource:
-        - target_selfcal/images
-      pickValue: the_only_non_null
     - id: phasediff_score_csv
       type: File?
       outputSource: phasediff_selection/phasediff_score_csv
-    - id: h5parm
-      type:
-        - File
-        - File[]
-      outputSource:
-        - target_selfcal/h5parm
-      pickValue: the_only_non_null
