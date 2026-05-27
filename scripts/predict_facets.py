@@ -109,7 +109,7 @@ def split_facet_h5(h5parm: str, dirname: str) -> str:
 
 def repack(h5: str):
     """
-    Repack h5parm
+    Reduce h5parm size by repacking with h5repack.
 
     Parameters
     ----------
