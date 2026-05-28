@@ -22,6 +22,11 @@ outputs:
     doc: Delay Calibrator CSV
     outputBinding:
       glob: delay_calibrators.csv
+  - id: image_catalogue_pf
+    type: File
+    doc: Image catalogue CSV
+    outputBinding:
+      glob: image_catalogue.csv
 
 arguments:
   - --continue_no_lotss
