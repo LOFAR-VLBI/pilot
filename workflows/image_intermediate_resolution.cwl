@@ -17,7 +17,7 @@ inputs:
 
     - id: number_cores
       type: int?
-      default: 12
+      default: 24
       doc: The minimum number of cores that should be available for steps that require high I/O.
 
     - id: dd_solutions
@@ -38,12 +38,24 @@ inputs:
       type: File?
       doc: Optional user-provided facet layout file
 
+    - id: tmpdir_wsclean
+      type: string?
+      default: '.'
+      doc: |
+         Path to the directory where wsclean will perform the data reordering
+         required for imaging. Can be absolute or relative to the working directory.
+         Intended for fast scratch space local to the compute node. By default
+         this the step's working directory. See wsclean documentation for more
+         details.
+
 steps:
     - id: average_data
       label: average
       in:
         - id: msin
           source: msin
+        - id: ncpu
+          source: number_cores
       out:
         - id: ms_avg
       run: ../steps/average_intermediate_resolution.cwl
@@ -52,7 +64,8 @@ steps:
       label: facet_layout
       in:
         - id: msin
-          source: average_data/ms_avg
+          source: msin
+          valueFrom: $(self[0])
         - id: h5parm
           source: dd_solutions
         - id: imsize
@@ -73,9 +86,11 @@ steps:
       label: intermediate_resolution_image
       in:
         - id: msin
-          source: msin
-        - id: cores
+          source: average_data/ms_avg
+        - id: ncpu
           source: number_cores
+        - id: tmpdir
+          source: tmpdir_wsclean
         - id: size
           source: image_size
         - id: scale
@@ -106,7 +121,6 @@ steps:
         - id: MFS_model
         - id: MFS_psf
         - id: channel_model_images
-
       run: ../steps/wsclean.cwl
 
     - id: validate_image
@@ -116,9 +130,7 @@ steps:
           source: make_intermediate_resolution_image/MFS_image_pb
       out:
         - id: validation_csv
-
       run: ../steps/validate_1arcsec_image.cwl
-
 
 outputs:
     - id: facet_region
@@ -136,7 +148,7 @@ outputs:
       doc: |
         Final primary-beam corrected MFS FITS image at intermediate resolution.
     - id: MFS_image
-      outputSource: make_intermediate_resolution_image/MFS_image_pb
+      outputSource: make_intermediate_resolution_image/MFS_image
       type: File
       doc: |
         Final apparent corrected MFS FITS image at intermediate resolution.
@@ -147,7 +159,7 @@ outputs:
       doc: |
         Final primary-beam corrected MFS FITS image at intermediate resolution.
     - id: MFS_residual
-      outputSource: make_intermediate_resolution_image/MFS_residual_pb
+      outputSource: make_intermediate_resolution_image/MFS_residual
       type: File
       doc: |
         Final apparent corrected MFS FITS image at intermediate resolution.
@@ -158,7 +170,7 @@ outputs:
       doc: |
         Final primary-beam corrected MFS FITS image at intermediate resolution.
     - id: MFS_model
-      outputSource: make_intermediate_resolution_image/MFS_model_pb
+      outputSource: make_intermediate_resolution_image/MFS_model
       type: File
       doc: |
         Final apparent corrected MFS FITS image at intermediate resolution.

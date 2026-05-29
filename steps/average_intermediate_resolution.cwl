@@ -19,6 +19,14 @@ inputs:
       itemSeparator: ','
       valueFrom: "[$(self.map(function(d) { return d.path || d.location; }).join(','))]"
 
+  - id: ncpu
+    type: int?
+    default: 24
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: 'numthreads='
+
 outputs:
   - id: ms_avg
     doc: |
@@ -56,7 +64,7 @@ hints:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: 12
+    coresMin: $(inputs.ncpu)
 
 stdout: dp3_intermediate_avg.log
 stderr: dp3_intermediate_avg_err.log

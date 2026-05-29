@@ -5,7 +5,7 @@ label: WSClean
 doc: Runs WSClean on the input data to produce an image.
 
 baseCommand: wsclean
-arguments: [-verbose, -log-time, -no-update-model-required]
+arguments: [-verbose, -log-time, -no-update-model-required, -reorder]
 
 inputs:
   - id: msin
@@ -16,8 +16,8 @@ inputs:
       position: 2
       shellQuote: false
       itemSeparator: ' '
-  - id: tempdir
-    type: string
+  - id: tmpdir
+    type: string?
     default: '.'
     inputBinding:
       position: 1
@@ -58,6 +58,13 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-weight'
+  - id: weighting-rank-filter
+    type: int?
+    default: 3
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-weighting-rank-filter'
   - id: parallel-reordering
     type: int?
     default: 6
@@ -67,7 +74,7 @@ inputs:
       prefix: '-parallel-reordering'
   - id: mgain
     type: float?
-    default: 0.7
+    default: 0.75
     inputBinding:
       position: 1
       shellQuote: false
@@ -81,7 +88,7 @@ inputs:
       prefix: '-data-column'
   - id: auto-mask
     type: float?
-    default: 3.0
+    default: 2.5
     inputBinding:
       position: 1
       shellQuote: false
@@ -130,7 +137,7 @@ inputs:
       prefix: '-niter'
   - id: multiscale-scale-bias
     type: float?
-    default: 0.6
+    default: 0.7
     inputBinding:
       position: 1
       shellQuote: false
@@ -144,7 +151,7 @@ inputs:
       prefix: '-parallel-deconvolution'
   - id: parallel-gridding
     type: int?
-    default: 4
+    default: 6
     inputBinding:
       position: 1
       shellQuote: false
@@ -172,7 +179,7 @@ inputs:
       prefix: '-nmiter'
   - id: channels-out
     type: int?
-    default: 6
+    default: 12
     inputBinding:
       position: 1
       shellQuote: false
@@ -186,18 +193,31 @@ inputs:
       prefix: '-join-channels'
   - id: fit-spectral-pol
     type: int?
-    default: 3
+    default: 9
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-fit-spectral-pol'
   - id: deconvolution-channels
     type: int?
-    default: 3
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-deconvolution-channels'
+  - id: local-rms-window
+    type: int?
+    default: 50
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-local-rms-window'
+  - id: local-rms
+    type: boolean?
+    default: true
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-local-rms'
   - id: gridder
     type: string?
     default: wgridder
@@ -207,11 +227,39 @@ inputs:
       prefix: '-gridder'
   - id: apply-primary-beam
     type: boolean?
-    default: true
+    default: false
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-apply-primary-beam'
+  - id: apply-facet-beam
+    type: boolean?
+    default: true
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-apply-facet-beam'
+  - id: facet-beam-update
+    type: int?
+    default: 600
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-facet-beam-update'
+  - id: dd-psf-grid
+    type: int[]?
+    default: [3, 3]
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-dd-psf-grid'
+  - id: scalar-visibilities
+    type: boolean?
+    default: true
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-scalar-visibilities'
   - id: use-differential-lofar-beam
     type: boolean?
     default: true
