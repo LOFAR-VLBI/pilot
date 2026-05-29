@@ -11,6 +11,7 @@ doc: |
 requirements:
   - class: SubworkflowFeatureRequirement
   - class: MultipleInputFeatureRequirement
+  - class: InlineJavascriptRequirement
 
 inputs:
     - id: msin
@@ -29,33 +30,19 @@ inputs:
       type: File?
       doc: Provide already obtained direction-dependent h5parm solutions for the Dutch LOFAR array to pre-apply before international LOFAR calibration.
 
-    - id: max_dp3_threads
-      type: int?
-      default: 4
-      doc: Number of cores to use per job for tasks with high I/O or memory.
-
-    - id: numbands
-      type: int?
-      default: -1
-      doc: The number of bands to group. -1 means all bands.
-
-    - id: truncateLastSBs
+    - id: validate
       type: boolean?
       default: true
-      doc: Whether to truncate the last subbands of the MSs to the same length.
-
-    - id: dd_selection
-      type: boolean?
-      default: true
-      doc: If set to true the pipeline will perform direction-dependent calibrator selection.
+      doc: If set to true the pipeline will perform validation of the direction-dependent calibrator selection.
 
     - id: phasediff_score
       type: float
       default: 2.3
       doc: |
-         Phasediff-score to select good calibrators. See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
-         For calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators. If no selection set on for example value >5.
-         Only used when dd_selection==true.
+         Phasediff-score to select good calibrators and control the DD calibrator selection.
+         See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
+         For calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+         If all sources should be selected, set this to a value >6.
 
     - id: custom_phasediff_score_csv
       type: File?
@@ -77,6 +64,12 @@ inputs:
          Maximum fraction of bad solutions. Lower value is stricter.
          Workflow crashes if fraction is exceeded.
 
+    - id: chunk_size_directions
+      type: int?
+      default: 10
+      doc: |
+        Sets the number of directions to split off per DP3 explode call
+        (enhances parallelisation and optimises the DP3 explode step)
 
 steps:
     - id: split_directions
@@ -88,14 +81,16 @@ steps:
           source: delay_solset
         - id: image_cat
           source: source_catalogue
-        - id: max_dp3_threads
-          source: max_dp3_threads
         - id: phasediff_score
           source: phasediff_score
         - id: peak_flux_cut
           source: peak_flux_cut
+        - id: custom_phasediff_score_csv
+          source: custom_phasediff_score_csv
         - id: dd_selection
-          source: dd_selection
+          valueFrom: $(inputs.custom_phasediff_score_csv == null)
+        - id: chunk_size_directions
+          source: chunk_size_directions
       out:
         - msout_concat
         - phasediff_score_csv
@@ -130,15 +125,15 @@ steps:
           source: ddcal_int/h5parms
         - id: model_cache
           source: model_cache
-        - id: dd_selection
-          source: dd_selection
+        - id: validate
+          source: validate
         - id: max_rejected_fraction
           source: max_rejected_fraction
       out:
         - h5parm_selected
         - images_selected
         - validate_csv
-      when: $(inputs.dd_selection)
+      when: $(inputs.validate)
       run: ./subworkflows/ddcal_validation.cwl
 
     - id: multidir_merge

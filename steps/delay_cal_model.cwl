@@ -29,9 +29,6 @@ inputs:
         position: 2
         prefix: --model-image
         separate: true
-        valueFrom: $(self.basename)
-
-
     - id: process_all
       type: boolean?
       default: false

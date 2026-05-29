@@ -11,10 +11,6 @@ baseCommand: [cat, input.parset]
 stdout: dp3_explode.parset
 
 inputs:
-    - id: msout_names
-      type: string
-      doc: |
-        A string of names, one for each direction to image.
 
     - id: phase_centers
       type: string
@@ -86,5 +82,4 @@ requirements:
             averager2.timeresolution    = $(inputs.time_resolution)
 
             msout.storagemanager        = dysco
-            msout.name                  = $(inputs.msout_names)
             msout.overwrite             = True

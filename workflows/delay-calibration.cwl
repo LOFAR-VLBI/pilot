@@ -43,7 +43,7 @@ inputs:
         If not provided, lofar-vlbi-plot will be run to generate the CSV (requires internet access).
 
     - id: image_catalogue
-      type: File
+      type: File?
       doc: An image catalogue file in CSV format.
 
     - id: Ateam_skymodel
@@ -70,10 +70,6 @@ inputs:
       type: string?
       default: TGSSphase
       doc: The name of the target solution table to use from the solset input.
-
-    - id: configfile
-      type: File
-      doc: Settings for the delay calibration in delay_solve.
 
     - id: reference_stationSB
       type: int?
@@ -158,10 +154,11 @@ inputs:
 
     - id: starting_skymodel
       type:
-        - File?
         - File[]?
       doc: |
-        Optional starting model(s) in BBS-compatible text format used to kickstart the delay calibration. If given and `do_auto_delay_selection` is enabled, the number of skymodels must be equal to `select_best_n_delay_calibrators`. Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
+        Optional starting model(s) in FITS format used to kickstart the delay calibration when automatic selection from multiple delay candidates is used.
+        If given and `do_auto_delay_selection` is enabled, the number of skymodels must be equal to `select_best_n_delay_calibrators`.
+        Additionally, they should be named in such a way that when sorted by name, the delay calibrator MSes and skymodels end up in the same order.
 
     - id: do_auto_delay_selection
       type: boolean?
@@ -206,6 +203,7 @@ steps:
           source: delay_calibrator
       out:
         - id: delay_calibrator_pf
+        - id: image_catalogue_pf
       run: ../steps/lofar_vlbi_plot.cwl
       when: $(inputs.delay_calibrator == null)
 
@@ -320,12 +318,16 @@ steps:
           linkMerge: merge_nested
           pickValue: first_non_null
           valueFrom: $(self)
-        - id: configfile
-          source: configfile
         - id: delay_calibrator
           source:
             - delay_calibrator
             - lofar_vlbi_plot/delay_calibrator_pf
+          pickValue: first_non_null
+          valueFrom: $(self)
+        - id: image_catalogue
+          source:
+            - image_catalogue
+            - lofar_vlbi_plot/image_catalogue_pf
           pickValue: first_non_null
           valueFrom: $(self)
         - id: select_best_n_delay_calibrators
@@ -345,6 +347,7 @@ steps:
         - id: pictures
         - id: phasediff_score_csv
         - id: solutions
+        - id: configs
       run: ./subworkflows/find-best-delay-calibrator.cwl
       when: $(inputs.do_auto_delay_selection)
 
@@ -452,7 +455,10 @@ outputs:
   - id: facetselfcal_config
     outputSource: 
       - phaseup/facetselfcal_config
-    type: File
+      - select_best_delay_cal/configs
+    type:
+      - File
+      - File[]
     pickValue: the_only_non_null
     doc: Config file with settings used for the delay calibration.
 
@@ -461,8 +467,7 @@ outputs:
       - phaseup/starting_skymodel
       - select_best_delay_cal/starting_skymodels
     type: File[]
-    pickValue: all_non_null
-    linkMerge: merge_flattened
+    pickValue: first_non_null
     doc: |
         The starting model(s) that were used to kick start the delay calibration.
 
