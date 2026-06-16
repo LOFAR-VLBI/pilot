@@ -38,6 +38,14 @@ def write_skymodel(model: str, outname: str):
             skymodel.write( '{:s}\n'.format(ss_to_write) )
 
 def model_from_image(modelImage: str, smodel: float, opt_coords: SkyCoord, astroSearchRadius: float = 3.0, outdir: str = '.'):
+    # Sometimes if temporary directory paths are too long PyBDSF's multiprocessing
+    # will fail with a `OSError: AF_UNIX path too long`, because socket paths are not
+    # allowed to exceed 108 bytes. To avoid this we purposely override the usual
+    # temporary paths here.
+    os.environ["TMPDIR"] = "/tmp"
+    os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
+    os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
+
     img = bdsf.process_image(modelImage, mean_map='zero', rms_map=True, rms_box = (100,10), outdir=outdir)
     sources = img.sources
     maxval = 0.
