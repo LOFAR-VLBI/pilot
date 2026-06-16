@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 from typing import List
-
+from pathlib import Path
 
 
 def parse_args() -> argparse.Namespace:
@@ -33,13 +33,25 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+def stage_inputs(args: argparse.Namespace):
+    workdir = Path.cwd()
 
-def build_rmsynth_cmd(args: argparse.Namespace) -> List[str]:
+    q_local = workdir / "image-polcube-Q.fits"
+    u_local = workdir / "image-polcube-U.fits"
+    freq_local = workdir / "image_frequency_list.dat"
+
+    shutil.copy2(args.stokes_q, q_local)
+    shutil.copy2(args.stokes_u, u_local)
+    shutil.copy2(args.freqs, freq_local)
+
+    return str(q_local), str(u_local), str(freq_local)
+
+def build_rmsynth_cmd(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,) -> List[str]:
     cmd = [
         "rmsynth3d",
-        args.stokes_q,
-        args.stokes_u,
-        args.freqs,
+        qfile,
+        ufile,
+        freqfile,
         "-l",
         str(args.max_lam2),
         "-d",
@@ -74,11 +86,11 @@ def move_outputs(stokes_q_path: str) -> None:
 
 def main() -> int:
     args = parse_args()
-    rmsynth_cmd = build_rmsynth_cmd(args)
-    rc = subprocess.call(rmsynth_cmd)
-    move_outputs(args.stokes_q)
-    return rc
-
+    qfile,ufile,freqfile = stage_inputs(args)
+    rmsynth_cmd = build_rmsynth_cmd(args,qfile,ufile,freqfile,)
+    print("Running:", " ".join(rmsynth_cmd))
+    print("Working directory: ", Path.cwd())
+    return subprocess.call(rmsynth_cmd)
 
 if __name__ == "__main__":
     sys.exit(main())
