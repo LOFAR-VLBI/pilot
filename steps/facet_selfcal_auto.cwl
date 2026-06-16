@@ -50,31 +50,31 @@ outputs:
     - id: h5_facetselfcal
       type: File
       outputBinding:
-        glob: 'best_ILTJ*solutions.h5'
+        glob: 'h5_solutions/best_ILTJ*solutions.h5'
       doc: The output merged calibration solution files generated in HDF5 format, selected during self-calibration.
 
     - id: selfcal_images
       type: File[]
       outputBinding:
-         glob: 'ILTJ*.png'
+         glob: 'plots/ILTJ*.png'
       doc: Selfcal PNG images for quick inspection.
 
     - id: solution_inspection_images
       type: Directory[]
       outputBinding:
-         glob: 'plotlosoto*'
+         glob: 'solution_plots*'
       doc: Solution inspection plots
 
     - id: fits_image
       type: File
       outputBinding:
-         glob: 'best_*MFS-image.fits'
+         glob: 'fits_images/best_*MFS-image.fits'
       doc: Best selfcal FITS image
 
     - id: logfile
       type: File[]
       outputBinding:
-         glob: [facet_selfcal*.log, selfcal.log]
+         glob: [facet_selfcal*.log, logs/selfcal.log]
       doc: |
         The files containing the stdout
         and stderr from the step.
