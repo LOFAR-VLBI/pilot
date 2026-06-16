@@ -367,30 +367,21 @@ steps:
       run: ../steps/collectfiles.cwl
       label: store_logs
 
-    # Selection of the concatenated MSs, as pickValue doesn't allow
-    # us to do this in the msouts output of the workflow. The reasoning
-    # is the following:
-    # If process_ddf was run, take that output.
-    # If process_ddf was not run but sort-concatenate-flag was, take that instead.
-    # Otherwise, don't collect anything.
-    - id: select_concatenated_mss
-      in:
-        - id: input1
-          source: sort-concatenate-flag/msout
-        - id: input2
-          source: process_ddf/msout
-      out:
-        - id: output
-      when: $(inputs.input1 != null || inputs.input2 != null)
-      run: ../utils/select_input.cwl
-
     - id: apply_delay_allms
       in:
         - id: ms
           source:
-            - select_concatenated_mss/output
+            - process_ddf/msout
             - msin
           pickValue: first_non_null
+          # process_ddf/msout returns [null, null, ...] when skipped; convert
+          # to null so first_non_null falls through to msin.
+          valueFrom: ${
+            if (self instanceof Array && self.every(function(e) { return e === null; })) {
+              return null;
+            }
+            return self;
+            }
         - id: h5parm
           source:
             - phaseup/solutions
@@ -413,6 +404,24 @@ steps:
       label: apply_delay_allms
       when: $(inputs.apply_delay_solutions && (inputs.select_best_n_delay_calibrators == 1))
 
+    # Selection of the concatenated MSs, as pickValue doesn't allow
+    # us to do this in the msouts output of the workflow. The reasoning
+    # is the following:
+    # If process_ddf was run, take that output.
+    # If process_ddf was not run but sort-concatenate-flag was, take that instead.
+    # Otherwise, don't collect anything.
+    - id: select_concatenated_mss
+      in:
+        - id: input1
+          source: apply_delay_allms/ms_out
+        - id: input2
+          source: process_ddf/msout
+        - id: input3
+          source: sort-concatenate-flag/msout
+      out:
+        - id: output
+      run: ../utils/select_input.cwl
+
 outputs:
   - id: msout
     outputSource: 
@@ -427,10 +436,8 @@ outputs:
 
   - id: msouts
     outputSource:
-      - apply_delay_allms/ms_out
       - select_concatenated_mss/output
-    pickValue: first_non_null
-    type: Directory[]?
+    type: Directory[]
     doc: |
         The concatenated data in MeasurementSet format after
         A-team clipping and optional DDF solutions applied
