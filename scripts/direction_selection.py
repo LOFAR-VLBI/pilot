@@ -59,7 +59,7 @@ def filter_too_nearest_neighbours(csv: str, sep: float = 0.1) -> pd.DataFrame:
     return filtered_df
 
 
-def match_source_id(mslist: list = None, source_id: str = None) -> str:
+def match_source_id(mslist: list, source_id: str) -> str:
     """
     Return MS name by matching source ID with items from list with MS names
 
