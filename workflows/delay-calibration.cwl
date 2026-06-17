@@ -39,7 +39,8 @@ inputs:
     - id: number_cores
       type: int?
       default: 12
-      doc: Number of cores to use per job for tasks with
+      doc: |
+        Number of cores to use per job for tasks with
         high I/O or memory.
 
     - id: max_dp3_threads
