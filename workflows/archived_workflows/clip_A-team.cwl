@@ -63,7 +63,7 @@ steps:
         - id: msout
         - id: flag_statistics_before
         - id: flag_statistics_after
-      run: ../../steps/dp3_prep_target.cwl
+      run: ../../steps/archived/dp3_prep_target.cwl
     - id: Ateamclipper
       in:
         - id: msin
@@ -80,7 +80,7 @@ steps:
         - id: msout
         - id: logfile
         - id: output 
-      run: ../../steps/clipper.cwl
+      run: ../../steps/archived/clipper.cwl
     - id: concat_logfiles_prep_targ
       label: concat_logfiles_prep_target
       in:

@@ -107,7 +107,7 @@ steps:
       out:
         - id: filter_out
         - id: logfile
-      run: ../../steps/check_station_mismatch.cwl
+      run: ../../steps/archived/check_station_mismatch.cwl
       label: check_station_mismatch
 
     - id: check_ateam_separation
@@ -121,7 +121,7 @@ steps:
         - id: output_image
         - id: output_json
         - id: logfile
-      run: ../../steps/check_ateam_separation.cwl
+      run: ../../steps/archived/check_ateam_separation.cwl
       label: check_Ateam_separation
 
     - id: dp3_make_parset
@@ -138,7 +138,7 @@ steps:
           source: rm_correction
       out:
         - id: parset
-      run: ../../steps/dp3_make_parset.cwl
+      run: ../../steps/archived/dp3_make_parset.cwl
 
     - id: clip_A-team
       in:
@@ -164,7 +164,7 @@ steps:
         - id: flag_statistics_before
         - id: flag_statistics_after
         - id: msout
-      run: ./subworkflows/clip_A-team.cwl
+      run: ./clip_A-team.cwl
       scatter: msin
       label: clip_A-team
 
