@@ -14,7 +14,7 @@ from astropy import units as u
 from make_config_international import parse_source_id
 
 
-def filter_too_nearest_neighbours(csv: str = None, sep: float = 0.1) -> pd.DataFrame:
+def filter_too_nearest_neighbours(csv: str, sep: float = 0.1) -> pd.DataFrame:
     """
     Identify sources that have a nearest neighbour within 0.1 degrees distance.
     Keep the source with the highest spd_score.
