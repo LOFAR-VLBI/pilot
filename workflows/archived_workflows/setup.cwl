@@ -107,7 +107,7 @@ steps:
       out:
         - id: filter_out
         - id: logfile
-      run: ../steps/check_station_mismatch.cwl
+      run: ../../steps/check_station_mismatch.cwl
       label: check_station_mismatch
 
     - id: check_ateam_separation
@@ -121,7 +121,7 @@ steps:
         - id: output_image
         - id: output_json
         - id: logfile
-      run: ../steps/check_ateam_separation.cwl
+      run: ../../steps/check_ateam_separation.cwl
       label: check_Ateam_separation
 
     - id: dp3_make_parset
@@ -138,7 +138,7 @@ steps:
           source: rm_correction
       out:
         - id: parset
-      run: ../steps/dp3_make_parset.cwl
+      run: ../../steps/dp3_make_parset.cwl
 
     - id: clip_A-team
       in:
@@ -179,7 +179,7 @@ steps:
           default: clip_A-team
       out:
         - id: output
-      run: ../steps/concatenate_files.cwl
+      run: ../../steps/concatenate_files.cwl
 
     - id: initial_flags_join
       in:
@@ -193,7 +193,7 @@ steps:
       out:
         - id: flagged_fraction_antenna
         - id: logfile
-      run: ../steps/findRefAnt_join.cwl
+      run: ../../steps/findRefAnt_join.cwl
       label: initial_flags_join
 
     - id: prep_target_flags_join
@@ -208,7 +208,7 @@ steps:
       out:
         - id: flagged_fraction_antenna
         - id: logfile
-      run: ../steps/findRefAnt_join.cwl
+      run: ../../steps/findRefAnt_join.cwl
       label: prep_target_flags_join
 
     - id: summary
@@ -237,7 +237,7 @@ steps:
       out:
         - id: summary_file
         - id: logfile
-      run: ../steps/summary.cwl
+      run: ../../steps/summary.cwl
       label: summary
 
     - id: save_logfiles
@@ -253,7 +253,7 @@ steps:
           default: setup
       out:
         - id: dir
-      run: ../steps/collectfiles.cwl
+      run: ../../steps/collectfiles.cwl
       label: save_logfiles
 
 outputs:
