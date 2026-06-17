@@ -288,7 +288,6 @@ outputs:
 
   - id: msouts
     outputSource: apply_delay_allms/ms_out
-    pickValue: first_non_null
     type: Directory[]?
     doc: The MeasurementSets with delay calibration solutions applied.
 
