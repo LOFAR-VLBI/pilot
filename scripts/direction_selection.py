@@ -14,7 +14,7 @@ from astropy import units as u
 from make_config_international import parse_source_id
 
 
-def filter_too_nearest_neighbours(csv: str = None, sep: float = 0.1):
+def filter_too_nearest_neighbours(csv: str = None, sep: float = 0.1) -> pd.DataFrame:
     """
     Identify sources that have a nearest neighbour within 0.1 degrees distance.
     Keep the source with the highest spd_score.
@@ -23,8 +23,7 @@ def filter_too_nearest_neighbours(csv: str = None, sep: float = 0.1):
         csv: CSV file with RA/DEC and spd_score
         sep: separation threshold in degrees
 
-    Returns:
-
+    Returns: DataFrame filtered on spd_score and seperation threshold
     """
 
     df = pd.read_csv(csv)
@@ -60,7 +59,7 @@ def filter_too_nearest_neighbours(csv: str = None, sep: float = 0.1):
     return filtered_df
 
 
-def match_source_id(mslist: list = None, source_id: str = None):
+def match_source_id(mslist: list = None, source_id: str = None) -> str:
     """
     Return MS name by matching source ID with items from list with MS names
 
@@ -82,7 +81,7 @@ def match_source_id(mslist: list = None, source_id: str = None):
     sys.exit(f"ERROR: No matching MS for {source_id}")
 
 
-def rename_folder(old_name, new_name):
+def rename_folder(old_name: str, new_name: str):
     """
     Rename folder name
 

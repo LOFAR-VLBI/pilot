@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import argparse
 import json
 import psutil
-import sys
 
 
-def main(memory_percentage):
+def main(memory_percentage: float) -> dict[str, int]:
     """
     Computes memory_percentage percent of the available virtual memory.
     Writes the amount of available memory to a dictionary.

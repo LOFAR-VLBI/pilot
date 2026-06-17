@@ -15,31 +15,10 @@ from shutil import rmtree
 from astropy.io import fits
 from casacore.tables import table
 from joblib import Parallel, delayed
-from numba import njit, prange, set_num_threads
 import numpy as np
 import tables
 
-
-def make_utf8(inp: str | bytes) -> str:
-    """
-    Convert input from bytes to a UTF-8 string if necessary.
-
-    Parameters
-    ----------
-    inp
-        Input value, either already a string or a byte sequence.
-
-    Returns
-    -------
-    str
-        The input converted to a UTF-8 string (or returned unchanged if
-        conversion is not applicable).
-    """
-    try:
-        inp = inp.decode('utf8')
-        return inp
-    except (UnicodeDecodeError, AttributeError):
-        return inp
+from make_config_dical import make_utf8
 
 
 def split_facet_h5(h5parm: str, dirname: str) -> str:

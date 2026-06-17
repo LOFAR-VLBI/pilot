@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from __future__ import annotations
+
 __author__ = "Jurjen de Jong"
 
 from argparse import ArgumentParser
@@ -13,159 +15,166 @@ import pandas as pd
 import casacore.tables as ct
 
 
-def make_config(solint, ms, with_dutch_sols):
+def solint_list_str(*vals: float) -> str:
     """
-    Make config for facetselfcal
+    Format solution intervals into a DP3-compatible list string.
+
+    Each input value (assumed to be in hours) is converted to seconds and
+    formatted as a quoted string with an "s" suffix.
 
     Args:
-        solint: solution interval
-        ms: MeasurementSet
-        with_dutch_sols: Have used pre-applied Dutch calibration solutions.
+        *vals : float
+            Solution interval values in hours.
+
+    Returns
+        DP3-style list string of intervals in seconds.
+    """
+    formatted = [f"'{int(v * 60)}s'" for v in vals]
+    return f"[{','.join(formatted)}]"
+
+
+def clamp(x: float, lo: float, hi: float) -> float:
+    """
+    Clamp a value to the interval [lo, hi].
+
+    Args
+        x : float
+            Input value.
+        lo : float
+            Lower bound.
+        hi : float
+            Upper bound.
+
+    Returns
+        float
+            Value restricted to [lo, hi].
+    """
+    if x < lo:
+        return lo
+    if x > hi:
+        return hi
+    return x
+
+
+def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
+    """
+    Generate a facetselfcal configuration file.
+
+    The configuration is derived from:
+        - solution interval (solint)
+        - Measurement Set time sampling
+        - whether Dutch calibration solutions are already applied
+
+    Args:
+        solint : Base solution interval in hours (as used in upstream logic).
+        ms : Path to Measurement Set.
+        with_dutch_sols : Whether pre-applied Dutch calibration solutions are present.
+
+    Returns
+        Path to the written configuration file.
     """
 
-    # Get time array
+    # -----------------------------
+    # Time sampling
+    # -----------------------------
     with ct.table(ms, readonly=True, ack=False) as t:
-        time = np.unique(t.getcol('TIME'))
+        time = np.unique(t.getcol("TIME"))
 
-    deltime = np.abs(time[1]-time[0])
-    fulltime = np.max(time)-np.min(time)
+    deltime = np.abs(time[1] - time[0])
 
-    # Solint in minutes for scalarphase
-    solint_scalarphase_1 = min(max(deltime/60, np.sqrt(solint)/2), 2) # max 2 minutes
-    solint_scalarphase_2 = min(max(deltime/60, np.sqrt(solint)), 3) # max 3 minutes
-    if with_dutch_sols:
-        solint_scalarphase_3 = min(max(deltime/60, 3 * np.sqrt(solint)), 5) # max 5 minutes
-    else:
-        solint_scalarphase_3 = min(max(deltime/60, 2 * np.sqrt(solint)), 3) # max 3 minutes
+    solint_scalarphase_1 = clamp(deltime / 60, np.sqrt(solint) / 2, 2)
+    solint_scalarphase_2 = clamp(deltime / 60, np.sqrt(solint), 3)
+    solint_scalarphase_3 = clamp(deltime / 60, 3 * np.sqrt(solint), 5) \
+        if with_dutch_sols \
+        else clamp(deltime / 60, 2 * np.sqrt(solint), 3)
 
-    # Solint in minutes for scalar complexgain (amplitudes)
-    solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint)) # min 20 minutes
-    if with_dutch_sols:
-        solint_complexgain_2 = 2.0 * solint_complexgain_1
-    else:
-        solint_complexgain_2 = 1.5 * solint_complexgain_1
+    solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
+    solint_complexgain_2 = 2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
 
-    # Decide if amplitude solve or not based on solint size
-    cg_cycle_1 = 3
-    if solint_complexgain_1/60 > 5:
-        cg_cycle_1 = 999
-    elif solint_complexgain_1/60 > 3:
-        solint_complexgain_1 = 240.
+    cg_cycle_1 = 3 if solint_complexgain_1 / 60 <= 3 else 999
+    if 3 < solint_complexgain_1 / 60 <= 5:
+        solint_complexgain_1 = 240.0
 
-    # Decide if amplitude solve or not based on solint size
-    cg_cycle_2 = 4
-    if solint_complexgain_2/60 > 5:
-        cg_cycle_2 = 999
-    elif solint_complexgain_2/60 > 3:
-        solint_complexgain_2 = 240.
+    cg_cycle_2 = 4 if solint_complexgain_2 / 60 <= 3 else 999
+    if 3 < solint_complexgain_2 / 60 <= 5:
+        solint_complexgain_2 = 240.0
 
-    # UV-min larger for high S/N sources and smaller for low S/N sources
-    uvmin = int(40000 - 20000 * np.exp(-1/solint))
-
+    uvmin = int(40000 - 20000 * np.exp(-1 / solint))
     stop = 16
     imsize = 2048
 
-    # Extra time-averaging when solint larger than 60 seconds
-    if solint_scalarphase_1 * 60 > deltime * 2:
-        avgstep = 2
+    avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
+
+    soltypecycles_base = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]" if solint < 10 else f"[0,0,{cg_cycle_1}]"
+    soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']" \
+        if solint < 10 \
+        else "['scalarphase','scalarphase','scalarcomplexgain']"
+
+    # -----------------------------
+    # Smoothness linked to solution interval
+    # -----------------------------
+    if solint < 0.05:
+        smooth_p, smooth_c = 7.5, 10.0
+    elif solint < 0.1:
+        smooth_p, smooth_c = 10.0, 10.0
+    elif solint < 1:
+        smooth_p, smooth_c = 10.0, 12.5
+    elif solint < 5:
+        smooth_p, smooth_c = 10.0, 15.0
+    elif solint < 10:
+        smooth_p, smooth_c = 10.0, 20.0
     else:
-        avgstep = 1
+        smooth_p, smooth_c = 10.0, 20.0
 
-    # Different configurations for different S/N
-    if solint<0.05:
-        smoothness_phase = 7.5
-        smoothness_complex = 10.0
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
-        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
-        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
+    smoothnessconstraint_list = (f"[{smooth_p},{smooth_p},{smooth_p*1.5},{smooth_c},{smooth_c+5}]")
+
+    smoothnessreffrequency_list = ("[120.0,120.0,120.0,0.0,0.0]" if solint < 10 else "[120.0,120.0,0.0]")
+    smoothnessspectralexponent_list = ("[-1.0,-1.0,-1.0,-1.0,-1.0]" if solint < 10 else "[-1.0,-1.0,-1.0]")
+
+    # -----------------------------
+    # Station resets
+    # -----------------------------
+    if solint < 0.1:
         if with_dutch_sols:
-            resetsols_list = "['alldutchandclosegerman','alldutch','coreandfirstremotes','alldutch','coreandfirstremotes']"
+            resetsols_list = ("['alldutchandclosegerman','alldutch','coreandfirstremotes',"
+                              "'alldutch','coreandfirstremotes']")
         else:
             resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
 
-    elif solint<0.1:
-        smoothness_phase = 10.0
-        smoothness_complex = 10.0
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
-        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
-        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
+    elif solint < 1:
         if with_dutch_sols:
-            resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
+            resetsols_list = ("['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes',"
+                              "'alldutch','coreandallbutmostdistantremotes']")
         else:
             resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
 
-    elif solint<1:
-        smoothness_phase = 10.0
-        smoothness_complex = 12.5
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
-        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
-        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
+    elif solint < 10:
         if with_dutch_sols:
-            resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
-        else:
-            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
-
-    elif solint<5:
-        smoothness_phase = 10.0
-        smoothness_complex = 15.0
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
-        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+10.0}]"
-        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
-        if with_dutch_sols:
-            resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
-        else:
-            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
-
-    elif solint<10:
-        smoothness_phase = 10.0
-        smoothness_complex = 20.0
-        soltypecycles_list = f'[0,0,{cg_cycle_1},{cg_cycle_2}]'
-        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s','{int(solint_complexgain_2*60)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase*1.25},{smoothness_complex},{smoothness_complex+5.0}]"
-        smoothnessreffrequency_list = "[120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0]"
-        if with_dutch_sols:
-            resetsols_list = "['alldutchandclosegerman','alldutch','alldutchandclosegerman','alldutch']"
+            resetsols_list = ("['alldutchandclosegerman','alldutch','alldutchandclosegerman','alldutch']")
         else:
             resetsols_list = "['alldutch',None,'alldutch',None]"
 
     else:
-        soltypecycles_list = f'[0,0,{cg_cycle_1}]'
-        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s']"
-        smoothnessconstraint_list = f"[10.0,15.0,25.0]"
-        smoothnessreffrequency_list = "[120.0,120.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0]"
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','alldutch']"
         else:
             resetsols_list = "['alldutch',None,None]"
 
-
-    config=f"""imagename                       = "{parse_source_id(ms)}"
+    # -----------------------------
+    # Final config
+    # -----------------------------
+    config = f"""imagename                       = "{parse_source_id(ms)}"
 phaseupstations                 = "core"
 forwidefield                    = True
 autofrequencyaverage            = True
 update_multiscale               = True
-soltypecycles_list              = {soltypecycles_list}
+soltypecycles_list              = {soltypecycles_base}
 soltype_list                    = {soltype_list}
 smoothnessconstraint_list       = {smoothnessconstraint_list}
 smoothnessreffrequency_list     = {smoothnessreffrequency_list}
 smoothnessspectralexponent_list = {smoothnessspectralexponent_list}
-solint_list                     = {solint_list}
+solint_list                     = {solint_list_str(solint_scalarphase_1, solint_scalarphase_2, 
+                                                   solint_scalarphase_3, solint_complexgain_1, solint_complexgain_2,)}
 uvmin                           = {uvmin}
 imsize                          = {imsize}
 resetsols_list                  = {resetsols_list}
@@ -177,16 +186,18 @@ channelsout                     = 12
 fitspectralpol                  = 5
 early_stopping                  = True
 """
-    if avgstep>1:
-        config+=f"""avgtimestep                     = {avgstep}
-"""
 
-    # write to file
-    with open(ms+".config.txt", "w") as f:
+    if avgstep > 1:
+        config += f"avgtimestep                     = {avgstep}\n"
+
+    out_file = ms + ".config.txt"
+    with open(out_file, "w") as f:
         f.write(config)
 
+    return out_file
 
-def parse_source_id(input_string: str):
+
+def parse_source_id(input_string: str) -> str:
     """
     Parse ILTJhhmmss.ss±ddmmss.s source_id string
 
@@ -206,7 +217,7 @@ def parse_source_id(input_string: str):
     return parsed_input
 
 
-def get_solint(ms, phasediff_output):
+def get_solint(ms: str, phasediff_output: str) -> float:
     """
     Get solution interval from phase-diff CSV output.
 
@@ -229,7 +240,6 @@ def get_solint(ms, phasediff_output):
         solint = phasediff[phasediff[matching_columns[0]].apply(parse_source_id) == sourceid]["best_solint"].min()
 
     return solint
-
 
 
 def parse_args():
