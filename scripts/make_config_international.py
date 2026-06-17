@@ -15,7 +15,7 @@ import pandas as pd
 import casacore.tables as ct
 
 
-def solint_list_str(*vals: float) -> str:
+def solints_to_dp3_str(*vals: float) -> str:
     """
     Format solution intervals into a DP3-compatible list string.
 
@@ -31,29 +31,6 @@ def solint_list_str(*vals: float) -> str:
     """
     formatted = [f"'{int(v * 60)}s'" for v in vals]
     return f"[{','.join(formatted)}]"
-
-
-def clamp(x: float, lo: float, hi: float) -> float:
-    """
-    Clamp a value to the interval [lo, hi].
-
-    Args
-        x : float
-            Input value.
-        lo : float
-            Lower bound.
-        hi : float
-            Upper bound.
-
-    Returns
-        float
-            Value restricted to [lo, hi].
-    """
-    if x < lo:
-        return lo
-    if x > hi:
-        return hi
-    return x
 
 
 def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
@@ -82,11 +59,12 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
 
     deltime = np.abs(time[1] - time[0])
 
-    solint_scalarphase_1 = clamp(deltime / 60, np.sqrt(solint) / 2, 2)
-    solint_scalarphase_2 = clamp(deltime / 60, np.sqrt(solint), 3)
-    solint_scalarphase_3 = clamp(deltime / 60, 3 * np.sqrt(solint), 5) \
-        if with_dutch_sols \
-        else clamp(deltime / 60, 2 * np.sqrt(solint), 3)
+    solint_scalarphase_1 = float(np.clip(deltime / 60, np.sqrt(solint) / 2, 2))
+    solint_scalarphase_2 = float(np.clip(deltime / 60, np.sqrt(solint), 3))
+    if with_dutch_sols:
+        solint_scalarphase_3 = float(np.clip(deltime / 60, 3 * np.sqrt(solint), 5))
+    else:
+        solint_scalarphase_3 = float(np.clip(deltime / 60, 2 * np.sqrt(solint), 3))
 
     solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
     solint_complexgain_2 = 2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
@@ -106,9 +84,10 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
 
     soltypecycles_base = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]" if solint < 10 else f"[0,0,{cg_cycle_1}]"
-    soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']" \
-        if solint < 10 \
-        else "['scalarphase','scalarphase','scalarcomplexgain']"
+    if solint < 10:
+        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+    else:
+        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain']"
 
     # -----------------------------
     # Smoothness linked to solution interval
@@ -173,7 +152,7 @@ soltype_list                    = {soltype_list}
 smoothnessconstraint_list       = {smoothnessconstraint_list}
 smoothnessreffrequency_list     = {smoothnessreffrequency_list}
 smoothnessspectralexponent_list = {smoothnessspectralexponent_list}
-solint_list                     = {solint_list_str(solint_scalarphase_1, solint_scalarphase_2, 
+solint_list                     = {solints_to_dp3_str(solint_scalarphase_1, solint_scalarphase_2, 
                                                    solint_scalarphase_3, solint_complexgain_1, solint_complexgain_2,)}
 uvmin                           = {uvmin}
 imsize                          = {imsize}
