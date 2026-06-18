@@ -52,6 +52,8 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     # ------------------------------------------
     # Linking solints to configuration file
     # ------------------------------------------
+
+    # Decide if amplitude solve or not based on solint size
     cg_cycle_1 = 3 if solint_complexgain_1 / 60 <= 3 else 999
     if 3 < solint_complexgain_1 / 60 <= 5:
         solint_complexgain_1 = 240.0
@@ -60,10 +62,12 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     if 3 < solint_complexgain_2 / 60 <= 5:
         solint_complexgain_2 = 240.0
 
+    # UV-min larger for high S/N sources and smaller for low S/N sources
     uvmin = int(40000 - 20000 * np.exp(-1 / solint))
     stop = 16
     imsize = 2048
 
+    # Extra time-averaging when solint larger than 60 seconds
     avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
 
     if solint<0.05:
