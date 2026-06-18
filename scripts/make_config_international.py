@@ -49,9 +49,9 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
     solint_complexgain_2 = 2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
 
-    # -----------------------------
-    # Cycle setup
-    # -----------------------------
+    # ------------------------------------------
+    # Linking solints to configuration file
+    # ------------------------------------------
     cg_cycle_1 = 3 if solint_complexgain_1 / 60 <= 3 else 999
     if 3 < solint_complexgain_1 / 60 <= 5:
         solint_complexgain_1 = 240.0
@@ -66,7 +66,6 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
 
     avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
 
-    # Different configurations for different S/N
     if solint<0.05:
         smoothness_phase = 7.5
         smoothness_complex = 10.0
