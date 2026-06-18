@@ -19,12 +19,12 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
 
     The configuration is derived from:
         - solution interval (solint)
-        - Measurement Set time sampling
+        - MeasurementSet time sampling
         - whether Dutch calibration solutions are already applied
 
     Args:
-        solint : Base solution interval in hours.
-        ms : Path to Measurement Set.
+        solint : Solution interval.
+        ms : Path to MeasurementSet.
         with_dutch_sols : Whether pre-applied Dutch calibration solutions are present.
 
     Returns
