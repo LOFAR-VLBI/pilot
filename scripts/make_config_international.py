@@ -17,12 +17,8 @@ def solints_to_dp3_str(*vals: float) -> str:
     """
     Format solution intervals into a DP3-compatible list string.
 
-    Each input value (assumed to be in hours) is converted to seconds and
-    formatted as a quoted string with an "s" suffix.
-
     Args:
-        *vals : float
-            Solution interval values in hours.
+        *vals : Solution interval values in hours.
 
     Returns
         DP3-style list string of intervals in seconds.
@@ -41,7 +37,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         - whether Dutch calibration solutions are already applied
 
     Args:
-        solint : Base solution interval in hours (as used in upstream logic).
+        solint : Base solution interval in hours.
         ms : Path to Measurement Set.
         with_dutch_sols : Whether pre-applied Dutch calibration solutions are present.
 
@@ -167,7 +163,7 @@ early_stopping                  = True
     if avgstep > 1:
         config += f"avgtimestep                     = {avgstep}\n"
 
-    out_file = ms + ".config.txt"
+    out_file = basename(ms) + ".config.txt"
     with open(out_file, "w") as f:
         f.write(config)
 
