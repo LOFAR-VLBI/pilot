@@ -46,7 +46,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     """
 
     # -----------------------------
-    # Time sampling
+    # Solution interval
     # -----------------------------
     with ct.table(ms, readonly=True, ack=False) as t:
         time = np.unique(t.getcol("TIME"))
@@ -63,6 +63,9 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
     solint_complexgain_2 = 2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
 
+    # -----------------------------
+    # Cycle setup
+    # -----------------------------
     cg_cycle_1 = 3 if solint_complexgain_1 / 60 <= 3 else 999
     if 3 < solint_complexgain_1 / 60 <= 5:
         solint_complexgain_1 = 240.0
@@ -100,7 +103,6 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smooth_p, smooth_c = 10.0, 20.0
 
     smoothnessconstraint_list = (f"[{smooth_p},{smooth_p},{smooth_p*1.5},{smooth_c},{smooth_c+5}]")
-
     smoothnessreffrequency_list = ("[120.0,120.0,120.0,0.0,0.0]" if solint < 10 else "[120.0,120.0,0.0]")
     smoothnessspectralexponent_list = ("[-1.0,-1.0,-1.0,-1.0,-1.0]" if solint < 10 else "[-1.0,-1.0,-1.0]")
 
@@ -147,7 +149,7 @@ smoothnessconstraint_list       = {smoothnessconstraint_list}
 smoothnessreffrequency_list     = {smoothnessreffrequency_list}
 smoothnessspectralexponent_list = {smoothnessspectralexponent_list}
 solint_list                     = {solints_to_dp3_str(solint_scalarphase_1, solint_scalarphase_2, 
-                                                   solint_scalarphase_3, solint_complexgain_1, solint_complexgain_2,)}
+                                   solint_scalarphase_3, solint_complexgain_1, solint_complexgain_2,)}
 uvmin                           = {uvmin}
 imsize                          = {imsize}
 resetsols_list                  = {resetsols_list}
