@@ -13,20 +13,6 @@ import pandas as pd
 import casacore.tables as ct
 
 
-def solints_to_dp3_str(*vals: float) -> str:
-    """
-    Format solution intervals into a DP3-compatible list string.
-
-    Args:
-        *vals : Solution interval values in hours.
-
-    Returns
-        DP3-style list string of intervals in seconds.
-    """
-    formatted = [f"'{int(v * 60)}s'" for v in vals]
-    return f"[{','.join(formatted)}]"
-
-
 def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     """
     Generate a facetselfcal configuration file.
@@ -80,56 +66,84 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
 
     avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
 
-    soltypecycles_base = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]" if solint < 10 else f"[0,0,{cg_cycle_1}]"
-    if solint < 10:
+    # Different configurations for different S/N
+    if solint<0.05:
+        smoothness_phase = 7.5
+        smoothness_complex = 10.0
+        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-    else:
-        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain']"
-
-    # -----------------------------
-    # Smoothness linked to solution interval
-    # -----------------------------
-    if solint < 0.05:
-        smooth_p, smooth_c = 7.5, 10.0
-    elif solint < 0.1:
-        smooth_p, smooth_c = 10.0, 10.0
-    elif solint < 1:
-        smooth_p, smooth_c = 10.0, 12.5
-    elif solint < 5:
-        smooth_p, smooth_c = 10.0, 15.0
-    elif solint < 10:
-        smooth_p, smooth_c = 10.0, 20.0
-    else:
-        smooth_p, smooth_c = 10.0, 20.0
-
-    smoothnessconstraint_list = (f"[{smooth_p},{smooth_p},{smooth_p*1.5},{smooth_c},{smooth_c+5}]")
-    smoothnessreffrequency_list = ("[120.0,120.0,120.0,0.0,0.0]" if solint < 10 else "[120.0,120.0,0.0]")
-    smoothnessspectralexponent_list = ("[-1.0,-1.0,-1.0,-1.0,-1.0]" if solint < 10 else "[-1.0,-1.0,-1.0]")
-
-    # -----------------------------
-    # Station resets
-    # -----------------------------
-    if solint < 0.1:
+        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
+        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
         if with_dutch_sols:
-            resetsols_list = ("['alldutchandclosegerman','alldutch','coreandfirstremotes',"
-                              "'alldutch','coreandfirstremotes']")
+            resetsols_list = "['alldutchandclosegerman','alldutch','coreandfirstremotes','alldutch','coreandfirstremotes']"
         else:
             resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
 
-    elif solint < 1:
+    elif solint<0.1:
+        smoothness_phase = 10.0
+        smoothness_complex = 10.0
+        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
+        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
         if with_dutch_sols:
-            resetsols_list = ("['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes',"
-                              "'alldutch','coreandallbutmostdistantremotes']")
+            resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
         else:
             resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
 
-    elif solint < 10:
+    elif solint<1:
+        smoothness_phase = 10.0
+        smoothness_complex = 12.5
+        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
+        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
         if with_dutch_sols:
-            resetsols_list = ("['alldutchandclosegerman','alldutch','alldutchandclosegerman','alldutch']")
+            resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
+        else:
+            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+
+    elif solint<5:
+        smoothness_phase = 10.0
+        smoothness_complex = 15.0
+        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+10.0}]"
+        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
+        if with_dutch_sols:
+            resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
+        else:
+            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+
+    elif solint<10:
+        smoothness_phase = 10.0
+        smoothness_complex = 20.0
+        soltypecycles_list = f'[0,0,{cg_cycle_1},{cg_cycle_2}]'
+        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s','{int(solint_complexgain_2*60)}s']"
+        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase*1.25},{smoothness_complex},{smoothness_complex+5.0}]"
+        smoothnessreffrequency_list = "[120.0,120.0,0.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0]"
+        if with_dutch_sols:
+            resetsols_list = "['alldutchandclosegerman','alldutch','alldutchandclosegerman','alldutch']"
         else:
             resetsols_list = "['alldutch',None,'alldutch',None]"
 
     else:
+        soltypecycles_list = f'[0,0,{cg_cycle_1}]'
+        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain']"
+        solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s']"
+        smoothnessconstraint_list = f"[10.0,15.0,25.0]"
+        smoothnessreffrequency_list = "[120.0,120.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0]"
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','alldutch']"
         else:
@@ -143,13 +157,12 @@ phaseupstations                 = "core"
 forwidefield                    = True
 autofrequencyaverage            = True
 update_multiscale               = True
-soltypecycles_list              = {soltypecycles_base}
+soltypecycles_list              = {soltypecycles_list}
 soltype_list                    = {soltype_list}
 smoothnessconstraint_list       = {smoothnessconstraint_list}
 smoothnessreffrequency_list     = {smoothnessreffrequency_list}
 smoothnessspectralexponent_list = {smoothnessspectralexponent_list}
-solint_list                     = {solints_to_dp3_str(solint_scalarphase_1, solint_scalarphase_2, 
-                                   solint_scalarphase_3, solint_complexgain_1, solint_complexgain_2,)}
+solint_list                     = {solint_list}
 uvmin                           = {uvmin}
 imsize                          = {imsize}
 resetsols_list                  = {resetsols_list}
