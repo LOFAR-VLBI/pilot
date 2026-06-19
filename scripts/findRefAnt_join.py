@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import argparse
 import ast
 import json
 import re
-import sys
 
 
-
-def main(flagged_fraction_dict, station_filter, state):
+def main(flagged_fraction_dict: str, station_filter: str, state: str):
 
     with open(flagged_fraction_dict, "r") as f_stream:
         flagged_fraction_dict_list = json.load(f_stream)

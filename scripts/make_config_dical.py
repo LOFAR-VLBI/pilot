@@ -6,6 +6,7 @@ __author__ = "Jurjen de Jong, James Petley, Leah Morabito"
 from argparse import ArgumentParser
 from collections.abc import Sequence
 import os
+from typing import Any
 
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
@@ -16,16 +17,16 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
+def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str):
     """
-    Make config for facetselfcal
+    Make configuration file for facetselfcal
 
     Args:
-        best_solint: Optimal solint determined within this script
+        best_solint: Optimal solution interval, determined within this script
         smoothness: Optimal smoothness constraint determined within this script
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
-        inputmodel: Input skymodel to be added to config file
-        ms: MeasurementSet
+        inputmodel: Input skymodel to be added to configuration file
+        ms: MeasurementSet name
     """
     # Get the source name
     filename = parse_source_from_h5(os.path.basename(ms))
@@ -111,7 +112,7 @@ def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
             
 
     ## Update smoothness constraints based on ionospheric conditions
-    configdict = update_smoothness( smoothness, configdict )
+    configdict = update_smoothness(smoothness, configdict)
 
     ## average to smallest solution interval if that is larger than data resolution
     phase_inds = [i for i, val in enumerate(configdict['soltype_list']) if val == 'scalarphase'] # Getting indexes for scalarphase
@@ -120,12 +121,20 @@ def make_config(best_solint, smoothness, imagecat, inputmodel, ms):
     if avgstep > 1:
         configdict['avgtimestep'] = avgstep
 
-    configfile = write_config( filename, configdict )
+    configfile = write_config(filename, configdict)
     print("CREATED: " + configfile)
 
-def write_config(filename,configdict):
+
+def write_config(filename: str, configdict: dict[str, object]) -> str:
     """
-    Write the dictionary of config parameters to a text file
+    Write configuration parameters to a text file.
+
+    Args:
+        filename : Base name of the output configuration file.
+        configdict : Dictionary containing configuration parameters to write.
+
+    Returns
+        Path to the generated configuration file.
     """
     ## write out the config file
     with open(filename + ".config.txt", "w") as f:
@@ -153,7 +162,7 @@ def write_config(filename,configdict):
     return filename + ".config.txt"
 
 
-def get_best_solint(ms, phasediff_output):
+def get_best_solint(ms: str, phasediff_output: str) -> float:
     """
     Get best solution interval
 
@@ -174,9 +183,10 @@ def get_best_solint(ms, phasediff_output):
 
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
-def process_catalog(imagecat, ms):
-    '''
-    Search through image_catalogue.csv for two purposes. 
+
+def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
+    """
+    Search through image_catalogue.csv for two purposes.
     1. Is calibrator bright enough for final bandpass solve
     2. Is there a nearby source that requires core phaseup
 
@@ -185,9 +195,9 @@ def process_catalog(imagecat, ms):
         imagecat: image_catalogue.csv from plot_field.py
 
     Returns:
-        bandpass: bool 
+        bandpass: bool
         phaseup: bool
-    '''
+    """
     im_t = Table.read(imagecat)
 
     bandpass = False # Default option
@@ -251,19 +261,35 @@ def process_catalog(imagecat, ms):
     print('Delay cal flux: ', delay_cal['Total_flux'])
     return bandpass, phaseup
 
-def make_utf8(inp):
-    """
-    Convert input to utf8 instead of bytes
 
-    :param inp: string input
+def make_utf8(inp: bytes | str) -> str:
     """
-    try:
-        inp = inp.decode('utf8')
-        return inp
-    except (UnicodeDecodeError, AttributeError):
-        return inp
+    Convert a UTF-8 encoded byte string to a Python string.
 
-def get_scalarphase( ms ):
+    Args
+        inp : Input value to convert.
+
+    Returns
+        The decoded UTF-8 string. If ``inp`` is already a string, it is
+        returned unchanged.
+    """
+    if isinstance(inp, bytes):
+        return inp.decode("utf-8")
+    return inp
+
+
+def get_scalarphase(ms: str) -> str:
+    """
+    Solve for scalar phase solutions using DP3 ddecal.
+
+    Args
+        ms : str
+            Input Measurement Set.
+
+    Returns
+        Path to the output H5Parm file containing the scalar phase
+        solutions.
+    """
     outh5 = 'test_phases_'+ms+'.h5'
     with open( 'test_dp3_phasesolve.parset', 'w') as f:
         f.write('msin={:s}\n'.format(ms))
@@ -289,10 +315,20 @@ def get_scalarphase( ms ):
         f.write('ddecal.smoothnessspectralexponent=-1.0\n')
         f.write('ddecal.smoothnessrefdistance=0.0\n')
         f.write('ddecal.tolerance=0.0001\n')
-    os.system( 'DP3 test_dp3_phasesolve.parset') 
+    os.system( 'DP3 test_dp3_phasesolve.parset')
     return outh5
 
-def get_smoothing( h5 ):
+def get_smoothing(h5: str) -> float:
+    """
+    Find a suitable frequency smoothness from an h5parm.
+
+    Args
+        h5 : str
+            Path to the H5 solution file.
+
+    Returns
+        Estimated smoothness scale in MHz.
+    """
     with tables.open_file(h5) as H:
         phase_table = H.root.sol000.phase000
         freqs = H.root.sol000.phase000.freq[:]
@@ -314,19 +350,36 @@ def get_smoothing( h5 ):
     smoothness = round( freq_per_wrap / 3., 1) # Sampling 3 times per frequency wrap
     return smoothness
 
-def update_smoothness( smoothness, cfgdict ):
-    '''
-    smoothness constraint determined by ionosphere for international stations (when reset = 'alldutch')
-    this should be set to number of wraps divided by 3. This has been found to be a good sampling 
-    for smoothness
-    '''
-    scalarphase_idx = [ i for i,val in enumerate(cfgdict['soltype_list']) if val == 'scalarphase' ]
-    for i in scalarphase_idx:
-        reset = cfgdict['resetsols_list'][i]
-        if reset == 'alldutch':
-            cfgdict['smoothnessconstraint_list'][i] = smoothness
-            cfgdict['smoothnessreffrequency_list'][i] = 120.0
+
+def update_smoothness(smoothness: float, cfgdict: dict[str, Any]) -> dict[str, Any]:
+    """
+    Update smoothness constraints for scalarphase solutions in a DP3-style configuration dictionary.
+
+    Parameters
+        smoothness : float
+            Smoothness constraint value (typically derived from phase wrap analysis).
+        cfgdict : dict
+            Configuration dictionary containing DP3 solver settings. Expected keys:
+            - soltype_list
+            - resetsols_list
+            - smoothnessconstraint_list
+            - smoothnessreffrequency_list
+
+    Returns
+        Updated configuration dictionary (modified in place and also returned).
+    """
+    scalarphase_indices = [
+        i for i, val in enumerate(cfgdict.get("soltype_list", []))
+        if val == "scalarphase"
+    ]
+
+    for i in scalarphase_indices:
+        if cfgdict["resetsols_list"][i] == "alldutch":
+            cfgdict["smoothnessconstraint_list"][i] = smoothness
+            cfgdict["smoothnessreffrequency_list"][i] = 120.0
+
     return cfgdict
+
 
 def parse_args():
     """

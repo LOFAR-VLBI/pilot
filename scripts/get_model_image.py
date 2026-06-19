@@ -6,7 +6,6 @@ __author__ = "Jurjen de Jong"
 from argparse import ArgumentParser
 from glob import glob
 from itertools import repeat
-import os
 import re
 import subprocess
 
@@ -58,18 +57,10 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
         if len(files) > 1:
             for n, model_image in enumerate(files):
                 new_name = re.sub(r'\d{4}', add_trailing_zeros(str(n), 4), model_image)
-                subprocess.run(
-                    ["mv", model_image, new_name],
-                    text=True,
-                    stdout=subprocess.PIPE,
-                )
+                subprocess.run(["mv", model_image, new_name], text=True, stdout=subprocess.PIPE)
         elif len(files) == 1:
             new_name = re.sub(r'\-\d{4}', '', files[0])
-            subprocess.run(
-                ["mv", files[0], new_name],
-                text=True,
-                stdout=subprocess.PIPE,
-            )
+            subprocess.run(["mv", files[0], new_name], text=True, stdout=subprocess.PIPE)
 
     # Get images with overlapping frequencies
     freqs = []
@@ -86,11 +77,7 @@ def get_model_image(msin: str, model_images: list[str]) -> None:
         fmin, fmax = fcent - fdelt, fcent + fdelt
         if not (fmin > fmax_ms or fmax < fmin_ms):
             print(f"Taking {model_image}")
-            subprocess.run(
-                ["cp", model_image, "."],
-                text=True,
-                stdout=subprocess.PIPE,
-            )
+            subprocess.run(["cp", model_image, "."], text=True, stdout=subprocess.PIPE)
 
     # Rename for WSClean predict
     model_patterns = [

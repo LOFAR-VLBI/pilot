@@ -15,7 +15,7 @@ from astropy.table import Table as astropy_table
 from casacore.tables import table as casacore_table
 
 
-def read_catalogue(file_path):
+def read_catalogue(file_path: str) -> pd.DataFrame:
     """
     Read catalogue regardless if it is a CSV or FITS table
 
@@ -30,7 +30,7 @@ def read_catalogue(file_path):
         return astropy_table.read(file_path).to_pandas()
 
 
-def ra_dec_to_iltj(ra_deg, dec_deg):
+def ra_dec_to_iltj(ra_deg: float, dec_deg: float) -> str:
     """
     Convert RA/DEC floats to ILTJ source name format: ILTJhhmmss.ss±ddmmss.s
 
@@ -62,7 +62,7 @@ def ra_dec_to_iltj(ra_deg, dec_deg):
     return source_name
 
 
-def get_phase_centre(ms):
+def get_phase_centre(ms: str) -> SkyCoord:
     """
     Get phase centre from MeasurementSet in degrees
 
@@ -78,7 +78,7 @@ def get_phase_centre(ms):
     return phasedir_coor
 
 
-def select_bright_sources(phase_centre, catalogue, fluxcut, fov=2.5):
+def select_bright_sources(phase_centre: SkyCoord, catalogue: str, fluxcut: float, fov: float = 2.5):
     """
     Produces a data frame of sources collected from catalogue which are within a box of size `fov` degrees
     centred on phase_centre, and have a flux density exceeding `fluxcut`.

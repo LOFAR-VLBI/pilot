@@ -13,65 +13,63 @@ import pandas as pd
 import casacore.tables as ct
 
 
-def make_config(solint, ms, with_dutch_sols):
+def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     """
-    Make config for facetselfcal
+    Generate a facetselfcal configuration file.
+
+    The configuration is derived from:
+        - solution interval (solint)
+        - MeasurementSet time sampling
+        - whether Dutch calibration solutions are already applied
 
     Args:
-        solint: solution interval
-        ms: MeasurementSet
-        with_dutch_sols: Have used pre-applied Dutch calibration solutions.
+        solint : Solution interval.
+        ms : Path to MeasurementSet.
+        with_dutch_sols : Whether pre-applied Dutch calibration solutions are present.
+
+    Returns
+        Path to the written configuration file.
     """
 
-    # Get time array
+    # -----------------------------
+    # Solution interval
+    # -----------------------------
     with ct.table(ms, readonly=True, ack=False) as t:
-        time = np.unique(t.getcol('TIME'))
+        time = np.unique(t.getcol("TIME"))
 
-    deltime = np.abs(time[1]-time[0])
-    fulltime = np.max(time)-np.min(time)
+    deltime = np.abs(time[1] - time[0])
 
-    # Solint in minutes for scalarphase
-    solint_scalarphase_1 = min(max(deltime/60, np.sqrt(solint)/2), 2) # max 2 minutes
-    solint_scalarphase_2 = min(max(deltime/60, np.sqrt(solint)), 3) # max 3 minutes
+    solint_scalarphase_1 = float(np.clip(deltime / 60, np.sqrt(solint) / 2, 2))
+    solint_scalarphase_2 = float(np.clip(deltime / 60, np.sqrt(solint), 3))
     if with_dutch_sols:
-        solint_scalarphase_3 = min(max(deltime/60, 3 * np.sqrt(solint)), 5) # max 5 minutes
+        solint_scalarphase_3 = float(np.clip(deltime / 60, 3 * np.sqrt(solint), 5))
     else:
-        solint_scalarphase_3 = min(max(deltime/60, 2 * np.sqrt(solint)), 3) # max 3 minutes
+        solint_scalarphase_3 = float(np.clip(deltime / 60, 2 * np.sqrt(solint), 3))
 
-    # Solint in minutes for scalar complexgain (amplitudes)
-    solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint)) # min 20 minutes
-    if with_dutch_sols:
-        solint_complexgain_2 = 2.0 * solint_complexgain_1
-    else:
-        solint_complexgain_2 = 1.5 * solint_complexgain_1
+    solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
+    solint_complexgain_2 = 2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
+
+    # ------------------------------------------
+    # Linking solints to configuration file
+    # ------------------------------------------
 
     # Decide if amplitude solve or not based on solint size
-    cg_cycle_1 = 3
-    if solint_complexgain_1/60 > 5:
-        cg_cycle_1 = 999
-    elif solint_complexgain_1/60 > 3:
-        solint_complexgain_1 = 240.
+    cg_cycle_1 = 3 if solint_complexgain_1 / 60 <= 3 else 999
+    if 3 < solint_complexgain_1 / 60 <= 5:
+        solint_complexgain_1 = 240.0
 
-    # Decide if amplitude solve or not based on solint size
-    cg_cycle_2 = 4
-    if solint_complexgain_2/60 > 5:
-        cg_cycle_2 = 999
-    elif solint_complexgain_2/60 > 3:
-        solint_complexgain_2 = 240.
+    cg_cycle_2 = 4 if solint_complexgain_2 / 60 <= 3 else 999
+    if 3 < solint_complexgain_2 / 60 <= 5:
+        solint_complexgain_2 = 240.0
 
     # UV-min larger for high S/N sources and smaller for low S/N sources
-    uvmin = int(40000 - 20000 * np.exp(-1/solint))
-
+    uvmin = int(40000 - 20000 * np.exp(-1 / solint))
     stop = 16
     imsize = 2048
 
     # Extra time-averaging when solint larger than 60 seconds
-    if solint_scalarphase_1 * 60 > deltime * 2:
-        avgstep = 2
-    else:
-        avgstep = 1
+    avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
 
-    # Different configurations for different S/N
     if solint<0.05:
         smoothness_phase = 7.5
         smoothness_complex = 10.0
@@ -154,8 +152,10 @@ def make_config(solint, ms, with_dutch_sols):
         else:
             resetsols_list = "['alldutch',None,None]"
 
-
-    config=f"""imagename                       = "{parse_source_id(ms)}"
+    # -----------------------------
+    # Final config
+    # -----------------------------
+    config = f"""imagename                       = "{parse_source_id(ms)}"
 phaseupstations                 = "core"
 forwidefield                    = True
 autofrequencyaverage            = True
@@ -177,16 +177,18 @@ channelsout                     = 12
 fitspectralpol                  = 5
 early_stopping                  = True
 """
-    if avgstep>1:
-        config+=f"""avgtimestep                     = {avgstep}
-"""
 
-    # write to file
-    with open(ms+".config.txt", "w") as f:
+    if avgstep > 1:
+        config += f"avgtimestep                     = {avgstep}\n"
+
+    out_file = basename(ms) + ".config.txt"
+    with open(out_file, "w") as f:
         f.write(config)
 
+    return out_file
 
-def parse_source_id(input_string: str):
+
+def parse_source_id(input_string: str) -> str:
     """
     Parse ILTJhhmmss.ss±ddmmss.s source_id string
 
@@ -206,7 +208,7 @@ def parse_source_id(input_string: str):
     return parsed_input
 
 
-def get_solint(ms, phasediff_output):
+def get_solint(ms: str, phasediff_output: str) -> float:
     """
     Get solution interval from phase-diff CSV output.
 
@@ -229,7 +231,6 @@ def get_solint(ms, phasediff_output):
         solint = phasediff[phasediff[matching_columns[0]].apply(parse_source_id) == sourceid]["best_solint"].min()
 
     return solint
-
 
 
 def parse_args():

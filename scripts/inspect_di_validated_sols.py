@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 __author__ = "Jurjen de Jong (jurjendejong@strw.leidenuniv.nl)"
 
@@ -26,8 +27,7 @@ def parse_args():
 def main():
     args = parse_args()
     validation_csv = pd.read_csv(args.validation_solutions_csv)
-    # Apparently we can encounter both Source_id and source_id for some reason
-    # so we homogenise case here.
+    # We can encounter both Source_id and source_id for some reason so we homogenise case here.
     validation_csv.columns = validation_csv.columns.str.lower()
 
     # Return an error if there are sources with bad solutions

@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from argparse import ArgumentParser
 import os
 import json
@@ -11,7 +13,7 @@ from regions import Regions
 
 def calculate_image_size(
     ras: ndarray, decs: ndarray, pixel_size: float, padding: float = 1.0
-) -> Tuple[int, int, float]:
+    ) -> Tuple[int, int, float]:
     """Calculates the image size needed to image a polygonal area delimited by the coordinates given,
     alongside the allowed baseline averaging factor for WSClean.
 
