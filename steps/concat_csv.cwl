@@ -17,7 +17,7 @@ inputs:
       prefix: ""
       separate: true
 
-  - id: output_csv
+  - id: output_csv_name
     type: string?
     default: "concat.csv"
     doc: Output csv name
@@ -38,5 +38,5 @@ outputs:
 requirements:
   - class: InlineJavascriptRequirement
 
-stdout: $(inputs.output_csv)
+stdout: $(inputs.output_csv_name)
 stderr: concat_csvs_err.log
