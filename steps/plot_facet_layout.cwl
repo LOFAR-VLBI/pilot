@@ -13,6 +13,7 @@ inputs:
     inputBinding:
       prefix: "--ms"
       position: 0
+      separate: true
 
   - id: facet_layout
     type: File
@@ -20,6 +21,7 @@ inputs:
     inputBinding:
       prefix: "--facet_layout"
       position: 1
+      separate: true
 
 outputs:
   - id: facet_layout_png
