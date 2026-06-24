@@ -3,7 +3,10 @@ cwlVersion: v1.2
 id: concat_csv
 doc: Concatenate CSV files with identical columns
 
-baseCommand: [bash, concat.sh]
+baseCommand: awk
+
+arguments:
+  - 'NR == 1 || FNR > 1'
 
 inputs:
   - id: input_csvs
@@ -17,33 +20,23 @@ inputs:
   - id: output_csv
     type: string?
     default: "concat.csv"
-    doc: Output csv
-    inputBinding:
-      position: 1
+    doc: Output csv name
 
 outputs:
   - id: concat_csv
-    type: File
+    type: stdout
     doc: Concatenated phasediff score CSV
-    outputBinding:
-      glob: $(inputs.output_csv)
 
   - id: logfile
     type: File[]
     outputBinding:
       glob: concat_csvs*.log
     doc: |
-      The files containing stdout and stderr from the step.
+      The file containing stderr from the step.
+      Passed as an array for consistency with other steps.
 
 requirements:
   - class: InlineJavascriptRequirement
-  - class: InitialWorkDirRequirement
-    listing:
-      - entryname: concat.sh
-        entry: |
-          #!/bin/bash
-          set -euo pipefail
-          awk 'NR == 1 || FNR > 1' "$@" > "$1"
 
-stdout: concat_csvs.log
+stdout: $(inputs.output_csv)
 stderr: concat_csvs_err.log
