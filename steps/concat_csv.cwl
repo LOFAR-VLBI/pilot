@@ -35,8 +35,5 @@ outputs:
       The file containing stderr from the step.
       Passed as an array for consistency with other steps.
 
-requirements:
-  - class: InlineJavascriptRequirement
-
 stdout: $(inputs.output_csv_name)
 stderr: concat_csvs_err.log
