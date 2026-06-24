@@ -24,7 +24,7 @@ inputs:
       shellQuote: false
       itemSeparator: ' '
       prefix: '-temp-dir'
-  - id: cores
+  - id: ncpu
     type: int?
     default: 24
     inputBinding:

@@ -55,7 +55,7 @@ steps:
     - id: make_facet_image
       label: make_facet_image
       in:
-        - id: cores
+        - id: ncpu
           source: number_cores
         - id: msin
           source: msin
