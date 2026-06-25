@@ -33,6 +33,7 @@ packages = []
 [tool.tox]
 requires = ["tox>=4.22"]
 envlist = ["py311", "py312", "py313"]
+skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
 change_dir = "{tox_root}/tests"
