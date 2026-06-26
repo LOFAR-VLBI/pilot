@@ -109,7 +109,7 @@ def plot_ds9_regions(filepath: str, msfiles: list[str]) -> None:
     ax.set_ylabel('Declination (deg)')
     ax.invert_xaxis()
     plt.tight_layout()
-    plt.savefig(f'facet_layout_{obs_id}.png', dpi=150)
+    plt.savefig(f'facet_layout_L{obs_id}.png', dpi=150)
 
 
 def main():
