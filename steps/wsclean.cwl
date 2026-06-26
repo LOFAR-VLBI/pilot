@@ -349,7 +349,7 @@ requirements:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: $(inputs.cores)
+    coresMin: $(inputs.ncpu)
 
 stdout: wsclean.log
 stderr: wsclean_err.log
