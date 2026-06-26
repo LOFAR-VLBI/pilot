@@ -28,7 +28,7 @@ outputs:
     type: File
     doc: Facet layout PNG
     outputBinding:
-      glob: "facet_layout.png"
+      glob: "facet_layout*.png"
 
 hints:
   - class: DockerRequirement
