@@ -255,7 +255,7 @@ inputs:
       prefix: '-dd-psf-grid'
   - id: scalar-visibilities
     type: boolean?
-    default: true
+    default: false
     inputBinding:
       position: 1
       shellQuote: false
