@@ -9,6 +9,7 @@ doc: |
 requirements:
     - class: ScatterFeatureRequirement
     - class: SubworkflowFeatureRequirement
+    - class: InlineJavascriptRequirement
 
 inputs:
     - id: msin
