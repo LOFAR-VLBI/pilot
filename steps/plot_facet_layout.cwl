@@ -33,5 +33,3 @@ outputs:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
-  - class: ResourceRequirement
-    coresMin: 1
