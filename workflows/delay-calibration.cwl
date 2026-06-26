@@ -90,6 +90,12 @@ inputs:
       default: 5
       doc: The number of threads per DP3 process.
 
+    - id: aoflagger_memory_max
+      type: int?
+      doc: |
+        Maximum memory in MiB for the AOflagger job.
+        If not specified, defaults to 10x the minimum memory.
+
     - id: ddf_solsdir
       type: Directory?
       doc: |
@@ -219,6 +225,8 @@ steps:
           source: max_dp3_threads
         - id: rfi_strategy
           source: rfi_strategy
+        - id: aoflagger_memory_max
+          source: aoflagger_memory_max
       out:
         - id: logdir
         - id: msout

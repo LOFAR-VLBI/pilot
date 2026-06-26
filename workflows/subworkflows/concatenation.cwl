@@ -39,6 +39,12 @@ inputs:
         The amount of memory in mebibytes that should be available
         for an AOFlagger flagging job. Negative values mean no limit.
 
+  - id: aoflagger_memory_max
+    type: int?
+    doc: |
+        Maximum memory in MiB for the AOflagger job.
+        If not specified, defaults to 10x the minimum memory.
+
   - id: rfi_strategy
     doc: The RFI strategy to use if flagging.
     type: File?
@@ -80,6 +86,8 @@ steps:
         source: max_dp3_threads
       - id: memory
         source: aoflagger_memory
+      - id: ramMax
+        source: aoflagger_memory_max
       - id: strategy
         source: rfi_strategy
         valueFrom: $(self)

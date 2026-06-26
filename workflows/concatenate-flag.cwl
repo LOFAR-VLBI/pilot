@@ -43,6 +43,12 @@ inputs:
         will be used by AOFlagger (and should be
         available before an AOFlagger job can start).
 
+  - id: aoflagger_memory_max
+    type: int?
+    doc: |
+        Maximum memory in MiB for the AOflagger job.
+        If not specified, defaults to 10x the minimum memory.
+
   - id: rfi_strategy
     doc: The RFI strategy to use in flagging.
     type: File
@@ -87,6 +93,8 @@ steps:
         source: max_dp3_threads
       - id: aoflagger_memory
         source: get_memory/memory
+      - id: aoflagger_memory_max
+        source: aoflagger_memory_max
       - id: rfi_strategy
         source: rfi_strategy
     out:
