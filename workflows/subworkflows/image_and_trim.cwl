@@ -82,6 +82,8 @@ steps:
           default: false
         - id: apply-primary-beam
           default: true
+        - id: scalar-visibilities
+          default: false
       out:
         - id: MFS_image_pb
         - id: MFS_image
