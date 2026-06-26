@@ -51,7 +51,7 @@ steps:
       in:
         - id: input_csvs
           source: calc_phasediff/phasediff_score_csv
-        - id: output_csv
+        - id: output_csv_name
           default: "phasediff_concat.csv"
       out:
         - id: concat_csv
