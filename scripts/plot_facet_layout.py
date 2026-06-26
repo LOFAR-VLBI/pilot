@@ -37,6 +37,23 @@ def get_phase_centre(ms: str) -> tuple[float, float]:
     return ra % 360, dec
 
 
+def get_obsid(ms):
+    """
+    Extract Observation ID from MeasurementSet metadata.
+    Parameters
+    ----------
+    ms : str
+        Path to the MeasurementSet.
+
+    Returns
+    -------
+    obsid : str
+        Observation ID.
+    """
+    with table(f"{ms}::OBSERVATION", ack=False) as t:
+        return t.getcol("LOFAR_OBSERVATION_ID")[0]
+
+
 def parse_polygons(filepath: str) -> list[np.ndarray]:
     """
     Parse polygon regions from a DS9 region file.
@@ -72,6 +89,7 @@ def plot_ds9_regions(filepath: str, msfiles: list[str]) -> None:
     msfiles : list of str
         Paths to MeasurementSets.
     """
+    obs_id = get_obsid(msfiles[0])
     phase_centres = [get_phase_centre(ms) for ms in msfiles]
     ras, decs = zip(*phase_centres)
     fnums = [ms.split("_")[1] for ms in msfiles]
@@ -91,7 +109,7 @@ def plot_ds9_regions(filepath: str, msfiles: list[str]) -> None:
     ax.set_ylabel('Declination (deg)')
     ax.invert_xaxis()
     plt.tight_layout()
-    plt.savefig('facet_layout.png', dpi=150)
+    plt.savefig(f'facet_layout_{obs_id}.png', dpi=150)
 
 
 def main():
