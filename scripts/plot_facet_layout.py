@@ -33,7 +33,7 @@ def get_phase_centre(ms: str) -> tuple[float, float]:
         Declination in degrees.
     """
     with table(f"{ms}::FIELD", ack=False) as t:
-        ra, dec = np.degrees(t.getcol("PHASE_DIR")).squeeze()
+        ra, dec = np.rad2deg(t.getcol("PHASE_DIR")).squeeze()
     return ra % 360, dec
 
 
