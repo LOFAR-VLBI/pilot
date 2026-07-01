@@ -41,12 +41,6 @@ inputs:
       Number of cores to use per job for tasks with
       high I/O or memory.
 
-  - id: aoflagger_memory_max
-    type: int?
-    doc: |
-        Maximum memory in MiB for the AOflagger job.
-        If not specified, defaults to 10x the minimum memory.
-
   - id: model_image
     type: File?
     doc: Image to generate an initial delay calibrator model from.
@@ -109,8 +103,6 @@ steps:
         source: sort_concatenate/groupnames
       - id: groups_specification
         source: sort_concatenate/filenames
-      - id: aoflagger_memory_max
-        source: aoflagger_memory_max
     out:
       - id: msout
       - id: concat_flag_statistics
