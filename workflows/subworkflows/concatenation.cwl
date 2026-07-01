@@ -86,8 +86,6 @@ steps:
         source: max_dp3_threads
       - id: memory
         source: aoflagger_memory
-      - id: ramMax
-        source: aoflagger_memory_max
       - id: strategy
         source: rfi_strategy
         valueFrom: $(self)

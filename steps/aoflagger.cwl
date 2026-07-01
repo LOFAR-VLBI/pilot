@@ -56,12 +56,6 @@ inputs:
         valueFrom: "$(self/1000)"
       doc: The maximum amount of memory to use in GB. 
 
-    - id: ramMax
-      type: int?
-      doc: |
-          Maximum RAM in MiB for the AOflagger job.
-          If not specified, defaults to 10x the minimum memory.
-
     - id: strategy
       doc: The RFI strategy to use in flagging.
       type: File
@@ -99,7 +93,6 @@ requirements:
   - class: ResourceRequirement
     coresMin: 6
     ramMin: $(inputs.memory)
-    ramMax: "$(inputs.ramMax != null ? inputs.ramMax : (inputs.memory != null ? inputs.memory * 10 : null))"
 
 hints:
   - class: DockerRequirement
