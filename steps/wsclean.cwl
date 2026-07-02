@@ -53,7 +53,7 @@ inputs:
       prefix: '-minuv-l'
   - id: weight
     type: string?
-    default: briggs -1.5
+    default: briggs -1.4
     inputBinding:
       position: 1
       shellQuote: false
@@ -193,7 +193,7 @@ inputs:
       prefix: '-join-channels'
   - id: fit-spectral-pol
     type: int?
-    default: 9
+    default: 5
     inputBinding:
       position: 1
       shellQuote: false
@@ -255,7 +255,7 @@ inputs:
       prefix: '-dd-psf-grid'
   - id: scalar-visibilities
     type: boolean?
-    default: true
+    default: false
     inputBinding:
       position: 1
       shellQuote: false
@@ -349,7 +349,7 @@ requirements:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: $(inputs.cores)
+    coresMin: $(inputs.ncpu)
 
 stdout: wsclean.log
 stderr: wsclean_err.log

@@ -56,3 +56,7 @@ outputs:
 
 requirements:
     - class: InlineJavascriptRequirement
+
+hints:
+  - class: DockerRequirement
+    dockerPull: vlbi-cwl
