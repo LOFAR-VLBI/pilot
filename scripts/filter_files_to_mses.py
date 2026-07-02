@@ -44,8 +44,7 @@ def main():
     cwl_files = [{"class": "File", "path": f} for f in keep_files]
 
     with open("cwl.output.json", "w") as f:
-        if cwl_files:
-            json.dump({"filtered_files": cwl_files}, f)
+        json.dump({"filtered_files": cwl_files}, f)
 
 
 if __name__ == "__main__":
