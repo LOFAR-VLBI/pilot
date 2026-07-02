@@ -34,6 +34,13 @@ def main():
 
     keep_files = [f for f in args.files if parse_source_from_h5(f) in source_names_ms]
 
+    if not keep_files:
+        raise RuntimeError("No files in common with the MSes. Please check inputs.")
+    elif len(keep_files) != len(source_names_ms):
+        raise NotImplementedError(
+            "Number of files does not match number of MSes. This is not supported."
+        )
+
     cwl_files = [{"class": "File", "path": f} for f in keep_files]
 
     with open("cwl.output.json", "w") as f:
