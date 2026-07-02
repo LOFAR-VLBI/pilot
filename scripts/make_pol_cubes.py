@@ -1,30 +1,50 @@
 #!/usr/bin/env python3
+"""Create Stokes Q and U cubes from WSClean channel images"""
+
 
 import numpy as np
 from astropy.io import fits
+from typing import List
 import os
 import argparse
 
+from validate_lofar_images import get_rms
 
-def findrms(mIn, maskSup=1e-7):
+
+def cube_maker(q_images: List[str], u_images: List[str], nchan: int, imsize: List[int]) -> None:
     """
-    find the rms of an array, from Cyril Tasse/kMS
+    Constructs Stokes Q and U data cubes from individual FITS channel images from WSClean,
+    filtering out noisy channels based on an RMS threshold.
+    This function reads a sequence of Stokes Q and U FITS files, extracts their
+    data and frequencies, and calculates the average RMS noise per channel. Channels
+    with an average noise greater than 5 times the median noise across all channels
+    are flagged and excluded. The filtered results are written out as new 4D FITS 
+    cubes alongside metadata text files.
+
+    Parameters
+    ----------
+    q_images : list of str
+        File paths to the Stokes Q FITS images, ordered by channel.
+    u_images : list of str
+        File paths to the Stokes U FITS images, ordered by channel.
+    nchan : int
+        The total number of frequency channels to process.
+    imsize : tuple of int or list of int
+        The spatial dimensions of the input images in pixels.
+
+    Returns
+    -------
+    None
+        Outputs are written directly to disk as FITS files 
+        ('<imagename>-polcube-Q.fits', '<imagename>-polcube-U.fits')
+        and text data files.
+
+    Notes
+    -----
+    - The output files use a naming prefix extracted from the first Stokes Q filename.
+    - Temporary logs of frequencies and noise values are generated and then 
+        overwritten with the final filtered subsets.
     """
-    m = mIn[np.abs(mIn) > maskSup]
-    rmsold = np.std(m)
-    diff = 1e-1
-    cut = 3.
-    med = np.median(m)
-    for i in range(10):
-        ind = np.where(np.abs(m - med) < rmsold * cut)[0]
-        rms = np.std(m[ind])
-        if np.abs((rms - rmsold) / rmsold) < diff: break
-        rmsold = rms
-    return rms
-
-
-
-def cube_maker(q_images, u_images, nchan, imsize):
 
     # Extract the name for the frequency and rms noise files
     firstq = os.path.basename(q_images[0])
@@ -32,6 +52,9 @@ def cube_maker(q_images, u_images, nchan, imsize):
 
     cube_q = np.zeros((1,nchan,imsize[1],imsize[0]))
     cube_u = np.zeros((1,nchan,imsize[1],imsize[0]))
+
+    header_q = None
+    header_u = None
     
     with open('' + str(imagename) + '_frequency_list.dat','w') as lfr:
         with open('' + str(imagename) + '_avg_qunoise_list.dat','w') as avgqunoise:
@@ -43,10 +66,12 @@ def cube_maker(q_images, u_images, nchan, imsize):
                 if np.isnan(data_q).any() or np.isnan(data_u).any():
                     print("Channel " + str(i) + "is NaN, move to the next one...")
                     continue
-                if i == 0:      # This is required to store the first frequency channel in the header of the final cube, useful for visualization
+
+                if header_q is None:      # This is required to store the first frequency channel in the header of the final cube, useful for visualization
                     header_q = hdu_q[0].header
                     header_u = hdu_u[0].header
-                avgnoise = 0.5 * ( findrms(data_q) + findrms(data_u) )
+
+                avgnoise = 0.5 * ( get_rms(q_images[i]) + get_rms(u_images[i]) )
                 frequ = hdu_q[0].header['CRVAL3']
                 lfr.write(str(frequ)+'\n')
                 avgqunoise.write(str(avgnoise)+'\n')
