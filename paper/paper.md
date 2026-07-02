@@ -190,7 +190,7 @@ No generative AI was used in the development of PILoT, the writing of this manus
 
 # Acknowledgements
 
-MvdW is supported by the Science and Technology Facilities Council via LOFAR-U.K. [ST/V002406/1] and UKSRC [ST/T000244/1].
+MvdW is supported by the Science and Technology Facilities Council via LOFAR-U.K. [ST/V002406/1] and UKSRC [ST/X002586].
 FS appreciates the support of STFC [ST/Y004159/1].
 JMGHJdJ acknowledges support from project CORTEX (NWA.1160.18.316) of research programme NWA-ORC, which is (partly) financed by the Dutch Research Council (NWO), and support from the OSCARS project, which has received funding from the European Commission’s Horizon Europe Research and Innovation programme under grant agreement No. 101129751.
 LKM is grateful for support from a UKRI FLF [MR/Y020405/1] and LOFAR-UK via STFC [ST/V002406/1].
