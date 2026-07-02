@@ -33,7 +33,7 @@ def main():
 
     keep_files = [f for f in args.files if parse_source_from_h5(f) in source_names_ms]
 
-    cwl_files = [{"type": "Directory", "path": f} for f in keep_files]
+    cwl_files = [{"class": "File", "path": f} for f in keep_files]
 
     with open("cwl.output.json", "w") as f:
         if cwl_files:
