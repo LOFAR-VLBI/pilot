@@ -34,11 +34,11 @@ The most straightforward way to run PILoT through FLoCs requires the following s
 PILOT comes with a test suite, which is controlled through [tox](https://tox.wiki/en/latest/config.html).
 Tox controls any dependencies, so running the tests is as simple as running `tox` from anywhere in the project directory after [installing PILOT](#installing-the-pipeline).
 
-By default, tox tests against Python versions 3.10 through 3.13 (if available).
+By default, tox tests against Python versions 3.11 through 3.13 (if available).
 To test against a specific version, run tox with the `-e` flag.
-For example, to test against Python 3.10, run
+For example, to test against Python 3.13, run
 ```
-tox -e py310
+tox -e py313
 ```
 The testing suite for the Python scripts can also be run using [`pytest`](pytest.org).
 In this case, the variable `VLBI_ROOT_DIR` must be set to the project root directory and `PYTHONPATH` must include the project's `scripts` directory.
