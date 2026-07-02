@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.0
+
+### Fixed
+
+* Several runtime errors in the facet imaging workflow were patched (#137)
+
+### Added
+
+* A facet layout inspection plot is generated after facet subtraction (#130)
+
+### Changed
+
+* Imaging parameters in the facet imaging workflow were updated (#137)
+* Inspection plots for DD calibrators are labelled by source name (#140)
+
+
 ## 1.0.0
 
 ### Fixed
