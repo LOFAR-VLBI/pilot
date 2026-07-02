@@ -30,6 +30,3 @@ outputs:
   filtered_files:
     type:
       - File[]?
-
-requirements:
-  - class: InlineJavascriptRequirement
