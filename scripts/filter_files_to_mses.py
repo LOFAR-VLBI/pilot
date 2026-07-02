@@ -27,7 +27,7 @@ def main():
 
     if not args.files:
         with open("cwl.output.json", "w") as f:
-            json.dump({"files": None}, f)
+            json.dump({"filtered_files": None}, f)
 
     source_names_ms = {parse_source_from_h5(ms) for ms in args.ms}
 
@@ -37,7 +37,7 @@ def main():
 
     with open("cwl.output.json", "w") as f:
         if cwl_files:
-            json.dump({"files": cwl_files}, f)
+            json.dump({"filtered_files": cwl_files}, f)
 
 
 if __name__ == "__main__":
