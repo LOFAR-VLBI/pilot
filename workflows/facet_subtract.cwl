@@ -123,6 +123,16 @@ steps:
       run: ../steps/dp3_parset.cwl
       scatter: parset
 
+    - id: plot_facet_layout
+      in:
+        - id: msin
+          source: concat_facets/msout
+        - id: facet_layout
+          source: get_facet_layout/facet_regions
+      out:
+        - id: facet_layout_png
+      run: ../steps/plot_facet_layout.cwl
+
 requirements:
   - class: MultipleInputFeatureRequirement
   - class: ScatterFeatureRequirement
@@ -138,3 +148,6 @@ outputs:
     - id: polygon_regions
       type: File[]
       outputSource: split_polygons/polygon_regions
+    - id: facet_layout_png
+      type: File
+      outputSource: plot_facet_layout/facet_layout_png
