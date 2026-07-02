@@ -33,6 +33,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     # Set defaults
     configdict = {}
+    configdict['imagename'] = filename
     configdict['imsize'] = 1600
     configdict['pixelscale'] = 0.075
     configdict['robust'] = -0.5

@@ -9,6 +9,7 @@ doc: |
 requirements:
     - class: ScatterFeatureRequirement
     - class: SubworkflowFeatureRequirement
+    - class: InlineJavascriptRequirement
 
 inputs:
     - id: msin
@@ -41,6 +42,9 @@ inputs:
         If mosaic is true, a final mosaic will be made of the trimmed facet images
         using this configuration.
 
+    - id: tmpdir
+      type: string?
+      doc: Temporary directory to run I/O heavy jobs.
 
 steps:
     - id: sort_mses
@@ -72,6 +76,8 @@ steps:
           source: pixel_scale
         - id: resolution
           source: resolution
+        - id: tmpdir
+          source: tmpdir
       out:
         - id: MFS_image_pb
         - id: MFS_image
@@ -97,7 +103,7 @@ steps:
       out:
         - id: output_image
       run: ../steps/swarp.cwl
-      when: $(config != null)
+      when: $(inputs.config != null)
 
 outputs:
   - id: MFS_images_pb

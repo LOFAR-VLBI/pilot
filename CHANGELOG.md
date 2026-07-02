@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.0.0
+
+### Fixed
+
+* Resolved CWL warnings (#53, #72)
+* Fixed various paths for pipeline failure (#59, #63, #58, #95, #98, #103, #116, #118)
+* Fixed configuration issues (#107, #108, #111)
+* Added various fixes in the 1 arcsecond resolution workflow (#99, #108, #110)
+
+### Added
+
+* Improvements to facet mosaicing using SWarp (#50, #90)
+* lofar-vlbi-plot is used when no delay calibrator catalogue is provided (#70, #113)
+* Improvements to phase-difference selection (#91, 95)
+* Improved parallelisation in split directions (#97)
+* Add option to set the acceptable fracton of bad DD calibration directions (#105)
+* Additions to the delay calibrator selection (#113)
+* Improvements to facet subtraction (#121, 122)
+
+### Changed
+
+* Updates to resource requirements (#55, #85, #87, #102)
+* Intermediate ouputs delay calibration and dd-calibration outputs are stored (#101, #104)
+* Various internal changes
+
+### Removed
+
+* Python 3.10 is no longer supported (#124)
+
+
 ## 0.9.1
 
 ### Fixed
