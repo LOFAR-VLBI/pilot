@@ -19,7 +19,7 @@ inputs:
       separate: true
   files:
     type:
-      - File[]
+      - File[]?
     doc: Files to filter into a set that matches the MSes.
     inputBinding:
       prefix: "--files"
@@ -29,7 +29,7 @@ inputs:
 outputs:
   filtered_files:
     type:
-      - File[]
+      - File[]?
 
 requirements:
   - class: InlineJavascriptRequirement
