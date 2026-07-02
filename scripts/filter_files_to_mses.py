@@ -28,6 +28,7 @@ def main():
     if not args.files:
         with open("cwl.output.json", "w") as f:
             json.dump({"filtered_files": None}, f)
+        return
 
     source_names_ms = {parse_source_from_h5(ms) for ms in args.ms}
 
