@@ -30,3 +30,6 @@ outputs:
   filtered_files:
     type:
       - File[]?
+
+stdout: match_files_to_ms.log
+stderr: match_files_to_ms_err.log
