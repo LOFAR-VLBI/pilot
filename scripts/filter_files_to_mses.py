@@ -9,7 +9,11 @@ from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 def main():
     parser = ArgumentParser(
-        description="Filters a given set of files into one that matches the set of MSes. This is done by extracting the source name, so both MSes and files are expected to follow the ILTJ... naming convention."
+        description=(
+            "Filters a given set of files into one that matches the set of MSes."
+            " This is done by extracting the source name, so both MSes and files"
+            " are expected to follow the ILTJ... naming convention."
+        )
     )
     parser.add_argument(
         "--ms",
