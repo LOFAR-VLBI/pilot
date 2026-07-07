@@ -37,7 +37,7 @@ inputs:
 
     - id: max_dp3_threads
       type: int?
-      default: 5
+      default: 8
       doc: The number of threads per DP3 process.
       inputBinding:
         prefix: numthreads=
