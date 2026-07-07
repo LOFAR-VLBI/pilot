@@ -7,7 +7,7 @@ doc: |
     containing pipeline run summary statistics.
 
 baseCommand:
-  - make_summary.py
+  - make_summary_pilot.py
 
 inputs:
   - id: flagFiles
