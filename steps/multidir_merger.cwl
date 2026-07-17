@@ -36,6 +36,8 @@ requirements:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
+  - class: ResourceRequirement
+    ramMin: 45000
 
 stdout: multidir_h5_merger.log
 stderr: multidir_h5_merger_err.log
