@@ -16,6 +16,14 @@ inputs:
       position: 2
       shellQuote: false
       itemSeparator: ' '
+  - id: absmem
+    type: float?
+    default: $(inputs.ncpu * 7629)
+    inputBinding:
+      position: 1
+      shellQuote: false
+      itemSeparator: ' '
+      prefix: '-abs-mem'
   - id: tmpdir
     type: string?
     default: '.'
@@ -350,6 +358,7 @@ requirements:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
     coresMin: $(inputs.ncpu)
+    ramMin: $(inputs.ncpu * 7629)
 
 stdout: wsclean.log
 stderr: wsclean_err.log
