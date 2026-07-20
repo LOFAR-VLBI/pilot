@@ -13,7 +13,7 @@
 ### Changed
 
 * Imaging parameters in the facet imaging workflow were updated (#137)
-* Inspection plots for DD calibrators are labelled by source name (#140)
+* Inspection plots for delay calibrators are labelled by source name (#140)
 
 
 ## 1.0.0
