@@ -158,7 +158,7 @@ def subtract_parabola(phases: np.ndarray, multiplier: float = 1.0):
 
             #Get proper fitted estimate
             p, cov = leastsq(residuals, p_0, args=(time_interval[~np.isnan(time_interval)], x[~np.isnan(time_interval)]))
-            model_phases=p[0]*x**2 + p[1]*x + p[0]
+            model_phases=p[0]*x**2 + p[1]*x + p[2]
             new_phases[:, idx] = time_interval - model_phases
         else:
             new_phases[:, idx] = time_interval
