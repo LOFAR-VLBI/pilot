@@ -5,6 +5,7 @@
 ### Fixed
 
 * Several runtime errors in the facet imaging workflow were patched (#137)
+* A shape check was added to the calibrator selection workflow (#142)
 
 ### Added
 
