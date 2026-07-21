@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+### Fixed
+
+* Corrected the model coefficients of the best-fit phase solution (#149)
+
 ## 1.1.0
 
 ### Fixed
