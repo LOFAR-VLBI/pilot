@@ -118,6 +118,17 @@ steps:
         - config_files
       run: ./subworkflows/ddcal_calibrators.cwl
 
+    - id: store_configs
+      label: Store selfcal config files
+      in:
+        - id: files
+          source: ddcal_int/config_files
+        - id: sub_directory_name
+          default: selfcal_configs
+      out:
+        - id: dir
+      run: ../steps/collectfiles.cwl
+
     - id: validation
       in:
         - id: images
@@ -191,8 +202,8 @@ outputs:
       doc: Self-calibration images in PNG format
 
     - id: selfcal_configs
-      type: File[]
-      outputSource: ddcal_int/config_files
+      type: Directory
+      outputSource: store_configs/dir
       doc: Configuration files used by facetselfcal.
 
     - id: msout
