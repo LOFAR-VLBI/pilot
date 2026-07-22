@@ -6,6 +6,11 @@
 
 * Corrected the model coefficients of the best-fit phase solution (#149)
 
+### Added
+
+* Self-calibration configuration file are stored in a dedicated folder (#148)
+
+
 ## 1.1.0
 
 ### Fixed
