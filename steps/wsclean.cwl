@@ -332,7 +332,7 @@ outputs:
     type:
       - File
       - File[]
-    doc: The final primary beam corrected image.
+    doc: The MFS psf image, or images per psf direction if a direction-dependent psf is used.
     outputBinding:
       glob: '$(inputs.name)*-MFS-psf.fits'
   - id: channel_model_images
