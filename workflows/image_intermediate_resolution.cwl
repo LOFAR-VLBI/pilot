@@ -179,7 +179,9 @@ outputs:
 
     - id: MFS_psf
       outputSource: make_intermediate_resolution_image/MFS_psf
-      type: File
+      type:
+        - File
+        - File[]
       doc: |
         Final MFS psf FITS image at intermediate resolution.
     - id: channel_model_images

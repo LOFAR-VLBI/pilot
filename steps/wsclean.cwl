@@ -329,10 +329,12 @@ outputs:
     outputBinding:
       glob: '$(inputs.name)-MFS-model.fits'
   - id: MFS_psf
-    type: File
-    doc: The final primary beam corrected image.
+    type:
+      - File
+      - File[]
+    doc: The MFS psf image, or images per psf direction if a direction-dependent psf is used.
     outputBinding:
-      glob: '$(inputs.name)-MFS-psf.fits'
+      glob: '$(inputs.name)*-MFS-psf.fits'
   - id: channel_model_images
     type: File[]
     doc: Per-channel model images required for the facet subtraction.
