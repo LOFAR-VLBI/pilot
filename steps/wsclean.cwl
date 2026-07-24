@@ -329,7 +329,9 @@ outputs:
     outputBinding:
       glob: '$(inputs.name)-MFS-model.fits'
   - id: MFS_psf
-    type: File
+    type:
+      - File
+      - File[]
     doc: The final primary beam corrected image.
     outputBinding:
       glob: '$(inputs.name)*-MFS-psf.fits'
