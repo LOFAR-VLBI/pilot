@@ -1,11 +1,18 @@
 # Changelog
 
+## 1.1.2
+
+### Fixed
+
+* fixed a runtime crash in the intermediate resolution workflow due to file permissions (#151)
+
+
 ## 1.1.1
 
 ### Fixed
 
 * Corrected the model coefficients of the best-fit phase solution (#149)
-* Fixed a runtime crashed during the writing of the DIcal config files (#153)
+* Fixed a runtime crash during the writing of the DIcal config files (#153)
 
 ### Added
 
