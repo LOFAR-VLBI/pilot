@@ -11,7 +11,6 @@ from casacore.tables import table
 from joblib import Parallel, delayed
 from numba import njit, prange, set_num_threads
 import numpy as np
-import tables
 
 
 @njit(parallel=True)

@@ -112,6 +112,8 @@ steps:
               "facet-solutions": inputs.dd_solutions,
               "soltabs": ["amplitude000", "phase000"]
             })
+        - id: scalar-visibilities
+          default: true
       out:
         - id: MFS_image_pb
         - id: MFS_image
@@ -177,7 +179,9 @@ outputs:
 
     - id: MFS_psf
       outputSource: make_intermediate_resolution_image/MFS_psf
-      type: File
+      type:
+        - File
+        - File[]
       doc: |
         Final MFS psf FITS image at intermediate resolution.
     - id: channel_model_images

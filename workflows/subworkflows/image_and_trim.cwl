@@ -36,6 +36,10 @@ inputs:
       doc: |
         Restoring beam to use for every facet following the WSClean order of major axis, minor axis, position angle.
 
+    - id: tmpdir
+      type: string?
+      doc: Temporary directory to run I/O heavy jobs.
+
 steps:
     - id: find_image_size
       label: image_size
@@ -55,7 +59,7 @@ steps:
     - id: make_facet_image
       label: make_facet_image
       in:
-        - id: cores
+        - id: ncpu
           source: number_cores
         - id: msin
           source: msin
@@ -72,6 +76,12 @@ steps:
           valueFrom: $(self.toString() + "asec")
         - id: beam-shape
           source: restoring_beam
+        - id: tmpdir
+          source: tmpdir
+        - id: apply-facet-beam
+          default: false
+        - id: apply-primary-beam
+          default: true
       out:
         - id: MFS_image_pb
         - id: MFS_image

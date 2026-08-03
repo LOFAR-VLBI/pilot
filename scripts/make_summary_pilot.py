@@ -11,7 +11,6 @@ import losoto.lib_operations as losoto
 import numpy
 
 
-###############################################################################
 def main(
     flagFiles=None,
     pipeline="LINC",

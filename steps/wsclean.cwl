@@ -24,7 +24,7 @@ inputs:
       shellQuote: false
       itemSeparator: ' '
       prefix: '-temp-dir'
-  - id: cores
+  - id: ncpu
     type: int?
     default: 24
     inputBinding:
@@ -53,7 +53,7 @@ inputs:
       prefix: '-minuv-l'
   - id: weight
     type: string?
-    default: briggs -1.5
+    default: briggs -1.4
     inputBinding:
       position: 1
       shellQuote: false
@@ -193,7 +193,7 @@ inputs:
       prefix: '-join-channels'
   - id: fit-spectral-pol
     type: int?
-    default: 9
+    default: 5
     inputBinding:
       position: 1
       shellQuote: false
@@ -255,7 +255,7 @@ inputs:
       prefix: '-dd-psf-grid'
   - id: scalar-visibilities
     type: boolean?
-    default: true
+    default: false
     inputBinding:
       position: 1
       shellQuote: false
@@ -329,10 +329,12 @@ outputs:
     outputBinding:
       glob: '$(inputs.name)-MFS-model.fits'
   - id: MFS_psf
-    type: File
-    doc: The final primary beam corrected image.
+    type:
+      - File
+      - File[]
+    doc: The MFS psf image, or images per psf direction if a direction-dependent psf is used.
     outputBinding:
-      glob: '$(inputs.name)-MFS-psf.fits'
+      glob: '$(inputs.name)*-MFS-psf.fits'
   - id: channel_model_images
     type: File[]
     doc: Per-channel model images required for the facet subtraction.
@@ -349,7 +351,7 @@ requirements:
     listing:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
-    coresMin: $(inputs.cores)
+    coresMin: $(inputs.ncpu)
 
 stdout: wsclean.log
 stderr: wsclean_err.log
