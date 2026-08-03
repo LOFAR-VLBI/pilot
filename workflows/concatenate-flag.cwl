@@ -55,7 +55,7 @@ steps:
         valueFrom: $(self)
     out:
       - id: memory
-    run: ../../steps/archived/get_memory_fraction.cwl
+    run: ../steps/get_memory_fraction.cwl
     label: Get memory fraction
 
   - id: sort_concatenate
@@ -72,7 +72,7 @@ steps:
       - id: filenames
       - id: groupnames
       - id: logfile
-    run: ../../steps/sort_concatmap.cwl
+    run: ../steps/sort_concatmap.cwl
     label: sort_concatmap
   - id: concatenate-flag
     in:
@@ -109,7 +109,7 @@ steps:
     out:
       - id: flagged_fraction_antenna
       - id: logfile
-    run: ../../steps/findRefAnt_join.cwl
+    run: ../steps/findRefAnt_join.cwl
     label: initial_flags_join
   - id: concatenate_logfiles_concatenate
     in:
@@ -120,7 +120,7 @@ steps:
         default: concatenate
     out:
       - id: output
-    run: ../../steps/concatenate_files.cwl
+    run: ../steps/concatenate_files.cwl
     label: concatenate_logfiles_concatenate
   - id: concatenate_logfiles_aoflagging
     in:
@@ -131,7 +131,7 @@ steps:
         default: AOflagging
     out:
       - id: output
-    run: ../../steps/concatenate_files.cwl
+    run: ../steps/concatenate_files.cwl
     label: concat_logfiles_AOflagging
 
   - id: summary
@@ -147,7 +147,7 @@ steps:
     out:
       - id: summary_file
       - id: logfile
-    run: ../../steps/summary.cwl
+    run: ../steps/summary.cwl
     label: summary
 
   - id: save_logfiles
@@ -164,7 +164,7 @@ steps:
         default: 'sort-concat-flag'
     out:
       - id: dir
-    run: ../../steps/collectfiles.cwl
+    run: ../steps/collectfiles.cwl
     label: save_logfiles
 
 outputs:
