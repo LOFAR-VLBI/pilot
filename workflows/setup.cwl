@@ -164,7 +164,7 @@ steps:
         - id: flag_statistics_before
         - id: flag_statistics_after
         - id: msout
-      run: ./clip_A-team.cwl
+      run: ./subworkflows/clip_A-team.cwl
       scatter: msin
       label: clip_A-team
 

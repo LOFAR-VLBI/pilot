@@ -94,7 +94,7 @@ steps:
       - id: concat_flag_statistics
       - id: aoflag_logfile
       - id: concatenate_logfile
-    run: ../subworkflows/concatenation.cwl
+    run: ./subworkflows/concatenation.cwl
     scatter: group_id
     label: concatenation-flag
   - id: concat_flags_join
