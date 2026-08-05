@@ -5,7 +5,7 @@ label: VLBI delay calibration
 doc: |
     The delay calibration pipeline does the following:
     * [If a DDF pipeline SOLSDIR directory is supplied]
-      corrects direction-dependent effects for the Dutch stations and
+      corrects direction-independent effects for the Dutch stations and
       optionally subtracts the LoTSS model outside a user-specifiable region.
     * creates a MeasurementSet with data phase-shifted
       to delay calibrator candidates (one or multiple),
