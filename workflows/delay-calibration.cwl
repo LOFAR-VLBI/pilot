@@ -11,7 +11,7 @@ doc: |
       to delay calibrator candidates (one or multiple),
       calibrated for direction-independent effects.
     * [if apply_delay_solutions is enabled]
-      apply the delay calibration solutions to the input MeasurementSets.
+      applies the delay calibration solutions to the input MeasurementSets.
 
 requirements:
   - class: SubworkflowFeatureRequirement
