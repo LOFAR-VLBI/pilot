@@ -71,8 +71,8 @@ steps:
           source:
             - average_ms/ms_avg
             - msin
-          pickValue: first_non_null
           linkMerge: merge_flattened
+          pickValue: first_non_null
       out:
         - id: sorted_entries
       run: ../steps/sort_by_name.cwl
