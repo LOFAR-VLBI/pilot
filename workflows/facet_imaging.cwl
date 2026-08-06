@@ -71,7 +71,6 @@ steps:
           source:
             - average_ms/ms_avg
             - msin
-          linkMerge: merge_flattened
           pickValue: first_non_null
       out:
         - id: sorted_entries
