@@ -144,7 +144,9 @@ def write_config(filename: str, configdict: dict[str, object]) -> str:
             ## string, int, float, or array
             value = configdict[key]
             match value:
-              case str() | int() | float():
+              case str():
+                f.write(f'{key} = "{value}"\n')
+              case int() | float():
                 f.write(f'{key} = {value}\n')
               case Sequence():
                 ss = []

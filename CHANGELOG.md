@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.1.2
+
+### Fixed
+
+* fixed a runtime crash in the intermediate resolution workflow due to file permissions (#151)
+
+
+## 1.1.1
+
+### Fixed
+
+* Corrected the model coefficients of the best-fit phase solution (#149)
+* Fixed a runtime crash during the writing of the DIcal config files (#153)
+
+### Added
+
+* Self-calibration configuration file are stored in a dedicated folder (#148)
+
+
+## 1.1.0
+
+### Fixed
+
+* Several runtime errors in the facet imaging workflow were patched (#137)
+* A shape check was added to the calibrator selection workflow (#142)
+
+### Added
+
+* A facet layout inspection plot is generated after facet subtraction (#130)
+
+### Changed
+
+* Imaging parameters in the facet imaging workflow were updated (#137)
+* Inspection plots for delay calibrators are labelled by source name (#140)
+
+
 ## 1.0.0
 
 ### Fixed

@@ -64,12 +64,23 @@ steps:
         - id: phasediff_score_csv
       run: ../split-directions.cwl
       label: select_best_delay_cal
+    
+    - id: filter_skymodels
+      in:
+        - id: ms
+          source: select_best_delay_cal/msout_concat
+        - id: files
+          source: starting_skymodel
+      out:
+        - id: filtered_files
+      run: ../../steps/match_files_to_ms.cwl
+      when: $(inputs.files != null)
 
     - id: sort_skymodels
       in:
         - id: input_entry
           source:
-            - starting_skymodel
+            - filter_skymodels/filtered_files
           pickValue: all_non_null
           linkMerge: merge_flattened
       out:
