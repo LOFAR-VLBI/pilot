@@ -24,6 +24,10 @@ inputs:
       type: string
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
+    - id: avgstep
+      type: int?
+      doc: Extra averaging step over time and frequency
+
     - id: facet_polygons
       type: File[]
       doc: |
@@ -47,11 +51,28 @@ inputs:
       doc: Temporary directory to run I/O heavy jobs.
 
 steps:
+    - id: average_ms
+      label: Apply extra averaging of MS
+      in:
+        - id: msin
+          source: msin
+        - id: avgstep
+          source: avgstep
+      out:
+        - ms_avg
+      run: ../steps/dp3_avg_step.cwl
+      scatter: msin
+      when: $(inputs.avgstep != null)
+
     - id: sort_mses
       label: Trim facets
       in:
         - id: input_entry
-          source: msin
+          source:
+            - average_ms/ms_avg
+            - msin
+          pickValue: first_non_null
+          linkMerge: merge_flattened
       out:
         - id: sorted_entries
       run: ../steps/sort_by_name.cwl
@@ -128,7 +149,9 @@ outputs:
     outputSource: image_and_trim/MFS_model
 
   - id: MFS_psfs
-    type: File[]
+    type:
+      - File?
+      - File[]?
     outputSource: image_and_trim/MFS_psf
 
   - id: MFS_mosaic
