@@ -1,6 +1,6 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: prediction_avg
+id: dp3_avg_step
 label: DP3 averaging for prediction
 doc: Average MeasurementSet in time and frequency for faster prediction.
 
