@@ -351,6 +351,5 @@ outputs:
   - id: summary_files
     outputSource:
       - phaseup/summary_file
-    pickValue: all_non_null
     type: File
     doc: Pipeline summary statistics in JSON format.
