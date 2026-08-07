@@ -26,11 +26,12 @@ inputs:
       prefix: '-temp-dir'
   - id: ncpu
     type: int?
-    default: 24
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-j'
+      valueFrom: |
+        ${ return self !== null ? self : runtime.cores; }
   - id: size
     type: int[]?
     default: [22500, 22500]
@@ -347,11 +348,21 @@ hints:
 
 requirements:
   - class: ShellCommandRequirement
+  - class: InlineJavascriptRequirement
+    expressionLib:
+      - |
+        function wsclean_cores(size) {
+          var imsize = Math.max(size[0], size[1]);
+          var raw = imsize / 512.0;
+          var cores = Math.round(raw / 4.0) * 4;   // nearest multiple of 4
+          return Math.max(8, Math.min(64, cores));
+        }
+  - class: ResourceRequirement
+    coresMin: |
+      ${ return inputs.ncpu !== null ? inputs.ncpu : wsclean_cores(inputs.image_size); }
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.msin)
-  - class: ResourceRequirement
-    coresMin: $(inputs.ncpu)
 
 stdout: wsclean.log
 stderr: wsclean_err.log

@@ -58,8 +58,9 @@ inputs:
 
     - id: ncpu
       type: int?
-      default: 24
-      doc: The number of cores that WSClean will use.
+      doc: |
+        The number of cores that WSClean will use.
+        Default is to calculate it internally based on image size
 
 steps:
     - id: average_ms
