@@ -17,7 +17,7 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str):
+def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, leakagecal: bool):
     """
     Make configuration file for facetselfcal
 
@@ -114,6 +114,15 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     ## Update smoothness constraints based on ionospheric conditions
     configdict = update_smoothness(smoothness, configdict)
+
+    ## Add Leakage calibration if requested
+    if leakagecal:
+        configdict['soltype_list'].extend(['complexgain', 'leakage'])
+        configdict['soltypecycles_list'].extend([5, 5])
+        configdict['smoothnessconstraint_list'].extend([5.0, 5.0])
+        configdict['smoothnessreffrequency_list'].extend([0.0, 0.0])
+        configdict['antennaconstraint_list'].extend([None, None]) # Instead of alldutch
+        configdict['resetsols_list'].extend([None, None]) # Instead of alldutch
 
     ## average to smallest solution interval if that is larger than data resolution
     phase_inds = [i for i, val in enumerate(configdict['soltype_list']) if val == 'scalarphase'] # Getting indexes for scalarphase
@@ -397,6 +406,7 @@ def parse_args():
     parser.add_argument('--inputmodel', type=str, help='Input skymodel')
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output')
     parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions')
+    parser.add_argument('--leakagecal', action="store_true", help='Perform leakage calibration')
     return parser.parse_args()
 
 
@@ -409,7 +419,7 @@ def main():
 
     best_solint = get_best_solint(args.ms, args.phasediff_output)
     smoothness = get_smoothing(args.scalarphase_h5)
-    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms)
+    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms, args.leakagecal)
 
 if __name__ == "__main__":
     main()
