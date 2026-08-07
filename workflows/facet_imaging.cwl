@@ -25,7 +25,7 @@ inputs:
       type: string
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
-    - id: avgstep
+    - id: averaging_factor
       type: int?
       doc: Extra averaging step over time and frequency
 
@@ -68,13 +68,13 @@ steps:
       in:
         - id: msin
           source: msin
-        - id: avgstep
-          source: avgstep
+        - id: averaging_factor
+          source: averaging_factor
       out:
         - ms_avg
       run: ../steps/dp3_avg_step.cwl
       scatter: msin
-      when: $(inputs.avgstep != null)
+      when: $(inputs.averaging_factor != null)
 
     - id: sort_mses
       label: Sort MS based on name

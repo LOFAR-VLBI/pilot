@@ -15,7 +15,7 @@ inputs:
       prefix: msin=
       separate: false
 
-  - id: avgstep
+  - id: averaging_factor
     type: int?
     doc: Averaging factor
 
@@ -37,8 +37,8 @@ outputs:
 arguments:
   - steps=[avg]
   - avg.type=averager
-  - valueFrom: $("avg.timestep=" + inputs.avgstep)
-  - valueFrom: $("avg.freqstep=" + inputs.avgstep)
+  - valueFrom: $("avg.timestep=" + inputs.averaging_factor)
+  - valueFrom: $("avg.freqstep=" + inputs.averaging_factor)
   - msout.storagemanager='dysco'
   - msout.storagemanager.databitrate=6
   - msout=$( inputs.msin.basename + '.avg.ms')
