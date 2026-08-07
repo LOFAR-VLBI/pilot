@@ -51,6 +51,11 @@ inputs:
       type: string?
       doc: Temporary directory to run I/O heavy jobs.
 
+    - id: ncpu
+      type: int?
+      default: 24
+      doc: The minimum number of cores that should be available for steps that require high I/O.
+
 steps:
     - id: average_ms
       label: Apply extra averaging of MS
@@ -110,6 +115,8 @@ steps:
           source: resolution
         - id: tmpdir
           source: tmpdir
+        - id: ncpu
+          source: ncpu
       out:
         - id: MFS_image_pb
         - id: MFS_image

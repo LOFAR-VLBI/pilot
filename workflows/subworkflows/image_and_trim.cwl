@@ -13,7 +13,7 @@ inputs:
       type: Directory
       doc: MeasurementSet that will be imaged.
 
-    - id: number_cores
+    - id: ncpu
       type: int?
       default: 24
       doc: The number of cores that WSClean will use.
@@ -60,7 +60,7 @@ steps:
       label: make_facet_image
       in:
         - id: ncpu
-          source: number_cores
+          source: ncpu
         - id: msin
           source: msin
         - id: name
