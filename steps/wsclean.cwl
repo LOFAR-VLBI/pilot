@@ -359,7 +359,7 @@ requirements:
         }
   - class: ResourceRequirement
     coresMin: |
-      ${ return inputs.ncpu !== null ? inputs.ncpu : wsclean_cores(inputs.image_size); }
+      ${ return inputs.ncpu !== null ? inputs.ncpu : wsclean_cores(inputs.size); }
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.msin)
