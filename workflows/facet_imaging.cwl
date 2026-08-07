@@ -71,7 +71,7 @@ steps:
       when: $(inputs.avgstep != null)
 
     - id: sort_mses
-      label: Trim facets
+      label: Sort MS based on name
       in:
         - id: input_entry
           source:
@@ -94,7 +94,7 @@ steps:
       run: ../steps/sort_by_name.cwl
 
     - id: sort_facet_regions
-      label: Trim facets
+      label: Sort facets based on name
       in:
         - id: input_entry
           source: facet_polygons
