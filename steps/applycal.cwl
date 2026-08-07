@@ -48,7 +48,7 @@ arguments:
   - --msout=${
       var base = inputs.ms.basename;
       var i = base.lastIndexOf(".");
-      return base.slice(0, inputs.ms.basename.lastIndexOf(".")) + inputs.infix + base.slice(i);
+      return base.slice(0, i) + inputs.infix + base.slice(i);
     }
 
 hints:
