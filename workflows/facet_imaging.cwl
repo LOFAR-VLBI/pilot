@@ -27,6 +27,7 @@ inputs:
 
     - id: averaging_factor
       type: int?
+      default: 1
       doc: Additional factor to average the data with in both time and frequency before imaging.
 
     - id: facet_polygons
@@ -74,7 +75,7 @@ steps:
         - ms_avg
       run: ../steps/dp3_avg_step.cwl
       scatter: msin
-      when: $(inputs.averaging_factor != null)
+      when: $(inputs.averaging_factor > 1)
 
     - id: sort_mses
       label: Sort MS based on name
