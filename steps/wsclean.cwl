@@ -137,7 +137,7 @@ inputs:
       prefix: '-niter'
   - id: multiscale-scale-bias
     type: float?
-    default: 0.7
+    default: 0.6
     inputBinding:
       position: 1
       shellQuote: false
