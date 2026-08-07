@@ -58,7 +58,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-weight briggs'
-      itemSeparator: ' '
   - id: weighting-rank-filter
     type: int?
     default: 3
