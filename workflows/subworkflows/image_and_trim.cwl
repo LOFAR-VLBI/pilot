@@ -94,7 +94,7 @@ steps:
       run: ../../steps/wsclean.cwl
 
     - id: trim_image_pb
-      label: Trim facets
+      label: Trim facet image-pb
       in:
         - id: image
           source:
@@ -108,7 +108,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_image
-      label: Trim facets
+      label: Trim facet image
       in:
         - id: image
           source:
@@ -122,7 +122,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_model_pb
-      label: Trim facets
+      label: Trim model image-pb
       in:
         - id: image
           source:
@@ -136,7 +136,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_model
-      label: Trim facets
+      label: Trim model image
       in:
         - id: image
           source:
@@ -150,7 +150,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_residual_pb
-      label: Trim facets
+      label: Trim residual image-pb
       in:
         - id: image
           source:
@@ -164,7 +164,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_residual
-      label: Trim facets
+      label: Trim residual image
       in:
         - id: image
           source:
