@@ -48,6 +48,13 @@ inputs:
         prefix: --scalarphase-h5
         separate: true
 
+    - id: add_leakage_calibration
+      type: boolean?
+      doc: Add leakage calibration to the configuration file.
+      inputBinding:
+        prefix: "--leakagecal"
+        position: 4
+
 outputs:
     - id: configfile
       type: File

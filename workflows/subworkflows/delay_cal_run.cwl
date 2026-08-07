@@ -18,6 +18,10 @@ inputs:
   - id: model_image
     type: File?
     doc: Input skymodel of delay calibrator
+  - id: add_leakage_calibration
+    type: boolean?
+    default: false
+    doc: Add leakage calibration to the DI configuration file.
   - id: number_cores
     type: int?
     default: 12
@@ -63,6 +67,8 @@ steps:
         source: calc_phasediff/phasediff_score_csv
       - id: scalarphase_h5out
         source: calc_phasediff/scalarphase_h5out
+      - id: add_leakage_calibration
+        source: add_leakage_calibration
     out:
       - id: configfile
       - id: logfile

@@ -45,6 +45,11 @@ inputs:
     type: File?
     doc: Image to generate an initial delay calibrator model from.
 
+  - id: add_leakage_calibration
+    type: boolean?
+    default: false
+    doc: Add leakage calibration to the DI configuration file.
+
 steps:
   - id: prep_delay
     in:
@@ -166,6 +171,8 @@ steps:
         source: model_image
       - id: number_cores
         source: number_cores
+      - id: add_leakage_calibration
+        source: add_leakage_calibration
     out:
       - id: solutions
       - id: starting_skymodel
