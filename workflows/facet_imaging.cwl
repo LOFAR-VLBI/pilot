@@ -40,6 +40,11 @@ inputs:
       doc: |
         Restoring beam to use for every facet following the WSClean order of major axis, minor axis, position angle.
 
+    - id: briggs
+      type: float?
+      default: -1.4
+      doc: Briggs weighting for WSClean.
+
     - id: swarp_config
       type: File?
       doc: |
@@ -54,7 +59,7 @@ inputs:
     - id: ncpu
       type: int?
       default: 24
-      doc: The minimum number of cores that should be available for steps that require high I/O.
+      doc: The number of cores that WSClean will use.
 
 steps:
     - id: average_ms
@@ -113,6 +118,8 @@ steps:
           source: pixel_scale
         - id: resolution
           source: resolution
+        - id: briggs
+          source: briggs
         - id: tmpdir
           source: tmpdir
         - id: ncpu

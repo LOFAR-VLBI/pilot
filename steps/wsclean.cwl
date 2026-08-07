@@ -51,13 +51,14 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-minuv-l'
-  - id: weight
-    type: string?
-    default: briggs -1.4
+  - id: briggs
+    type: float?
+    default: -1.4
     inputBinding:
       position: 1
       shellQuote: false
-      prefix: '-weight'
+      prefix: '-weight briggs'
+      itemSeparator: ' '
   - id: weighting-rank-filter
     type: int?
     default: 3

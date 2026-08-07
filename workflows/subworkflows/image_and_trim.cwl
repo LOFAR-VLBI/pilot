@@ -27,6 +27,11 @@ inputs:
       default: 0.3asec
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
+    - id: briggs
+      type: float?
+      default: -1.4
+      doc: Briggs weighting for WSClean.
+
     - id: facet_polygon
       type: File
       doc: DS9 region file that will be used to trim the facet.
@@ -76,6 +81,8 @@ steps:
           valueFrom: $(self.toString() + "asec")
         - id: beam-shape
           source: restoring_beam
+        - id: briggs
+          source: briggs
         - id: tmpdir
           source: tmpdir
         - id: apply-facet-beam
