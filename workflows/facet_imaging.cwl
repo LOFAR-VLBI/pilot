@@ -27,7 +27,7 @@ inputs:
 
     - id: averaging_factor
       type: int?
-      doc: Extra averaging step over time and frequency
+      doc: Additional factor to average the data with in both time and frequency before imaging.
 
     - id: facet_polygons
       type: File[]
