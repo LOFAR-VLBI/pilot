@@ -122,7 +122,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         configdict['smoothnessconstraint_list'].extend([5.0, 5.0])
         configdict['smoothnessreffrequency_list'].extend([0.0, 0.0])
         configdict['antennaconstraint_list'].extend([None, None]) # Instead of alldutch
-        configdict['resetsols_list'].extend([None, None]) # Instead of alldutch
+        configdict['resetsols_list'].extend([None, None])
 
     ## average to smallest solution interval if that is larger than data resolution
     phase_inds = [i for i, val in enumerate(configdict['soltype_list']) if val == 'scalarphase'] # Getting indexes for scalarphase
