@@ -72,7 +72,18 @@ steps:
           source:
             - average_ms/ms_avg
             - msin
-          pickValue: first_non_null
+          linkMerge: merge_nested
+          pickValue: all_non_null
+          valueFrom: |
+            ${
+              var avg = self[0];
+              if (avg === null || avg === undefined) { return self[1]; }
+              var kept = [];
+              for (var i = 0; i < avg.length; i++) {
+                if (avg[i] !== null && avg[i] !== undefined) { kept.push(avg[i]); }
+              }
+              return kept.length === 0 ? self[1] : kept;
+            }
       out:
         - id: sorted_entries
       run: ../steps/sort_by_name.cwl
