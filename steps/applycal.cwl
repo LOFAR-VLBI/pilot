@@ -20,13 +20,17 @@ inputs:
         prefix: "--h5"
         position: 4
         separate: true
+    - id: infix
+      type: string?
+      doc: Text to add to the MS name before the final suffix.
+      default: ".applied"
 
 outputs:
     - id: ms_out
       type: Directory
       doc: Output MeasurementSet with solutions applied
       outputBinding:
-        glob: "applied_*"
+        glob: "*$(inputs.infix)*"
     - id: logfile
       type: File[]
       doc: Log files corresponding to this step
@@ -41,7 +45,11 @@ requirements:
       - entry: $(inputs.h5parm)
 
 arguments:
-  - --msout=$( 'applied_' + inputs.ms.basename )
+  - --msout=${
+      var base = inputs.ms.basename;
+      var i = base.lastIndexOf(".");
+      return base.slice(0, inputs.ms.basename.lastIndexOf(".")) + inputs.infix + base.slice(i);
+    }
 
 hints:
   - class: DockerRequirement
