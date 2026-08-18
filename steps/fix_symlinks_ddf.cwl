@@ -46,6 +46,7 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.ddf_solsdir)
+        writable: true
 
 hints:
   - class: DockerRequirement
