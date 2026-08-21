@@ -14,12 +14,12 @@ arguments:
       solsdir="$0"
       mapfile -t src < <(find "$solsdir" -mindepth 1 -maxdepth 1 -type d \( -name '*.ms' -o -name '*.dp3concat' \) -printf '%f\n' | sort)
       mapfile -t dst < <(printf '%s\n' "$@" | sort)
-      if [ "${#src[@]}" -ne "${#dst[@]}" ]; then
-        printf 'SOLSDIR/input MS count mismatch: %s != %s\n' "${#src[@]}" "${#dst[@]}" >&2
+      if [ "\${#src[@]}" -ne "\${#dst[@]}" ]; then
+        printf 'SOLSDIR/input MS count mismatch: %s != %s\n' "\${#src[@]}" "\${#dst[@]}" >&2
         exit 1
       fi
-      for ((i = 0; i < ${#src[@]}; i++)); do
-        [ "${src[i]}" = "${dst[i]}" ] || mv -- "$solsdir/${src[i]}" "$solsdir/${dst[i]}"
+      for ((i = 0; i < \${#src[@]}; i++)); do
+        [ "\${src[i]}" = "\${dst[i]}" ] || mv -- "$solsdir/\${src[i]}" "$solsdir/\${dst[i]}"
       done
 inputs:
   - id: solsdir
