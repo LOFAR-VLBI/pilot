@@ -30,7 +30,7 @@ inputs:
         prefix: avg.freqresolution=
         separate: false
     - id: time_resolution
-      type: string?
+      type: float?
       doc: Time resolution in seconds
       inputBinding:
         prefix: avg.timeresolution=
