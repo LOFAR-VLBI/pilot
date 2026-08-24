@@ -10,6 +10,7 @@ requirements:
     - class: ScatterFeatureRequirement
     - class: SubworkflowFeatureRequirement
     - class: InlineJavascriptRequirement
+    - class: MultipleInputFeatureRequirement
 
 inputs:
     - id: msin
@@ -24,6 +25,11 @@ inputs:
       type: string
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
+    - id: averaging_factor
+      type: int?
+      default: 1
+      doc: Additional factor to average the data with in both time and frequency before imaging.
+
     - id: facet_polygons
       type: File[]
       doc: |
@@ -34,6 +40,11 @@ inputs:
       type: float[]?
       doc: |
         Restoring beam to use for every facet following the WSClean order of major axis, minor axis, position angle.
+
+    - id: briggs
+      type: float?
+      default: -1.4
+      doc: Briggs weighting for WSClean.
 
     - id: swarp_config
       type: File?
@@ -46,18 +57,57 @@ inputs:
       type: string?
       doc: Temporary directory to run I/O heavy jobs.
 
+    - id: ncpu
+      type: int?
+      doc: |
+        The number of cores that WSClean will use.
+        Default is to calculate it internally based on image size
+
 steps:
+    - id: average_ms
+      label: Apply extra averaging of MS
+      in:
+        - id: msin
+          source: msin
+        - id: freq_step
+          source: averaging_factor
+        - id: time_step
+          source: averaging_factor
+        - id: ncpu
+          default: 8
+        - id: dysco_databitrate
+          default: 8
+      out:
+        - dp3_avg_ms
+      run: ../steps/dp3_avg.cwl
+      scatter: msin
+      when: $(inputs.time_step > 1)
+
     - id: sort_mses
-      label: Trim facets
+      label: Sort MS based on name
       in:
         - id: input_entry
-          source: msin
+          source:
+            - average_ms/dp3_avg_ms
+            - msin
+          linkMerge: merge_nested
+          pickValue: all_non_null
+          valueFrom: |
+            ${
+              var avg = self[0];
+              if (avg === null || avg === undefined) { return self[1]; }
+              var kept = [];
+              for (var i = 0; i < avg.length; i++) {
+                if (avg[i] !== null && avg[i] !== undefined) { kept.push(avg[i]); }
+              }
+              return kept.length === 0 ? self[1] : kept;
+            }
       out:
         - id: sorted_entries
       run: ../steps/sort_by_name.cwl
 
     - id: sort_facet_regions
-      label: Trim facets
+      label: Sort facets based on name
       in:
         - id: input_entry
           source: facet_polygons
@@ -76,8 +126,12 @@ steps:
           source: pixel_scale
         - id: resolution
           source: resolution
+        - id: briggs
+          source: briggs
         - id: tmpdir
           source: tmpdir
+        - id: ncpu
+          source: ncpu
       out:
         - id: MFS_image_pb
         - id: MFS_image
@@ -128,7 +182,9 @@ outputs:
     outputSource: image_and_trim/MFS_model
 
   - id: MFS_psfs
-    type: File[]
+    type:
+      - File?
+      - File[]?
     outputSource: image_and_trim/MFS_psf
 
   - id: MFS_mosaic

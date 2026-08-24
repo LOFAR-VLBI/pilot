@@ -13,10 +13,11 @@ inputs:
       type: Directory
       doc: MeasurementSet that will be imaged.
 
-    - id: number_cores
+    - id: ncpu
       type: int?
-      default: 24
-      doc: The number of cores that WSClean will use.
+      doc: |
+        The number of cores that WSClean will use.
+        Default is to calculate it internally based on image size
 
     - id: pixel_scale
       type: float
@@ -26,6 +27,11 @@ inputs:
       type: string
       default: 0.3asec
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
+
+    - id: briggs
+      type: float?
+      default: -1.4
+      doc: Briggs weighting for WSClean.
 
     - id: facet_polygon
       type: File
@@ -60,7 +66,7 @@ steps:
       label: make_facet_image
       in:
         - id: ncpu
-          source: number_cores
+          source: ncpu
         - id: msin
           source: msin
         - id: name
@@ -76,6 +82,8 @@ steps:
           valueFrom: $(self.toString() + "asec")
         - id: beam-shape
           source: restoring_beam
+        - id: briggs
+          source: briggs
         - id: tmpdir
           source: tmpdir
         - id: apply-facet-beam
@@ -94,7 +102,7 @@ steps:
       run: ../../steps/wsclean.cwl
 
     - id: trim_image_pb
-      label: Trim facets
+      label: Trim facet image-pb
       in:
         - id: image
           source:
@@ -108,7 +116,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_image
-      label: Trim facets
+      label: Trim facet image
       in:
         - id: image
           source:
@@ -122,7 +130,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_model_pb
-      label: Trim facets
+      label: Trim model image-pb
       in:
         - id: image
           source:
@@ -136,7 +144,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_model
-      label: Trim facets
+      label: Trim model image
       in:
         - id: image
           source:
@@ -150,7 +158,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_residual_pb
-      label: Trim facets
+      label: Trim residual image-pb
       in:
         - id: image
           source:
@@ -164,7 +172,7 @@ steps:
       run: ../../steps/trim_facet.cwl
 
     - id: trim_residual
-      label: Trim facets
+      label: Trim residual image
       in:
         - id: image
           source:
@@ -201,5 +209,7 @@ outputs:
       outputSource: trim_residual/trimmed_image
 
     - id: MFS_psf
-      type: File
+      type:
+        - File?
+        - File[]?
       outputSource: make_facet_image/MFS_psf

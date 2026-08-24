@@ -47,6 +47,13 @@ inputs:
       inputBinding:
         prefix: avg.timestep=
         separate: false
+    - id: dysco_databitrate
+      type: int?
+      doc: Number of bits per float used for columns containing visibilities
+      default: 10
+      inputBinding:
+        prefix: msout.storagemanager.databitrate=
+        separate: false
     - id: ncpu
       type: int?
       doc: Number of cores to use
