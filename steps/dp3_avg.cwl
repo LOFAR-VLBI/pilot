@@ -2,7 +2,10 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: dp3_averaging
 label: DP3 averaging
-doc: This step averages a MeasurementSet with DP3
+doc: |
+    This step averages a MeasurementSet with DP3.
+    Note that freq_resolution and freq_step are mutually
+    exclusive (likewise for time_resolution and time_step)
 
 baseCommand: DP3
 
@@ -19,17 +22,15 @@ inputs:
       inputBinding:
         prefix: msin=
         position: 0
-        shellQuote: false
         separate: false
     - id: freq_resolution
       type: string?
       doc: Target frequency resolution, in Hz (or append MHz or kHz to specify it in those units)
       inputBinding:
         prefix: avg.freqresolution=
-        shellQuote: false
         separate: false
     - id: time_resolution
-      type: int?
+      type: string?
       doc: Time resolution in seconds
       inputBinding:
         prefix: avg.timeresolution=
@@ -55,9 +56,9 @@ inputs:
         separate: false
 
 outputs:
-    - id: phasediff_ms
+    - id: dp3_avg_ms
       type: Directory
-      doc: Output measurement sets
+      doc: Output MeasurementSet
       outputBinding:
         glob: $(inputs.msin.basename+".avg.ms")
     - id: logfile
