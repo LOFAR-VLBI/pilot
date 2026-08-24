@@ -20,7 +20,6 @@ inputs:
       doc: Target frequency resolution, in Hz (or append MHz or kHz to specify it in those units)
       inputBinding:
         prefix: avg.freqresolution=
-        position: 1
         shellQuote: false
         separate: false
     - id: time_resolution
@@ -28,34 +27,26 @@ inputs:
       doc: Time resolution in seconds
       inputBinding:
         prefix: avg.timeresolution=
-        position: 2
-        shellQuote: false
         separate: false
     - id: freq_step
       type: int?
       doc: Number of channels to average
       inputBinding:
         prefix: avg.freqstep=
-        position: 3
-        shellQuote: false
         separate: false
     - id: time_step
       type: int?
       doc: Number of time slots to average
       inputBinding:
         prefix: avg.timestep=
-        position: 4
-        shellQuote: false
         separate: false
     - id: ncpu
       type: int?
       doc: Number of cores to use
-      default: 4
+      default: 2
       inputBinding:
-        position: 1
         prefix: numthreads=
         separate: false
-        shellQuote: false
 
 outputs:
     - id: phasediff_ms

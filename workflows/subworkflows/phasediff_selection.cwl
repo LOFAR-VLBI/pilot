@@ -37,8 +37,6 @@ steps:
           default: 1953.6kHz
         - id: time_resolution
           default: 120
-        - id: ncpu
-          default: 2
       out:
         - id: phasediff_ms
       run: ../../steps/dp3_avg.cwl
