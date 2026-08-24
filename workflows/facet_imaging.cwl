@@ -69,20 +69,26 @@ steps:
       in:
         - id: msin
           source: msin
-        - id: averaging_factor
+        - id: freq_step
           source: averaging_factor
+        - id: time_step
+          source: averaging_factor
+        - id: ncpu
+          default: 8
+        - id: dysco_databitrate
+          default: 8
       out:
-        - ms_avg
-      run: ../steps/dp3_avg_step.cwl
+        - dp3_avg_ms
+      run: ../steps/dp3_avg.cwl
       scatter: msin
-      when: $(inputs.averaging_factor > 1)
+      when: $(inputs.time_step > 1)
 
     - id: sort_mses
       label: Sort MS based on name
       in:
         - id: input_entry
           source:
-            - average_ms/ms_avg
+            - average_ms/dp3_avg_ms
             - msin
           linkMerge: merge_nested
           pickValue: all_non_null
