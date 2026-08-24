@@ -159,6 +159,14 @@ steps:
       run: ../steps/swarp.cwl
       when: $(inputs.config != null)
 
+    - id: flatten_psf_images
+      in:
+         - id: nestedarray
+           source: image_and_trim/MFS_psf
+      out:
+         - flattenedarray
+      run: ../steps/flatten.cwl
+
 outputs:
   - id: MFS_images_pb
     type: File[]
@@ -182,10 +190,8 @@ outputs:
     outputSource: image_and_trim/MFS_model
 
   - id: MFS_psfs
-    type:
-      - File?
-      - File[]?
-    outputSource: image_and_trim/MFS_psf
+    type: File[]
+    outputSource: flatten_psf_images/flattenedarray
 
   - id: MFS_mosaic
     type: File?

@@ -330,9 +330,7 @@ outputs:
     outputBinding:
       glob: '$(inputs.name)-MFS-model.fits'
   - id: MFS_psf
-    type:
-      - File
-      - File[]
+    type: File[]
     doc: The MFS psf image, or images per psf direction if a direction-dependent psf is used.
     outputBinding:
       glob: '$(inputs.name)*-MFS-psf.fits'
