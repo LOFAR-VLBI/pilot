@@ -91,7 +91,7 @@ steps:
       - id: msin
         source: msin
       - id: solsdir
-        source: solsdir
+        source: fix_symlinks/solsdir
     out:
       - id: fixed_solsdir
     run: ../../steps/rename_solsdir_entries.cwl
