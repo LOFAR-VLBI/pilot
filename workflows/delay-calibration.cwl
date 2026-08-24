@@ -264,6 +264,8 @@ steps:
           # clause for this step prevents from running if we have more than 1 candidate, so
           # we should never be in a situation of having File[] here.
           valueFrom: $(self)
+        - id: infix
+          default: ".delay_corrected"
         - id: apply_delay_solutions
           source: apply_delay_solutions
         - id: select_best_n_delay_calibrators
@@ -349,6 +351,5 @@ outputs:
   - id: summary_files
     outputSource:
       - phaseup/summary_file
-    pickValue: all_non_null
-    type: File[]
+    type: File
     doc: Pipeline summary statistics in JSON format.
