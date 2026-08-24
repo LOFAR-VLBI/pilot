@@ -6,6 +6,12 @@ doc: This step averages a MeasurementSet with DP3
 
 baseCommand: DP3
 
+arguments:
+  - steps=[avg]
+  - msout.storagemanager=dysco
+  - avg.type=averager
+  - msout=$(inputs.msin.basename+".avg.ms")
+
 inputs:
     - id: msin
       type: Directory
@@ -59,12 +65,6 @@ outputs:
       doc: DP3 log files
       outputBinding:
         glob: dp3_averager*.log
-
-arguments:
-  - steps=[avg]
-  - msout.storagemanager=dysco
-  - avg.type=averager
-  - msout=$(inputs.msin.basename+".avg.ms")
 
 requirements:
   - class: InlineJavascriptRequirement
