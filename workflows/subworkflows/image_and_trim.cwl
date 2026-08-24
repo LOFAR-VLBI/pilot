@@ -209,7 +209,6 @@ outputs:
       outputSource: trim_residual/trimmed_image
 
     - id: MFS_psf
-      type:
-        - File?
-        - File[]?
+      type: File[]
       outputSource: make_facet_image/MFS_psf
+
