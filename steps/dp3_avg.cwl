@@ -50,7 +50,7 @@ inputs:
     - id: ncpu
       type: int?
       doc: Number of cores to use
-      default: 2
+      default: 1
       inputBinding:
         prefix: numthreads=
         separate: false
