@@ -34,7 +34,7 @@ inputs:
     doc: MeasurementSets providing destination basenames.
     inputBinding:
       position: 4
-      valueFrom: $(self.basename)
+      valueFrom: $(self.map(function (entry) { return entry.basename; }))
 
 outputs:
   - id: fixed_solsdir
@@ -43,6 +43,7 @@ outputs:
       glob: $(inputs.solsdir.basename)
 
 requirements:
+  - class: InlineJavascriptRequirement
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.solsdir)
