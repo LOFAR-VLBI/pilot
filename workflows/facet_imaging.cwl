@@ -152,8 +152,8 @@ steps:
           # This is to circumvent cwltool validation complaining about incompatible types.
           # This step won't run if the config is `null`, so it should always be compatible.
           valueFrom: $(self)
-        - id: image_name
         - id: input_images
+          source: image_and_trim/MFS_image_pb
       out:
         - id: output_image
       run: ../steps/swarp.cwl
