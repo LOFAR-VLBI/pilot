@@ -110,6 +110,12 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--csv', help='CSV with names and phasediff scores', default=None)
     parser.add_argument('--ms', nargs="+", help='Input MS', default=None)
+    parser.add_argument('--strong_score', type=float,
+                        help='Phasediff score threshold below which calibrators are considered strong.',
+                        default=2.0)
+    parser.add_argument('--weak_score', type=float,
+                        help='Lower limit for strong < score < weak between which which calibrators are considered strong.',
+                        default=2.6)
     parser.add_argument('--best_score', type=float,
                         help='Optimal selection score (See Section 3.3.1 https://arxiv.org/pdf/2407.13247)',
                         default=2.3)
@@ -139,11 +145,15 @@ def main():
     for source in df.set_index('source').iterrows():
         name = source[0]
         score = source[1]['spd_score']
-        if score < args.best_score:
+        if score <= args.strong_score:
             ms_name = match_source_id(args.ms, name)
-
-            # Rename folder to return best directions in CWL workflow
-            rename_folder(ms_name, ms_name.split('/')[-1]+args.suffix+'.ms')
+            rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')
+        elif (score > args.strong_score) and (score <= args.weak_score):
+            ms_name = match_source_id(args.ms, name)
+            rename_folder(ms_name, ms_name.split('/')[-1]+'_weak.ms')
+        elif score > args.weak_score:
+            ms_name = match_source_id(args.ms, name)
+            rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
 
 
 if __name__ == '__main__':
