@@ -48,7 +48,7 @@ inputs:
   - id: weight
     type:
       - string?
-    default: briggs -1.5
+    default: briggs 0.0
     inputBinding:
       position: 1
       shellQuote: false

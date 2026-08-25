@@ -48,7 +48,7 @@ inputs:
   - id: weight
     type:
       - string?
-    default: briggs -1.5
+    default: briggs 0.0
     inputBinding:
       position: 1
       shellQuote: false
@@ -67,13 +67,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-mgain'
-  - id: data-column
-    type: string?
-    default: CORRECTED_DATA
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-data-column'
   - id: auto-mask
     type: float?
     default: 3.0
