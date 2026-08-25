@@ -138,14 +138,21 @@ steps:
       run: ./subworkflows/phasediff_selection.cwl
 
 outputs:
-    - id: msout_concat
+    - id: msout_concat_strong
       type: Directory[]
       outputSource:
         - phasediff_selection/strong_ms
+      pickValue: all_non_null
+    - id: msout_concat_weak
+      type: Directory[]
+      outputSource:
         - phasediff_selection/weak_ms
+      pickValue: all_non_null
+    - id: msout_concat_unreliable
+      type: Directory[]
+      outputSource:
         - phasediff_selection/unreliable_ms
       pickValue: all_non_null
-      linkMerge: merge_flattened
     - id: phasediff_score_csv
       type: File?
       outputSource: phasediff_selection/phasediff_score_csv

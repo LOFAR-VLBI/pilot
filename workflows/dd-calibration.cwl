@@ -92,17 +92,129 @@ steps:
         - id: chunk_size_directions
           source: chunk_size_directions
       out:
-        - msout_concat
+        - msout_concat_strong
+        - msout_concat_weak
+        - msout_concat_unreliable
         - phasediff_score_csv
       run: ./split-directions.cwl
 
-    - id: ddcal_int
+    # Strong calibrators
+    - id: ddcal_int_strong
       label: Automatic direction-dependent calibration
       in:
         - id: msin
-          source: split_directions/msout_concat
+          source: split_directions/msout_concat_strong
         - id: dd_dutch_solutions
           source: dd_dutch_solutions
+        - id: phasediff_score_csv
+          source:
+            - custom_phasediff_score_csv
+            - split_directions/phasediff_score_csv
+          pickValue: first_non_null
+        - id: model_cache
+          source: model_cache
+      out:
+        - h5parms
+        - selfcal_images
+        - selfcal_inspection_images
+        - solution_inspection_images
+        - config_files
+      run: ./subworkflows/ddcal_calibrators.cwl
+
+    - id: validation_strong
+      in:
+        - id: images
+          source:
+            - ddcal_int_strong/selfcal_images
+        - id: h5parm
+          source: ddcal_int_strong/h5parms
+        - id: model_cache
+          source: model_cache
+        - id: validate
+          source: validate
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
+      out:
+        - h5parm_selected
+        - images_selected
+        - validate_csv
+      when: $(inputs.validate)
+      run: ./subworkflows/ddcal_validation.cwl
+
+    - id: multidir_merge_strong
+      in:
+        - id: h5parms
+          source:
+            - validation_strong/h5parm_selected
+            - ddcal_int_strong/h5parms
+          pickValue: first_non_null
+      out:
+        - multidir_h5
+      run: ../steps/multidir_merger.cwl
+
+
+    # Weak calibrators
+    - id: ddcal_int_weak
+      label: Automatic direction-dependent calibration
+      in:
+        - id: msin
+          source: split_directions/msout_concat_weak
+        - id: dd_dutch_solutions
+          source: multidir_merge_strong/multidir_h5
+        - id: phasediff_score_csv
+          source:
+            - custom_phasediff_score_csv
+            - split_directions/phasediff_score_csv
+          pickValue: first_non_null
+        - id: model_cache
+          source: model_cache
+      out:
+        - h5parms
+        - selfcal_images
+        - selfcal_inspection_images
+        - solution_inspection_images
+        - config_files
+      run: ./subworkflows/ddcal_calibrators.cwl
+
+    - id: validation_weak
+      in:
+        - id: images
+          source:
+            - ddcal_int_weak/selfcal_images
+        - id: h5parm
+          source: ddcal_int_weak/h5parms
+        - id: model_cache
+          source: model_cache
+        - id: validate
+          source: validate
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
+      out:
+        - id: h5parm_selected
+        - id: images_selected
+        - id: validate_csv
+      when: $(inputs.validate)
+      run: ./subworkflows/ddcal_validation.cwl
+
+    - id: multidir_merge_weak
+      in:
+        - id: h5parms
+          source:
+            - validation_weak/h5parm_selected
+            - ddcal_int_weak/h5parms
+          pickValue: first_non_null
+      out:
+        - id: multidir_h5
+      run: ../steps/multidir_merger.cwl
+
+    # Unreliable calibrators
+    - id: ddcal_int_unreliable
+      label: Automatic direction-dependent calibration
+      in:
+        - id: msin
+          source: split_directions/msout_concat_unreliable
+        - id: dd_dutch_solutions
+          source: multidir_merge_weak/multidir_h5
         - id: phasediff_score_csv
           source:
             - custom_phasediff_score_csv
@@ -122,48 +234,22 @@ steps:
       label: Store selfcal config files
       in:
         - id: files
-          source: ddcal_int/config_files
+          source:
+            - ddcal_int_strong/config_files
+            - ddcal_int_weak/config_files
+            - ddcal_int_unreliable/config_files
+          linkMerge: merge_flattened
         - id: sub_directory_name
           default: selfcal_configs
       out:
         - id: dir
       run: ../steps/collectfiles.cwl
 
-    - id: validation
-      in:
-        - id: images
-          source: ddcal_int/selfcal_images
-        - id: h5parm
-          source: ddcal_int/h5parms
-        - id: model_cache
-          source: model_cache
-        - id: validate
-          source: validate
-        - id: max_rejected_fraction
-          source: max_rejected_fraction
-      out:
-        - h5parm_selected
-        - images_selected
-        - validate_csv
-      when: $(inputs.validate)
-      run: ./subworkflows/ddcal_validation.cwl
-
-    - id: multidir_merge
-      in:
-        - id: h5parms
-          source:
-            - validation/h5parm_selected
-            - ddcal_int/h5parms
-          pickValue: first_non_null
-      out:
-        - multidir_h5
-      run: ../steps/multidir_merger.cwl
-
 outputs:
     - id: final_merged_h5
       type: File
-      outputSource: multidir_merge/multidir_h5
-      doc: Final multi-directional h5parm
+      outputSource: multidir_merge_weak/multidir_h5
+      doc: Final multi-directional h5parm containing solutions in the directions of strong and weak 
 
     - id: phasediff_score_csv
       type: File?
@@ -172,33 +258,49 @@ outputs:
 
     - id: validation_csv
       type: File?
-      outputSource: validation/validate_csv
+      outputSource:
+        - validation_strong/validate_csv
+      pickValue: all_non_null
       doc: Validation CSV file
 
     - id: FITS_images
       type: File[]
       outputSource:
-        - validation/images_selected
-        - ddcal_int/selfcal_images
-      pickValue: first_non_null
+        - validation_strong/images_selected
+        - validation_weak/images_selected
+        - ddcal_int_strong/selfcal_images
+        - ddcal_int_weak/selfcal_images
+        - ddcal_int_unreliable/selfcal_images
+      pickValue: all_non_null
+      linkMerge: merge_flattened
       doc: Best self-calibration image in FITS format
 
     - id: calibration_solutions
       type: File[]
       outputSource:
-        - validation/h5parm_selected
-        - ddcal_int/h5parms
-      pickValue: first_non_null
+        - ddcal_int_strong/h5parms
+        - ddcal_int_weak/h5parms
+      pickValue: all_non_null
+      linkMerge: merge_flattened
       doc: Best self-calibration solutions in h5parm format
 
     - id: solution_inspection_images
       type: Directory[]
-      outputSource: ddcal_int/solution_inspection_images
+      outputSource:
+        - ddcal_int_strong/solution_inspection_images
+        - ddcal_int_weak/solution_inspection_images
+      pickValue: all_non_null
+      linkMerge: merge_flattened
       doc: LoSoTo solution inspection images
 
     - id: selfcal_PNG_images
       type: File[]
-      outputSource: ddcal_int/selfcal_inspection_images
+      outputSource:
+        - ddcal_int_strong/selfcal_inspection_images
+        - ddcal_int_weak/selfcal_inspection_images
+        - ddcal_int_unreliable/selfcal_inspection_images
+      pickValue: all_non_null
+      linkMerge: merge_flattened
       doc: Self-calibration images in PNG format
 
     - id: selfcal_configs
@@ -208,5 +310,10 @@ outputs:
 
     - id: msout
       type: Directory[]
-      outputSource: split_directions/msout_concat
+      outputSource:
+        - split_directions/msout_concat_strong
+        - split_directions/msout_concat_weak
+        - split_directions/msout_concat_unreliable
+      pickValue: all_non_null
+      linkMerge: merge_flattened
       doc: MeasurementSets of all (selected) directions
