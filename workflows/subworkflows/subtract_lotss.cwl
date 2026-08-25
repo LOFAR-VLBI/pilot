@@ -86,6 +86,16 @@ steps:
       - id: solsdir
     run: ../../steps/fix_symlinks_ddf.cwl
 
+  - id: rename_solsdir_mses
+    in:
+      - id: msin
+        source: msin
+      - id: solsdir
+        source: fix_symlinks/solsdir
+    out:
+      - id: fixed_solsdir
+    run: ../../steps/rename_solsdir_entries.cwl
+
   - id: avg_ms_for_box_subtract
     in:
       - id: msin
@@ -116,7 +126,7 @@ steps:
       - id: column
         default: "DATA"
       - id: solsdir
-        source: fix_symlinks/solsdir
+        source: rename_solsdir_mses/fixed_solsdir
       - id: dds3sols
         source: gather_dds3/dds3sols
       - id: fitsfiles
