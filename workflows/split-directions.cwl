@@ -131,7 +131,9 @@ steps:
           source: select_best_n
       out:
         - id: phasediff_score_csv
-        - id: best_ms
+        - id: strong_ms
+        - id: weak_ms
+        - id: unreliable_ms
       when: $(inputs.dd_selection)
       run: ./subworkflows/phasediff_selection.cwl
 
@@ -139,9 +141,11 @@ outputs:
     - id: msout_concat
       type: Directory[]
       outputSource:
-        - phasediff_selection/best_ms
-        - flatten_msout/flattenedarray
-      pickValue: first_non_null
+        - phasediff_selection/strong_ms
+        - phasediff_selection/weak_ms
+        - phasediff_selection/unreliable_ms
+      pickValue: all_non_null
+      linkMerge: merge_flattened
     - id: phasediff_score_csv
       type: File?
       outputSource: phasediff_selection/phasediff_score_csv

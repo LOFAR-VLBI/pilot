@@ -40,11 +40,21 @@ inputs:
 
 
 outputs:
-    - id: best_ms
+    - id: strong_ms
       type: Directory[]
       doc: Best directions
       outputBinding:
-        glob: "*_best.ms"
+        glob: "*_strong.ms"
+    - id: weak_ms
+      type: Directory[]
+      doc: Best directions
+      outputBinding:
+        glob: "*_weak.ms"
+    - id: unreliable_ms
+      type: Directory[]
+      doc: Best directions
+      outputBinding:
+        glob: "*_unreliable.ms"
     - id: logfile
       type: File[]
       doc: Log files corresponding to this step
