@@ -25,7 +25,6 @@ inputs:
       Path to the SOLSDIR directory of the ddf-pipeline run.
     inputBinding:
       position: 1
-      valueFrom: $(self.basename)
 
 outputs:
   - id: solsdir
@@ -43,6 +42,8 @@ outputs:
         and stderr from the step.
 
 requirements:
+  - class: InplaceUpdateRequirement
+    inplaceUpdate: true
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.ddf_solsdir)
