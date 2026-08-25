@@ -1,8 +1,8 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: wsclean_pol
+id: wsclean_pol_iv
 label: WSClean
-doc: Runs WSClean on the input data to produce an image.
+doc: Runs WSClean on the input data to produce I and V channel images.
 
 baseCommand: wsclean
 arguments: [-verbose, -log-time, -no-update-model-required]
@@ -90,7 +90,7 @@ inputs:
       prefix: '-auto-threshold'
   - id: pol
     type: string?
-    default: q,u
+    default: i,v
     inputBinding:
       position: 1
       shellQuote: false
@@ -207,13 +207,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-fit-spectral-pol'
-  - id: deconvolution-channels
-    type: int?
-    default: 3
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-deconvolution-channels'
   - id: gridder
     type: string?
     default: wgridder
@@ -221,20 +214,7 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-gridder'
-  - id: apply-primary-beam
-    type: boolean?
-    default: true
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-apply-primary-beam'
-  - id: use-differential-lofar-beam
-    type: boolean?
-    default: true
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-use-differential-lofar-beam'
+
   - id: facet-regions
     type: File?
     inputBinding:
@@ -260,16 +240,16 @@ inputs:
       soltabs: null
 
 outputs:
-  - id: Q_channel_images
+  - id: I_channel_images
     type: File[]
-    doc: Per-channel Stokes Q images.
+    doc: Per-channel Stokes I images.
     outputBinding:
-      glob: '$(inputs.name)-????-Q-image.fits'
-  - id: U_channel_images
+      glob: '$(inputs.name)-????-I-image.fits'
+  - id: V_channel_images
     type: File[]
-    doc: Per-channel Stokes U images.
+    doc: Per-channel Stokes V images.
     outputBinding:
-      glob: '$(inputs.name)-????-U-image.fits'
+      glob: '$(inputs.name)-????-V-image.fits'
 
 hints:
   - class: DockerRequirement
@@ -282,5 +262,5 @@ requirements:
       - entry: $(inputs.msin)
   - class: ResourceRequirement
 
-stdout: wsclean_qu.log
-stderr: wsclean_qu_err.log
+stdout: wsclean_iv.log
+stderr: wsclean_iv_err.log

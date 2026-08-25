@@ -1,8 +1,8 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: wsclean_pol
+id: wsclean_pol_qu
 label: WSClean
-doc: Runs WSClean on the input data to produce an image.
+doc: Runs WSClean on the input data to produce Q and U channel images.
 
 baseCommand: wsclean
 arguments: [-verbose, -log-time, -no-update-model-required]
@@ -207,13 +207,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-fit-spectral-pol'
-  - id: deconvolution-channels
-    type: int?
-    default: 3
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-deconvolution-channels'
   - id: gridder
     type: string?
     default: wgridder
@@ -221,20 +214,15 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-gridder'
-  - id: apply-primary-beam
+
+  - id: fitrm
     type: boolean?
     default: true
     inputBinding:
       position: 1
       shellQuote: false
-      prefix: '-apply-primary-beam'
-  - id: use-differential-lofar-beam
-    type: boolean?
-    default: true
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-use-differential-lofar-beam'
+      prefix: '-fit-rm'
+
   - id: facet-regions
     type: File?
     inputBinding:

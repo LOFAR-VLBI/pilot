@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run RM-Tools rmsynth3d locally."""
+"""Run RM-Tools rmsynth3d."""
 
 import argparse
 import glob
@@ -9,6 +9,8 @@ import subprocess
 import sys
 from typing import List
 from pathlib import Path
+from RMtools_3D.do_RMsynth_3D import run_rmsynth,writefits
+from utils.fits_handling import get_header
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,6 +36,12 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 def stage_inputs(args: argparse.Namespace):
+	"""
+	Moves files from the cwl staging directory to the current 
+	working directory so that the next part of the workflow can 
+	pick it up
+	"""
+
     workdir = Path.cwd()
 
     q_local = workdir / "image-polcube-Q.fits"
@@ -46,51 +54,40 @@ def stage_inputs(args: argparse.Namespace):
 
     return str(q_local), str(u_local), str(freq_local)
 
-def build_rmsynth_cmd(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,) -> List[str]:
-    cmd = [
-        "rmsynth3d",
-        qfile,
-        ufile,
-        freqfile,
-        "-l",
-        str(args.max_lam2),
-        "-d",
-        str(args.dlam2),
-        "-v",
-        "-R",
-    ]
-    if args.output_prefix:
-        cmd += ["-o", args.output_prefix]
-    if args.extra_args:
-        cmd += args.extra_args.split()
-    return cmd
+def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,) -> List[str]:
+    
+    """Perform RMSynthesis using rmtools3d
+
+    See args in parse_args()
+
+    """ 
+
+    q_header = get_header(q_local)
+
+    dataArr=run_rmsynth(qfile,
+    	ufile,
+    	freqfile,
+    	phiMax_radm2=args.max_lam2,
+    	dPhi_radm2=dlam2,
+    	verbose=True,
+    	not_rmsf=False)
 
 
-def move_outputs(stokes_q_path: str) -> None:
-    # RM-Tools writes outputs into the same directory as the staged input FITS.
-    input_dir = os.path.dirname(stokes_q_path)
-    moved = []
-
-    for path in glob.glob(os.path.join(input_dir, "*FDF_*.fits")):
-        dest = os.path.basename(path)
-        shutil.move(path, dest)
-        moved.append(dest)
-
-    if moved:
-        print("Moved outputs to workdir:")
-        for name in moved:
-            print(f"  {name}")
-    else:
-        print("No staged outputs found to move.")
-
+    writefits(dataArr,
+    	headtemplate=q_header,
+    	fitRMSF=false,
+    	prefixOut=args,output_prefix,
+    	outDir='./',
+    	write_separate_FDF=True,
+    	not_rmsf=False,
+    	verbose=True)
 
 def main() -> int:
     args = parse_args()
     qfile,ufile,freqfile = stage_inputs(args)
-    rmsynth_cmd = build_rmsynth_cmd(args,qfile,ufile,freqfile,)
-    print("Running:", " ".join(rmsynth_cmd))
+    do_rmsynth(args,qfile,ufile,freqfile,)
+    print("Running rmtools3d with:", " ".join(print(args)))
     print("Working directory: ", Path.cwd())
-    return subprocess.call(rmsynth_cmd)
 
 if __name__ == "__main__":
     sys.exit(main())

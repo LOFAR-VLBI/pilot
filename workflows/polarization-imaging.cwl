@@ -3,10 +3,12 @@ cwlVersion: v1.2
 id: image_polarization 
 label: Polarization imaging
 doc: |
-  This workflow will image the provided MS in Q and U, and perform Rotation Measure Synthesis to provide linear polarization images.
+  This workflow will image the provided MS in Q and U, and perform Rotation Measure Synthesis to provide linear polarization images. The intended use is fully polarization calibrated datasets of science targets, generally averaged to at least 32s 
+  and at least 96 kHz channels. 
 
 requirements:
     - class: SubworkflowFeatureRequirement
+    - class: InlineJavascriptRequirement
 
 inputs:
     - id: msin
@@ -31,7 +33,7 @@ inputs:
 
     - id: stokes
       type: string
-      default: "IQUV"
+      default: "QU"
 
     - id: rmtools_max_lam2
       type: float?
@@ -54,6 +56,7 @@ inputs:
 steps:
     - id: image_qu
       label: image_qu
+      when: $(inputs.pol == "QU")
       in:
         - id: msin
           source: msin
@@ -70,10 +73,32 @@ steps:
       out:
         - id: Q_channel_images
         - id: U_channel_images
-      run: ../steps/wsclean_pol.cwl
+      run: ../steps/wsclean_polQU.cwl
 
-    - id: make_cubes
+    - id: image_iv
+      label: image_iv
+      when: $(inputs.pol == "IV")
+      in:
+        - id: msin
+          source: msin
+        - id: scale
+          source: pixel_scale
+        - id: taper-gaussian
+          source: taper
+        - id: size
+          source: image_size
+        - id: channels-out
+          source: num_channels
+        - id: pol
+          source: stokes
+      out:
+        - id: I_channel_images
+        - id: V_channel_images
+      run: ../steps/wsclean_polIV.cwl
+
+    - id: make_qu_cubes
       label: Make QU cubes
+      when: $(inputs.stokes == "QU")
       in:
         - id: Q_images
           source: image_qu/Q_channel_images
@@ -83,6 +108,8 @@ steps:
           source: image_size
         - id: nchannels
           source: num_channels
+        - id: stokes
+          source: stokes
       out:
         - id: stokesQcube
         - id: stokesUcube
@@ -92,13 +119,14 @@ steps:
 
     - id: run_rmtools
       label: RM synthesis
+      when: $(inputs.stokes == "QU")
       in:
         - id: stokes_q
-          source: make_cubes/stokesQcube
+          source: make_qu_cubes/stokesQcube
         - id: stokes_u
-          source: make_cubes/stokesUcube
+          source: make_qu_cubes/stokesUcube
         - id: freqs_hz
-          source: make_cubes/frequencies_list
+          source: make_qu_cubes/frequencies_list
         - id: max_lam2
           source: rmtools_max_lam2
         - id: dlam2
@@ -107,6 +135,8 @@ steps:
           source: rmtools_output_prefix
         - id: extra_args
           source: rmtools_extra_args
+        - id: stokes
+          source: stokes
       out:
         - id: fdf_im_dirty
         - id: fdf_real_dirty
@@ -120,11 +150,11 @@ steps:
 outputs:
   - id: stokesQcube
     type: File
-    outputSource: make_cubes/stokesQcube
+    outputSource: make_qu_cubes/stokesQcube
 
   - id: stokesUcube
     type: File
-    outputSource: make_cubes/stokesUcube
+    outputSource: make_qu_cubes/stokesUcube
 
   - id: fdf_im_dirty
     type: File
