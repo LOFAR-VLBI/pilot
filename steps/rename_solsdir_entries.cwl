@@ -10,6 +10,10 @@ arguments:
     valueFrom: -c
   - position: 2
     valueFrom: |
+      # This sorts the MSes by name such that they are in the same order and then renames
+      # them from (usually) e.g. L123456_121MHz_uv_pre-cal.ms to whatever is being subtracted.
+      # It demands that the input and SOLSDIR contents are named such that they are sorted
+      # in the same order.
       set -eu
       solsdir="$0"
       mapfile -t src < <(find "$solsdir" -mindepth 1 -maxdepth 1 -type d \( -name '*.ms' -o -name '*.dp3concat' \) -printf '%f\n' | sort)
