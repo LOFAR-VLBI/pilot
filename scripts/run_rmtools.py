@@ -10,7 +10,14 @@ import sys
 from typing import List
 from pathlib import Path
 from RMtools_3D.do_RMsynth_3D import run_rmsynth,writefits
-from utils.fits_handling import get_header
+from astropy.io import fits
+
+def get_header(fits_file):
+    """
+    Use astropy to return the header of a FITS file
+    """
+    with fits.open(fits_file) as hdu1:
+        return hdu1[0].header
 
 
 def parse_args() -> argparse.Namespace:
@@ -36,11 +43,11 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 def stage_inputs(args: argparse.Namespace):
-	"""
-	Moves files from the cwl staging directory to the current 
-	working directory so that the next part of the workflow can 
-	pick it up
-	"""
+    """
+    Moves files from the cwl staging directory to the current 
+    working directory so that the next part of the workflow can 
+    pick it up
+    """
 
     workdir = Path.cwd()
 
@@ -76,11 +83,11 @@ def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,)
     writefits(dataArr,
     	headtemplate=q_header,
     	fitRMSF=false,
-    	prefixOut=args,output_prefix,
+    	prefixOut=args.output_prefix,
     	outDir='./',
     	write_separate_FDF=True,
-    	not_rmsf=False,
-    	verbose=True)
+        verbose=True,
+    	not_rmsf=False)
 
 def main() -> int:
     args = parse_args()
