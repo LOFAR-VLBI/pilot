@@ -97,7 +97,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     # Add Leakage calibration if requested
     if leakagecal:
-        configdict['makeimage_fullpol'] = True
+        configdict['makeimage_fullpol'] = 'True'
         if peak_flux is None or peak_flux <= 1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
