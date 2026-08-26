@@ -71,9 +71,9 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['maskthreshold'] = [7.0]
     configdict['soltypecycles_list'] = [0, 0, min(4 + N_comp, 8)]
     configdict['soltype_list'] = ['scalarphasediff','scalarphase','scalarcomplexgain']
-    configdict['solint_list'] = [str(8*phase_solint)+'s', str(phase_solint)+'s', amplitude_solint]
+    configdict['solint_list'] = [str(8*phase_solint//60)+'min', str(phase_solint)+'s', amplitude_solint]
     configdict['nchan_list'] = [1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [10*smoothness , smoothness, amplitude_smoothness]
+    configdict['smoothnessconstraint_list'] = [max(10*smoothness, 5.0), smoothness, amplitude_smoothness]
     configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 0.0]
     configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
@@ -84,8 +84,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['channelsout'] = 12
     configdict['fitspectralpol'] = 5
     configdict['update_multiscale'] = 'True'
-    configdict['antenna_averaging_factors_list'] = [None,'core:5,remote:2,international:1','core:5,remote:2,international:1']
-    configdict['antenna_smoothness_factors_list'] = [None,'core:5,remote:2,international:1','core:5,remote:2,international:1']
+    configdict['antenna_averaging_factors_list'] = [None,'core:5,remote:2,international:1','dutch:2,international:1']
+    configdict['antenna_smoothness_factors_list'] = [None,'core:5,remote:2,international:1','dutch:2,international:1']
     configdict['stop'] = min(12 + N_comp, 20)
 
     if phaseup:
@@ -98,6 +98,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     # Add Leakage calibration if requested
     if leakagecal:
+        configdict['makeimage_fullpol'] = True
         if peak_flux is None or peak_flux <= 1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
@@ -131,7 +132,6 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         configdict['resetsols_list'].append(None)
 
     # average to smallest solution interval if that is larger than data resolution
-    phase_solint = configdict['solint_list'][1]
     avgstep = int(np.ceil(max(phase_solint, deltime))) // int(deltime) # Converting to seconds
     if avgstep > 1:
         configdict['avgtimestep'] = avgstep
