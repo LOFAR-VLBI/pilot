@@ -6,21 +6,22 @@ doc: |
   Run RM-Tools rmsynth3d on Stokes Q/U cubes and a frequency list.
 
 baseCommand: run_rmtools.py
+
 inputs:
   - id: stokes_q
-    type: File
+    type: File?
     doc: Stokes Q cube (per-channel).
     inputBinding:
       position: 1
       prefix: --stokes-q
   - id: stokes_u
-    type: File
+    type: File?
     doc: Stokes U cube (per-channel).
     inputBinding:
       position: 1
       prefix: --stokes-u
   - id: freqs_hz
-    type: File
+    type: File?
     doc: Frequency list in Hz (one per channel).
     inputBinding:
       position: 1
@@ -51,6 +52,7 @@ inputs:
     inputBinding:
       position: 1
       prefix: --extra-args
+
 outputs:
   - id: fdf_im_dirty
     type: File
@@ -87,7 +89,5 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
 
-
 stdout: rmsynth3d_stdout.log
 stderr: rmsynth3d_stderr.log
-

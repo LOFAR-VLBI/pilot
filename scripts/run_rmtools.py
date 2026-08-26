@@ -9,9 +9,10 @@ import subprocess
 import sys
 from typing import List
 from pathlib import Path
-from RMtools_3D.do_RMsynth_3D import run_rmsynth,writefits
+from RMtools_3D.do_RMsynth_3D import run_rmsynth, writefits
 from astropy.io import fits
 import numpy as np
+
 
 def get_header(fits_file):
     """
@@ -19,6 +20,7 @@ def get_header(fits_file):
     """
     with fits.open(fits_file) as hdu1:
         return hdu1[0].header
+
 
 def get_data(fits_file):
     """
@@ -51,10 +53,11 @@ def parse_args() -> argparse.Namespace:
 
     return parser.parse_args()
 
+
 def stage_inputs(args: argparse.Namespace):
     """
-    Moves files from the cwl staging directory to the current 
-    working directory so that the next part of the workflow can 
+    Moves files from the cwl staging directory to the current
+    working directory so that the next part of the workflow can
     pick it up
     """
 
@@ -70,13 +73,13 @@ def stage_inputs(args: argparse.Namespace):
 
     return q_local, u_local, freq_local
 
-def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,) -> List[str]:
-    
+
+def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str, ) -> List[str]:
     """Perform RMSynthesis using rmtools3d
 
     See args in parse_args()
 
-    """ 
+    """
 
     q_header = get_header(qfile)
 
@@ -88,33 +91,34 @@ def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,)
     phi_max = float(args.max_lam2)
     dphi = float(args.dlam2)
 
-    dataArr=run_rmsynth(q_data.squeeze(),
-    	u_data.squeeze(),
-    	freq_array,
-    	phiMax_radm2=phi_max,
-    	dPhi_radm2=dphi,
-        nSamples=None,
-        weightType="variance",
-        fitRMSF=False,
-    	verbose=True,
-    	not_rmsf=False)
-
+    dataArr = run_rmsynth(q_data.squeeze(),
+                          u_data.squeeze(),
+                          freq_array,
+                          phiMax_radm2=phi_max,
+                          dPhi_radm2=dphi,
+                          nSamples=None,
+                          weightType="variance",
+                          fitRMSF=False,
+                          verbose=True,
+                          not_rmsf=False)
 
     writefits(dataArr,
-    	headtemplate=q_header,
-    	fitRMSF=False,
-    	prefixOut=args.output_prefix,
-    	outDir='./',
-    	write_seperate_FDF=True,
-        verbose=True,
-    	not_rmsf=False)
+              headtemplate=q_header,
+              fitRMSF=False,
+              prefixOut=args.output_prefix,
+              outDir='./',
+              write_seperate_FDF=True,
+              verbose=True,
+              not_rmsf=False)
+
 
 def main() -> int:
     args = parse_args()
-    qfile,ufile,freqfile = stage_inputs(args)
-    do_rmsynth(args,qfile,ufile,freqfile,)
-    print("Running rmtools3d with:", " ".join(f'{k}={v}' for k,v in vars(args).items()))
+    qfile, ufile, freqfile = stage_inputs(args)
+    do_rmsynth(args, qfile, ufile, freqfile, )
+    print("Running rmtools3d with:", " ".join(f'{k}={v}' for k, v in vars(args).items()))
     print("Working directory: ", Path.cwd())
+
 
 if __name__ == "__main__":
     sys.exit(main())

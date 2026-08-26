@@ -8,21 +8,21 @@ baseCommand:
 
 inputs:
   - id: Q_images
-    type: File[]
-    doc: List of Stokes Q images from /steps/wsclean_pol.cwl.
+    type: File[]?
+    doc: List of Stokes Q images.
     inputBinding:
       position: 0
       prefix: '--qimages'
       itemSeparator: ','
   - id: U_images
-    type: File[]
-    doc: List of Stokes U images from /steps/wsclean_pol.cwl.
+    type: File[]?
+    doc: List of Stokes U images.
     inputBinding:
       position: 0
       prefix: '--uimages'
       itemSeparator: ','
   - id: image_size
-    type: int[]
+    type: int[]?
     doc: Image size in pixels as [x, y], matching WSClean -size.
     inputBinding:
       position: 0
@@ -30,7 +30,7 @@ inputs:
       itemSeparator: ','
   - id: nchannels
     type: int
-    doc: Number of channels as provided in WSClean as -channels-out.
+    doc: Number of channels as provided to WSClean.
     default: 480
     inputBinding:
       position: 0

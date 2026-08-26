@@ -9,9 +9,7 @@ arguments: [-verbose, -log-time, -no-update-model-required]
 
 inputs:
   - id: msin
-    type:
-      - Directory
-      - Directory[]
+    type: Directory[]
     inputBinding:
       position: 2
       shellQuote: false
@@ -31,13 +29,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-size'
-  - id: baseline_averaging
-    type: float?
-    default: 7.74
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-baseline-averaging'
   - id: minuv-l
     type: float?
     default: 80.0
@@ -45,14 +36,13 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-minuv-l'
-  - id: weight
-    type:
-      - string?
-    default: briggs 0.0
+  - id: briggs
+    type: float?
+    default: -1.4
     inputBinding:
       position: 1
       shellQuote: false
-      prefix: '-weight'
+      prefix: '-weight briggs'
   - id: parallel-reordering
     type: int?
     default: 6
@@ -62,7 +52,7 @@ inputs:
       prefix: '-parallel-reordering'
   - id: mgain
     type: float?
-    default: 0.7
+    default: 0.6
     inputBinding:
       position: 1
       shellQuote: false
@@ -76,7 +66,7 @@ inputs:
       prefix: '-auto-mask'
   - id: auto-threshold
     type: float?
-    default: 1.0
+    default: 0.5
     inputBinding:
       position: 1
       shellQuote: false
@@ -139,7 +129,7 @@ inputs:
       prefix: '-parallel-deconvolution'
   - id: parallel-gridding
     type: int?
-    default: 8
+    default: 6
     inputBinding:
       position: 1
       shellQuote: false
@@ -207,7 +197,6 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-gridder'
-
   - id: fitrm
     type: boolean?
     default: true
@@ -216,41 +205,32 @@ inputs:
       shellQuote: false
       prefix: '-fit-rm'
 
-  - id: facet-regions
-    type: File?
-    inputBinding:
-      position: 1
-      shellQuote: false
-      prefix: '-facet-regions'
-
-  - id: facet-options
-    type:
-      type: record
-      name: facet_options
-      fields:
-        - name: facet-solutions
-          type: File?
-          inputBinding:
-            prefix: '-apply-facet-solutions'
-        - name: soltabs
-          type: string[]?
-          inputBinding:
-            itemSeparator: ','
-    default:
-      facet-solutions: null
-      soltabs: null
-
 outputs:
   - id: Q_channel_images
-    type: File[]
+    type: File[]?
     doc: Per-channel Stokes Q images.
     outputBinding:
       glob: '$(inputs.name)-????-Q-image.fits'
   - id: U_channel_images
-    type: File[]
+    type: File[]?
     doc: Per-channel Stokes U images.
     outputBinding:
       glob: '$(inputs.name)-????-U-image.fits'
+  - id: I_channel_images
+    type: File[]?
+    doc: Per-channel Stokes I images.
+    outputBinding:
+      glob: '$(inputs.name)-????-I-image.fits'
+  - id: V_channel_images
+    type: File[]?
+    doc: Per-channel Stokes V images.
+    outputBinding:
+      glob: '$(inputs.name)-????-V-image.fits'
+  - id: MFS_images
+    type: File[]?
+    doc: MFS images.
+    outputBinding:
+      glob: '*MFS*image.fits'
 
 hints:
   - class: DockerRequirement
@@ -258,10 +238,21 @@ hints:
 
 requirements:
   - class: ShellCommandRequirement
+  - class: InlineJavascriptRequirement
+    expressionLib:
+      - |
+        function wsclean_cores(size) {
+          var imsize = Math.max(size[0], size[1]);
+          var raw = imsize / 512.0;
+          var cores = Math.round(raw / 4.0) * 4;   // nearest multiple of 4
+          return Math.max(4, Math.min(64, cores));
+        }
+  - class: ResourceRequirement
+    coresMin: |
+      ${ return inputs.ncpu !== null ? inputs.ncpu : wsclean_cores(inputs.size); }
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.msin)
-  - class: ResourceRequirement
 
 stdout: wsclean_qu.log
 stderr: wsclean_qu_err.log

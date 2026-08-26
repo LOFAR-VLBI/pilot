@@ -3,11 +3,12 @@ cwlVersion: v1.2
 id: image_polarization 
 label: Polarization imaging
 doc: |
-  This workflow will image the provided MS in Q and U, and perform Rotation Measure Synthesis to provide linear polarization images. The intended use is fully polarization calibrated datasets of science targets, generally averaged to at least 32s 
-  and at least 96 kHz channels. 
+  This workflow will image the provided MS in Q and U, and perform Rotation Measure
+  Synthesis to provide linear polarization images. The intended use is for datasets
+  of science targets that have been fully calibrated, including leakage calibration.
+  These datasets are generally averaged to at least 32 seconds and at least 96 kHz channels.
 
 requirements:
-    - class: SubworkflowFeatureRequirement
     - class: InlineJavascriptRequirement
 
 inputs:
@@ -24,8 +25,14 @@ inputs:
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
 
     - id: image_size
-      type: int[]
+      type: int[]?
+      default: [1024, 1024]
       doc: Size (in pixels) of image, [x, y]. Its syntax follows that of WSClean.
+
+    - id: briggs
+      type: float?
+      default: -1.4
+      doc: Briggs weighting for WSClean.
 
     - id: num_channels
       type: int
@@ -55,7 +62,7 @@ inputs:
 
 steps:
     - id: image_qu
-      label: image_qu
+      label: Image Stokes Q and U
       when: $(inputs.pol == "QU")
       in:
         - id: msin
@@ -70,13 +77,16 @@ steps:
           source: num_channels
         - id: pol
           source: stokes
+        - id: briggs
+          source: briggs
       out:
         - id: Q_channel_images
         - id: U_channel_images
-      run: ../steps/wsclean_polQU.cwl
+        - id: MFS_images
+      run: ../steps/wsclean_pol.cwl
 
     - id: image_iv
-      label: image_iv
+      label: Image Stokes I and V
       when: $(inputs.pol == "IV")
       in:
         - id: msin
@@ -91,10 +101,23 @@ steps:
           source: num_channels
         - id: pol
           source: stokes
+        - id: briggs
+          source: briggs
+        - id: fitrm
+          default: false
+        - id: squared-channel-joining
+          default: false
+        - id: join-polarizations
+          default: false
+        - id: multiscale-max-scales
+          default: 8
+        - id: multiscale-scale-bias
+          default: 0.7
       out:
         - id: I_channel_images
         - id: V_channel_images
-      run: ../steps/wsclean_polIV.cwl
+        - id: MFS_images
+      run: ../steps/wsclean_pol.cwl
 
     - id: make_qu_cubes
       label: Make QU cubes
@@ -118,7 +141,7 @@ steps:
       run: ../steps/concat_pol.cwl
 
     - id: run_rmtools
-      label: RM synthesis
+      label: Run RM synthesis
       when: $(inputs.stokes == "QU")
       in:
         - id: stokes_q
@@ -148,38 +171,50 @@ steps:
       run: ../steps/run_rmtools.cwl
 
 outputs:
+  - id: stokesI
+    type: File[]?
+    outputSource: image_iv/I_channel_images
+
+  - id: stokesV
+    type: File[]?
+    outputSource: image_iv/V_channel_images
+
+  - id: IV_MFS_images
+    type: File[]?
+    outputSource: image_iv/MFS_images
+
   - id: stokesQcube
-    type: File
+    type: File?
     outputSource: make_qu_cubes/stokesQcube
 
   - id: stokesUcube
-    type: File
+    type: File?
     outputSource: make_qu_cubes/stokesUcube
 
   - id: fdf_im_dirty
-    type: File
+    type: File?
     outputSource: run_rmtools/fdf_im_dirty
 
   - id: fdf_real_dirty
-    type: File
+    type: File?
     outputSource: run_rmtools/fdf_real_dirty
 
   - id: fdf_tot_dirty
-    type: File
+    type: File?
     outputSource: run_rmtools/fdf_tot_dirty
 
   - id: fdf_maxpi
-    type: File
+    type: File?
     outputSource: run_rmtools/fdf_maxpi
 
   - id: fdf_peakrm
-    type: File
+    type: File?
     outputSource: run_rmtools/fdf_peakrm
 
   - id: rmtools_stdout
-    type: File
+    type: File?
     outputSource: run_rmtools/rmsynth_stdout
 
   - id: rmtools_stderr
-    type: File
+    type: File?
     outputSource: run_rmtools/rmsynth_stderr
