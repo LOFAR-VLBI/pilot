@@ -11,6 +11,7 @@ from typing import List
 from pathlib import Path
 from RMtools_3D.do_RMsynth_3D import run_rmsynth,writefits
 from astropy.io import fits
+import numpy as np
 
 def get_header(fits_file):
     """
@@ -18,6 +19,13 @@ def get_header(fits_file):
     """
     with fits.open(fits_file) as hdu1:
         return hdu1[0].header
+
+def get_data(fits_file):
+    """
+    Use astropy to return the data of a FITS file
+    """
+    with fits.open(fits_file) as hdu1:
+        return hdu1[0].data
 
 
 def parse_args() -> argparse.Namespace:
@@ -59,7 +67,7 @@ def stage_inputs(args: argparse.Namespace):
     shutil.copy2(args.stokes_u, u_local)
     shutil.copy2(args.freqs, freq_local)
 
-    return str(q_local), str(u_local), str(freq_local)
+    return q_local, u_local, freq_local
 
 def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,) -> List[str]:
     
@@ -69,20 +77,31 @@ def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,)
 
     """ 
 
-    q_header = get_header(q_local)
+    q_header = get_header(qfile)
 
-    dataArr=run_rmsynth(qfile,
-    	ufile,
-    	freqfile,
-    	phiMax_radm2=args.max_lam2,
-    	dPhi_radm2=dlam2,
+    q_data = get_data(qfile)
+    u_data = get_data(ufile)
+
+    freq_array = np.array(np.loadtxt(freqfile))
+
+    phi_max = float(args.max_lam2)
+    dphi = float(args.dlam2)
+
+    dataArr=run_rmsynth(q_data.squeeze(),
+    	u_data.squeeze(),
+    	freq_array,
+    	phiMax_radm2=phi_max,
+    	dPhi_radm2=dphi,
+        nSamples=None,
+        weightType="variance",
+        fitRMSF=False,
     	verbose=True,
     	not_rmsf=False)
 
 
     writefits(dataArr,
     	headtemplate=q_header,
-    	fitRMSF=false,
+    	fitRMSF=False,
     	prefixOut=args.output_prefix,
     	outDir='./',
     	write_separate_FDF=True,
