@@ -48,6 +48,7 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Extra arguments passed to rmsynth3d (as a single string).",
     )
+
     return parser.parse_args()
 
 def stage_inputs(args: argparse.Namespace):
@@ -104,7 +105,7 @@ def do_rmsynth(args: argparse.Namespace, qfile: str, ufile: str, freqfile: str,)
     	fitRMSF=False,
     	prefixOut=args.output_prefix,
     	outDir='./',
-    	write_separate_FDF=True,
+    	write_seperate_FDF=True,
         verbose=True,
     	not_rmsf=False)
 
@@ -112,7 +113,7 @@ def main() -> int:
     args = parse_args()
     qfile,ufile,freqfile = stage_inputs(args)
     do_rmsynth(args,qfile,ufile,freqfile,)
-    print("Running rmtools3d with:", " ".join(print(args)))
+    print("Running rmtools3d with:", " ".join(f'{k}={v}' for k,v in vars(args).items()))
     print("Working directory: ", Path.cwd())
 
 if __name__ == "__main__":
