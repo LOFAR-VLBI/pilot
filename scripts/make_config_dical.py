@@ -78,7 +78,6 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
     configdict['forwidefield'] = 'True'
-    configdict['phaseupstations'] = "core"
     configdict['paralleldeconvolution'] = 1024
     configdict['parallelgridding'] = 6
     configdict['channelsout'] = 12
@@ -89,7 +88,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['stop'] = min(12 + N_comp, 20)
 
     if phaseup:
-        configdict['phaseupstations'] = "'core'"
+        configdict['phaseupstations'] = "core"
         configdict['robust'] = -0.4
     else:
         configdict['robust'] = -1.4
