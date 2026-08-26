@@ -45,7 +45,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         # Get time array
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
-    phase_solint = str(int(np.ceil(max(best_solint * 60, deltime))))+'s'
+    phase_solint = int(np.ceil(max(best_solint * 60, deltime)))
     if peak_flux is None:
         amplitude_solint = '40min'
         amplitude_smoothness = 10.0
@@ -71,9 +71,9 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['maskthreshold'] = [7.0]
     configdict['soltypecycles_list'] = [0, 0, min(4 + N_comp, 8)]
     configdict['soltype_list'] = ['scalarphasediff','scalarphase','scalarcomplexgain']
-    configdict['solint_list'] = [4, phase_solint, amplitude_solint]
+    configdict['solint_list'] = [str(8*phase_solint)+'s', str(phase_solint)+'s', amplitude_solint]
     configdict['nchan_list'] = [1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [40.0 , smoothness, amplitude_smoothness]
+    configdict['smoothnessconstraint_list'] = [10*smoothness , smoothness, amplitude_smoothness]
     configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 0.0]
     configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
@@ -86,7 +86,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['update_multiscale'] = 'True'
     configdict['antenna_averaging_factors_list'] = [None,'core:5,remote:2,international:1','core:5,remote:2,international:1']
     configdict['antenna_smoothness_factors_list'] = [None,'core:5,remote:2,international:1','core:5,remote:2,international:1']
-    configdict['stop'] = min(10 + N_comp, 18)
+    configdict['stop'] = min(12 + N_comp, 20)
 
     if phaseup:
         configdict['phaseupstations'] = "'core'"
