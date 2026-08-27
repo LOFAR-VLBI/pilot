@@ -263,7 +263,7 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
     if(len(small_search) == 0) and (len(large_search) == 0):
         phaseup = False 
 
-    print('Minimum flux for bandpass: ', min_flux)
+    print('Minimum flux density for bandpass: ', min_flux)
     print('Delay cal flux: ', total_flux)
     return bandpass, phaseup, delay_cal["Peak_flux"]
 
