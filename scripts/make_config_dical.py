@@ -152,8 +152,6 @@ def write_config(filename: str, configdict: dict[str, object]) -> str:
     """
     def fmt(value: object, in_list: bool = False) -> str:
         match value:
-            case bool():
-                raise ValueError(f"Value of unexpected type found: {value!r}")
             case str():
                 return f"'{value}'" if in_list else f'"{value}"'
             case int() | float() | None:
