@@ -38,7 +38,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     else:
         bandpass = False
         phaseup = True
-        peak_flux = None
+        peak_flux = 0
 
     # Set solints and smoothness constraints
     with ct.table(ms, readonly=True, ack=False) as t:
