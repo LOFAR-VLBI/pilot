@@ -124,6 +124,8 @@ def parse_args() -> argparse.Namespace:
 def main():
     args = parse_args()
 
+    print("Running rmtools3d with:", " ".join(f"{k}={v}" for k, v in vars(args).items()))
+
     qfile, ufile, freqfile = stage_inputs(
         stokes_q=args.stokes_q,
         stokes_u=args.stokes_u,
@@ -138,9 +140,6 @@ def main():
         dlam2=args.dlam2,
         output_prefix=args.output_prefix,
     )
-
-    print("Running rmtools3d with:", " ".join(f"{k}={v}" for k, v in vars(args).items()))
-    print("Working directory: ", Path.cwd())
 
 
 if __name__ == "__main__":
