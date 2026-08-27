@@ -247,7 +247,7 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
     if total_flux > min_flux:
         bandpass = True
 
-    # Some sort of logic for flux weighted - we are imaging a 2arcmin box
+    # Some sort of logic for flux weighted
     # Anything 2-10 arcmins and bright could be a problem 
 
     #Filter catalogue to only those bright enough to be a problem
