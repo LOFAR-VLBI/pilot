@@ -113,7 +113,7 @@ inputs:
       doc: |
         Automatically select the best delay calibrator based on phasediff scores.
 
-    - id: add_leakage_calibration
+    - id: calibrate_leakage
       type: boolean?
       default: false
       doc: Add leakage calibration to the DI configuration file.
@@ -181,8 +181,8 @@ steps:
           source: number_cores
         - id: do_auto_delay_selection
           source: do_auto_delay_selection
-        - id: add_leakage_calibration
-          source: add_leakage_calibration
+        - id: calibrate_leakage
+          source: calibrate_leakage
       out:
         - id: msout
         - id: solutions

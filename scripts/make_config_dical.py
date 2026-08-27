@@ -17,7 +17,7 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, leakagecal: bool):
+def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
     """
     Make configuration file for facetselfcal
 
@@ -96,7 +96,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     soltypecycle_fulljones = max(configdict['soltypecycles_list'][-1] + 1, 5)
 
     # Add Leakage calibration if requested
-    if leakagecal:
+    if calibrate_leakage:
         configdict['makeimage_fullpol'] = 'True'
         if peak_flux <= 1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
@@ -108,7 +108,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['soltype_list'].extend(['complexgain', 'leakage'])
             configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
             configdict['antenna_smoothness_factors_list'].extend(['alldutch:2,international:1', 'alldutch:2,international:1'])
-        elif leakagecal:
+        elif calibrate_leakage:
             configdict['soltypecycles_list'].append(soltypecycle_fulljones)
             configdict['solint_list'].append(amplitude_solint)
             configdict['smoothnessconstraint_list'].append(amplitude_smoothness)
@@ -328,7 +328,7 @@ def parse_args():
     parser.add_argument('--inputmodel', type=str, help='Input skymodel')
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output')
     parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions')
-    parser.add_argument('--leakagecal', action="store_true", help='Perform leakage calibration')
+    parser.add_argument('--calibrate-leakage', action="store_true", help='Perform leakage calibration')
     return parser.parse_args()
 
 
@@ -341,7 +341,7 @@ def main():
 
     best_solint = get_best_solint(args.ms, args.phasediff_output)
     smoothness = get_smoothing(args.scalarphase_h5)
-    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms, args.leakagecal)
+    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
 
 if __name__ == "__main__":
     main()
