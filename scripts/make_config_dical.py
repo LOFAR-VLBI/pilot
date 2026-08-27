@@ -192,7 +192,7 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
 
-def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
+def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
     """
     Search through image_catalogue.csv for two purposes.
     1. Is calibrator bright enough for final bandpass solve
