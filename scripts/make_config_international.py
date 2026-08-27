@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = "Jurjen de Jong"
+__author__ = "Jurjen de Jong, Frits Sweijen"
 
 from argparse import ArgumentParser
 import re
@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 import casacore.tables as ct
+from math import ceil
 
 
 def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
@@ -77,16 +78,22 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_complex = 10.0
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
-        smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
+        # solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        # smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','coreandfirstremotes','alldutch','coreandfirstremotes']"
         else:
             resetsols_list = (
                 "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
             )
+            solint_list = (
+                f"['{int(solint_scalarphase_1)}s','{int(solint_complexgain_1 * 60)}s']"
+            )
+            smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
+            antenna_averaging_factors_list = f"['distantinternational:1,alldutchandclosegerman:{ceil(solint_scalarphase_2/solint_scalarphase_1)},alldutch:{ceil(solint_scalarphase_3/solint_scalarphase_1)}','international:1,alldutch:{ceil(solint_complexgain_2/solint_complexgain_1)}']"
+            antenna_smoothness_factors_list = "['distantinternational:1,alldutchandclosegerman:1,alldutch:1.5',None,None]"
+            smoothnessreffrequency_list = "[120.0,0.0]"
+            smoothnessspectralexponent_list = "[-1.0,-1.0]"
 
     elif solint < 0.1:
         smoothness_phase = 10.0
@@ -174,6 +181,8 @@ autofrequencyaverage            = True
 update_multiscale               = True
 soltypecycles_list              = {soltypecycles_list}
 soltype_list                    = {soltype_list}
+antenna_averaging_factors_list  = {antenna_averaging_factors_list}
+antenna_smoothness_factors_list  = {antenna_smoothness_factors_list}
 smoothnessconstraint_list       = {smoothnessconstraint_list}
 smoothnessreffrequency_list     = {smoothnessreffrequency_list}
 smoothnessspectralexponent_list = {smoothnessspectralexponent_list}
