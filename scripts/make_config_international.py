@@ -78,14 +78,23 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_complex = 10.0
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        # solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
-        # smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
         if with_dutch_sols:
-            resetsols_list = "['alldutchandclosegerman','alldutch','coreandfirstremotes','alldutch','coreandfirstremotes']"
-        else:
-            resetsols_list = (
-                "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            resetsols_list = "['coreandfirstremotes','coreandfirstremotes']"
+            solint_list = (
+                f"['{int(solint_scalarphase_1)}s','{int(solint_complexgain_1 * 60)}s']"
             )
+            smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
+            antenna_averaging_factors_list = f"[\
+                'distantinternational:1,closegerman:{ceil(solint_scalarphase_2/solint_scalarphase_1)},alldutch:{ceil(solint_scalarphase_3/solint_scalarphase_1)}',\
+                'international:1,alldutch:{ceil(solint_complexgain_2/solint_complexgain_1)}'\
+                ]"
+            antenna_smoothness_factors_list = f"[\
+                'distantinternational:1,closegerman:{ceil(solint_scalarphase_2/solint_scalarphase_1)},alldutch:{ceil(solint_scalarphase_3/solint_scalarphase_1)}',\
+                'international:1,alldutch:{ceil(solint_complexgain_2/solint_complexgain_1)}'\
+                ]"
+            smoothnessreffrequency_list = "[120.0,0.0]"
+            smoothnessspectralexponent_list = "[-1.0,-1.0]"
+        else:
             solint_list = (
                 f"['{int(solint_scalarphase_1)}s','{int(solint_complexgain_1 * 60)}s']"
             )
