@@ -77,7 +77,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_phase = 7.5
         smoothness_complex = 10.0
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
-        soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        soltype_list = "['scalarphase','scalarcomplexgain']"
         if with_dutch_sols:
             resetsols_list = "['coreandfirstremotes','coreandfirstremotes']"
             solint_list = (
