@@ -39,12 +39,12 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
 
     deltime = np.abs(time[1] - time[0])
 
-    solint_scalarphase_1 = float(np.clip(deltime / 60, np.sqrt(solint) / 2, 2))
-    solint_scalarphase_2 = float(np.clip(deltime / 60, np.sqrt(solint), 3))
+    solint_scalarphase_1 = 60 * float(np.clip(deltime / 60, np.sqrt(solint) / 2, 2))
+    solint_scalarphase_2 = 60 * float(np.clip(deltime / 60, np.sqrt(solint), 3))
     if with_dutch_sols:
-        solint_scalarphase_3 = float(np.clip(deltime / 60, 3 * np.sqrt(solint), 5))
+        solint_scalarphase_3 = 60 * float(np.clip(deltime / 60, 3 * np.sqrt(solint), 5))
     else:
-        solint_scalarphase_3 = float(np.clip(deltime / 60, 2 * np.sqrt(solint), 3))
+        solint_scalarphase_3 = 60 * float(np.clip(deltime / 60, 2 * np.sqrt(solint), 3))
 
     solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
     solint_complexgain_2 = (
@@ -77,7 +77,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_complex = 10.0
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
         smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
         smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
@@ -93,7 +93,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_complex = 10.0
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
         smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
         smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
@@ -109,7 +109,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_complex = 12.5
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
         smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
         smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
@@ -125,7 +125,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_complex = 15.0
         soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_scalarphase_3)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+10.0}]"
         smoothnessreffrequency_list = "[120.0,120.0,120.0,0.0,0.0]"
         smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0,-1.0]"
@@ -143,7 +143,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         soltype_list = (
             "['scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
         )
-        solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s','{int(solint_complexgain_2*60)}s']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_complexgain_1*60)}s','{int(solint_complexgain_2*60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase*1.25},{smoothness_complex},{smoothness_complex+5.0}]"
         smoothnessreffrequency_list = "[120.0,120.0,0.0,0.0]"
         smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0]"
@@ -155,7 +155,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     else:
         soltypecycles_list = f"[0,0,{cg_cycle_1}]"
         soltype_list = "['scalarphase','scalarphase','scalarcomplexgain']"
-        solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_complexgain_1*60)}s']"
         smoothnessconstraint_list = f"[10.0,15.0,25.0]"
         smoothnessreffrequency_list = "[120.0,120.0,0.0]"
         smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0]"
