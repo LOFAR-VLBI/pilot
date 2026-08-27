@@ -61,7 +61,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     # Check number of components in VLASS model
     with open( inputmodel, 'r' ) as f:
-        N_comp = len(f.readlines())
+        N_comp = max(len(f.readlines()) - 1, 1)
 
     configdict = {}
     configdict['imagename'] = filename
