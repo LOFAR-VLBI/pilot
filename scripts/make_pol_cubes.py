@@ -4,14 +4,13 @@
 
 import numpy as np
 from astropy.io import fits
-from typing import List
 import os
 import argparse
 
 from validate_lofar_images import get_rms
 
 
-def cube_maker(q_images: List[str], u_images: List[str], nchan: int, imsize: List[int]) -> None:
+def cube_maker(q_images: list[str], u_images: list[str], nchan: int, imsize: list[int]) -> None:
     """
     Constructs Stokes Q and U data cubes from individual FITS channel images from WSClean,
     filtering out noisy channels based on an RMS threshold.
