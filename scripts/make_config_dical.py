@@ -83,8 +83,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['channelsout'] = 12
     configdict['fitspectralpol'] = 5
     configdict['update_multiscale'] = 'True'
-    configdict['antenna_averaging_factors_list'] = [None,'core:5,remote:2,international:1','dutch:2,international:1']
-    configdict['antenna_smoothness_factors_list'] = [None,'core:5,remote:2,international:1','dutch:2,international:1']
+    configdict['antenna_averaging_factors_list'] = [None,'core:5,remote:2,international:1','alldutch:2,international:1']
+    configdict['antenna_smoothness_factors_list'] = [None,'core:5,remote:2,international:1','alldutch:2,international:1']
     configdict['stop'] = min(12 + N_comp, 20)
 
     if phaseup:
@@ -106,8 +106,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['antennaconstraint_list'].extend([None, None]) # Instead of alldutch
             configdict['nchan_list'].extend([1, 1])
             configdict['soltype_list'].extend(['complexgain', 'leakage'])
-            configdict['antenna_averaging_factors_list'].extend(['dutch:2,international:1','dutch:2,international:1'])
-            configdict['antenna_smoothness_factors_list'].extend(['dutch:2,international:1', 'dutch:2,international:1'])
+            configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
+            configdict['antenna_smoothness_factors_list'].extend(['alldutch:2,international:1', 'alldutch:2,international:1'])
         elif leakagecal:
             configdict['soltypecycles_list'].append(soltypecycle_fulljones)
             configdict['solint_list'].append(amplitude_solint)
@@ -116,8 +116,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['antennaconstraint_list'].append(None) # Instead of alldutch
             configdict['nchan_list'].append(1)
             configdict['soltype_list'].append('fulljones')
-            configdict['antenna_averaging_factors_list'].append('dutch:2,international:1')
-            configdict['antenna_smoothness_factors_list'].append('dutch:2,international:1')
+            configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
+            configdict['antenna_smoothness_factors_list'].append('alldutch:2,international:1')
 
     # Add bandpass if requested
     if bandpass:
