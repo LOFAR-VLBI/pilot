@@ -264,7 +264,7 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
         phaseup = False 
 
     print('Minimum flux density for bandpass: ', min_flux)
-    print('Delay cal flux: ', total_flux)
+    print('Delay cal flux density: ', total_flux)
     return bandpass, phaseup, delay_cal["Peak_flux"]
 
 
