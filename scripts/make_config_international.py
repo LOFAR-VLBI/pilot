@@ -47,7 +47,9 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         solint_scalarphase_3 = float(np.clip(deltime / 60, 2 * np.sqrt(solint), 3))
 
     solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
-    solint_complexgain_2 = 2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
+    solint_complexgain_2 = (
+        2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
+    )
 
     # ------------------------------------------
     # Linking solints to configuration file
@@ -70,10 +72,10 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     # Extra time-averaging when solint larger than 60 seconds
     avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
 
-    if solint<0.05:
+    if solint < 0.05:
         smoothness_phase = 7.5
         smoothness_complex = 10.0
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
         solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex}]"
@@ -82,12 +84,14 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','coreandfirstremotes','alldutch','coreandfirstremotes']"
         else:
-            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            resetsols_list = (
+                "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            )
 
-    elif solint<0.1:
+    elif solint < 0.1:
         smoothness_phase = 10.0
         smoothness_complex = 10.0
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
         solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
@@ -96,12 +100,14 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
         else:
-            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            resetsols_list = (
+                "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            )
 
-    elif solint<1:
+    elif solint < 1:
         smoothness_phase = 10.0
         smoothness_complex = 12.5
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
         solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+5.0}]"
@@ -110,12 +116,14 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
         else:
-            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            resetsols_list = (
+                "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            )
 
-    elif solint<5:
+    elif solint < 5:
         smoothness_phase = 10.0
         smoothness_complex = 15.0
-        soltypecycles_list = f'[0,0,1,{cg_cycle_1},{cg_cycle_2}]'
+        soltypecycles_list = f"[0,0,1,{cg_cycle_1},{cg_cycle_2}]"
         soltype_list = "['scalarphase','scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
         solint_list = f"['{int(solint_scalarphase_1 * 60)}s','{int(solint_scalarphase_2 * 60)}s','{int(solint_scalarphase_3 * 60)}s','{int(solint_complexgain_1 * 60)}s','{int(solint_complexgain_2 * 60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase},{smoothness_phase*1.5},{smoothness_complex},{smoothness_complex+10.0}]"
@@ -124,13 +132,17 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','coreandallbutmostdistantremotes','alldutch','coreandallbutmostdistantremotes']"
         else:
-            resetsols_list = "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            resetsols_list = (
+                "['alldutchandclosegerman','alldutch',None,'alldutch',None]"
+            )
 
-    elif solint<10:
+    elif solint < 10:
         smoothness_phase = 10.0
         smoothness_complex = 20.0
-        soltypecycles_list = f'[0,0,{cg_cycle_1},{cg_cycle_2}]'
-        soltype_list = "['scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        soltypecycles_list = f"[0,0,{cg_cycle_1},{cg_cycle_2}]"
+        soltype_list = (
+            "['scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
+        )
         solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s','{int(solint_complexgain_2*60)}s']"
         smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase*1.25},{smoothness_complex},{smoothness_complex+5.0}]"
         smoothnessreffrequency_list = "[120.0,120.0,0.0,0.0]"
@@ -141,7 +153,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
             resetsols_list = "['alldutch',None,'alldutch',None]"
 
     else:
-        soltypecycles_list = f'[0,0,{cg_cycle_1}]'
+        soltypecycles_list = f"[0,0,{cg_cycle_1}]"
         soltype_list = "['scalarphase','scalarphase','scalarcomplexgain']"
         solint_list = f"['{int(solint_scalarphase_1*60)}s','{int(solint_scalarphase_2*60)}s','{int(solint_complexgain_1*60)}s']"
         smoothnessconstraint_list = f"[10.0,15.0,25.0]"
@@ -200,10 +212,12 @@ def parse_source_id(input_string: str) -> str:
     """
 
     try:
-        parsed_input = re.findall(r'ILTJ\d{6}\.\d{2}[+\-]\d{6}\.\d{1}', input_string)[0]
+        parsed_input = re.findall(r"ILTJ\d{6}\.\d{2}[+\-]\d{6}\.\d{1}", input_string)[0]
     except IndexError:
         parsed_input = basename(input_string)
-        print(f"WARNING: {input_string} does not contain a valid source ID (ILTJhhmmss.ss±ddmmss.s)")
+        print(
+            f"WARNING: {input_string} does not contain a valid source ID (ILTJhhmmss.ss±ddmmss.s)"
+        )
 
     return parsed_input
 
@@ -223,12 +237,17 @@ def get_solint(ms: str, phasediff_output: str) -> float:
     phasediff = pd.read_csv(phasediff_output)
     sourceid = parse_source_id(ms.split("/")[-1])
 
-    possible_columns = {"Source_id", "source",}  # Handling possible column variations (versions)
+    possible_columns = {
+        "Source_id",
+        "source",
+    }  # Handling possible column variations (versions)
     matching_columns = list(set.intersection(possible_columns, phasediff.columns))
     if len(matching_columns) != 1:
         raise KeyError("CSV must contain one of", possible_columns)
     else:
-        solint = phasediff[phasediff[matching_columns[0]].apply(parse_source_id) == sourceid]["best_solint"].min()
+        solint = phasediff[
+            phasediff[matching_columns[0]].apply(parse_source_id) == sourceid
+        ]["best_solint"].min()
 
     return solint
 
@@ -240,10 +259,16 @@ def parse_args():
     Returns: parsed arguments
     """
 
-    parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
-    parser.add_argument('--ms', type=str, help='Input MeasurementSet.')
-    parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output.')
-    parser.add_argument('--dutch_multidir_h5', action="store_true", help='Have used pre-applied Dutch calibration solutions.')
+    parser = ArgumentParser(
+        description="Make parameter configuration file for facetselfcal."
+    )
+    parser.add_argument("--ms", type=str, help="Input MeasurementSet.")
+    parser.add_argument("--phasediff_output", type=str, help="Phasediff CSV output.")
+    parser.add_argument(
+        "--dutch_multidir_h5",
+        action="store_true",
+        help="Have used pre-applied Dutch calibration solutions.",
+    )
     return parser.parse_args()
 
 
