@@ -60,6 +60,11 @@ inputs:
       type: string?
       doc: Extra arguments passed to rmsynth3d.
 
+    - id: ncpu
+      type: int?
+      default: 12
+      doc: Number of cores to use during WSClean imaging.
+
 steps:
     - id: image_qu
       label: Image Stokes Q and U
@@ -79,6 +84,8 @@ steps:
           source: stokes
         - id: briggs
           source: briggs
+        - id: ncpu
+          source: ncpu
       out:
         - id: Q_channel_images
         - id: U_channel_images
@@ -113,6 +120,8 @@ steps:
           default: 8
         - id: multiscale-scale-bias
           default: 0.7
+        - id: ncpu
+          source: ncpu
       out:
         - id: I_channel_images
         - id: V_channel_images
