@@ -27,6 +27,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
         inputmodel: Input skymodel to be added to configuration file
         ms: MeasurementSet name
+        calibrate_leakage: Perform leakage calibration
     """
 
     # Get the source name
