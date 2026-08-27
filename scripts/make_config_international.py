@@ -47,9 +47,11 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     else:
         solint_scalarphase_3 = 60 * float(np.clip(deltime / 60, 2 * np.sqrt(solint), 3))
 
-    solint_complexgain_1 = max(20.0, 45 * np.sqrt(solint))
+    solint_complexgain_1 = 60 * max(20.0, 45 * np.sqrt(solint))
     solint_complexgain_2 = (
-        2.0 * solint_complexgain_1 if with_dutch_sols else 1.5 * solint_complexgain_1
+        60 * 2.0 * solint_complexgain_1
+        if with_dutch_sols
+        else 60 * 1.5 * solint_complexgain_1
     )
 
     # ------------------------------------------
