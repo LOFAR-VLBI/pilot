@@ -245,6 +245,25 @@ steps:
         - id: dir
       run: ../steps/collectfiles.cwl
 
+    - id: concat_validation_csvs
+      label: Merge strong and weak validation
+      in:
+        - id: validate
+          source: validate
+        - id: input_csvs
+          source:
+            - validation_strong/validate_csv
+            - validation_weak/validate_csv
+          pickValue: all_non_null
+          linkMerge: merge_flattened
+        - id: output_csv_name
+          default: validation.csv
+      out:
+        - id: concat_csv
+        - id: logfile
+      run: ../steps/concat_csv.cwl
+      when: $(inputs.validate)
+
 outputs:
     - id: final_merged_h5
       type: File
@@ -258,9 +277,7 @@ outputs:
 
     - id: validation_csv
       type: File?
-      outputSource:
-        - validation_strong/validate_csv
-      pickValue: all_non_null
+      outputSource: concat_validation_csvs/concat_csv
       doc: Validation CSV file
 
     - id: FITS_images
