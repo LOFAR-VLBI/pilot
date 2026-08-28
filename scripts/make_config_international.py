@@ -169,7 +169,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
             resetsols_list = "['alldutchandclosegerman','alldutch','alldutchandclosegerman','alldutch']"
         else:
             if cg_cycle_1 < 999 and cg_cycle_2 < 999:
-                soltypecycles_list = f"[0,0,{cg_cycle_1},{cg_cycle_2}]"
+                soltypecycles_list = f"[0,{cg_cycle_1},{cg_cycle_2}]"
                 soltype_list = "['scalarphase','scalarcomplexgain']"
                 solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_complexgain_1)}s','{int(solint_complexgain_2)}s']"
                 smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase*1.25},{smoothness_complex},{smoothness_complex+5.0}]"
@@ -182,7 +182,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
                     'international:1,alldutch:{ceil((smoothness_complex+5.0)/smoothness_complex)}'\
                 ]"
             elif cg_cycle_1 < 999:
-                soltypecycles_list = f"[0,0,{cg_cycle_1}]"
+                soltypecycles_list = f"[0,{cg_cycle_1}]"
                 soltype_list = "['scalarphase','scalarcomplexgain']"
                 solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_complexgain_1)}s']"
                 smoothnessconstraint_list = (
@@ -197,7 +197,7 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
                     'international:1,alldutch:{ceil((smoothness_complex+5.0)/smoothness_complex)}'\
                 ]"
             else:
-                soltypecycles_list = "[0,0]"
+                soltypecycles_list = "[0]"
                 soltype_list = "['scalarphase']"
                 solint_list = (
                     f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s']"
