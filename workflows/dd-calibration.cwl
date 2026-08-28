@@ -218,8 +218,8 @@ steps:
       in:
         - id: h5parms
           source:
+            - validation_strong/h5parm_selected
             - validation_weak/h5parm_selected
-            - ddcal_int_weak/h5parms
           pickValue: first_non_null
       out:
         - id: multidir_h5
