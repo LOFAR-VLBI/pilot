@@ -52,7 +52,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         amplitude_smoothness = 5.0
     elif peak_flux > 0.5:
         amplitude_solint = '30min'
-        amplitude_smoothness = 10.0
+        amplitude_smoothness = 7.5
     else:
         amplitude_solint = '40min'
         amplitude_smoothness = 10.0
