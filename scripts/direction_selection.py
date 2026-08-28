@@ -147,27 +147,25 @@ def main():
             df = df.sort_values("spd_score", ascending=True)
             if len(df) < args.select_best_N:
                 print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
+        for source in df.set_index('source').iterrows():
+            name = source[0]
+            score = source[1]['spd_score']
+            if score <= args.strong_score:
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')
+            elif (score > args.strong_score) and (score <= args.weak_score):
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_weak.ms')
+            elif score > args.weak_score:
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
     else:
-        print(f"Reclassifying invalidated sources from {args.reclassify_from} to {args.suffix}.")
         df = df[~(df["accept_solutions"] & df["accept_image"])]
-    itercol = "source_id" if do_reclassify else "source"
-    for source in df.set_index(itercol).iterrows():
-        name = source[0]
-        if do_reclassify:
+        for source in df.set_index("source_id").iterrows():
+            name = source[0]
+            print(f"Reclassifying {name} from {args.reclassify_from} to {args.suffix}.")
             ms_name = match_source_id(args.ms, name)
             rename_folder(ms_name, ms_name.replace(args.reclassify_from, args.suffix))
-            continue
-        score = source[1]['spd_score']
-        if score <= args.strong_score:
-            ms_name = match_source_id(args.ms, name)
-            rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')
-        elif (score > args.strong_score) and (score <= args.weak_score):
-            ms_name = match_source_id(args.ms, name)
-            rename_folder(ms_name, ms_name.split('/')[-1]+'_weak.ms')
-        elif score > args.weak_score:
-            ms_name = match_source_id(args.ms, name)
-            rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
-
 
 if __name__ == '__main__':
     main()
