@@ -57,10 +57,8 @@ requirements:
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.msin)
+        writable: true
 
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
-
-stdout: dir_selection.log
-stderr: dir_selection_err.log
