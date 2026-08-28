@@ -31,7 +31,7 @@ inputs:
       doc: Provide already obtained direction-dependent h5parm solutions for the Dutch LOFAR array to pre-apply before international LOFAR calibration.
 
     - id: validate
-      type: boolean?
+      type: boolean
       default: true
       doc: If set to true the pipeline will perform validation of the direction-dependent calibrator selection.
 
@@ -152,13 +152,31 @@ steps:
         - multidir_h5
       run: ../steps/multidir_merger.cwl
 
+    - id: demote_strong_to_weak
+      label: Identify strong sources which failed validation
+      in:
+        - id: validate
+          source: validate
+        - id: msin
+          source: split_directions/msout_concat_strong
+        - id: validation_csv
+          source: validation_strong/validate_csv
+          pickValue: first_non_null
+      out:
+        - msout
+      run: ../steps/demote_selection.cwl
+      when: $(inputs.validate)
 
     # Weak calibrators
     - id: ddcal_int_weak
       label: Automatic direction-dependent calibration
       in:
         - id: msin
-          source: split_directions/msout_concat_weak
+          source:
+            - split_directions/msout_concat_weak
+            - demote_strong_to_weak/msout
+          pickValue: all_non_null
+          linkMerge: merge_flattened
         - id: dd_dutch_solutions
           source: multidir_merge_strong/multidir_h5
         - id: phasediff_score_csv
@@ -207,12 +225,31 @@ steps:
         - id: multidir_h5
       run: ../steps/multidir_merger.cwl
 
+    - id: demote_weak_to_unreliable
+      label: Identify weak sources which failed validation
+      in:
+        - id: validate
+          source: validate
+        - id: msin
+          source: split_directions/msout_concat_weak
+        - id: validation_csv
+          source: validation_weak/validate_csv
+          pickValue: first_non_null
+      out:
+        - msout
+      run: ../steps/demote_selection.cwl
+      when: $(inputs.validate)
+
     # Unreliable calibrators
     - id: ddcal_int_unreliable
       label: Automatic direction-dependent calibration
       in:
         - id: msin
-          source: split_directions/msout_concat_unreliable
+          source:
+            - split_directions/msout_concat_unreliable
+            - demote_weak_to_unreliable/msout
+          pickValue: all_non_null
+          linkMerge: merge_flattened
         - id: dd_dutch_solutions
           source: multidir_merge_weak/multidir_h5
         - id: phasediff_score_csv

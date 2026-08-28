@@ -121,6 +121,7 @@ def parse_args():
                         default=2.3)
     parser.add_argument('--select_best_N', help='Select the top N best scoring calibrators. If 0, select all.', type=int, default=0)
     parser.add_argument('--suffix', help='suffix', default='_best')
+    parser.add_argument('--reclassify_from', help='suffix', default='')
     return parser.parse_args()
 
 
@@ -131,19 +132,31 @@ def main():
 
     args = parse_args()
 
-    # Get dataframe after filtering for sources within 0.1 degrees distance from each other
-    df = filter_too_nearest_neighbours(args.csv)
+    do_reclassify = bool(args.reclassify_from)
 
-    # Sort values
-    df = df.sort_values("spd_score", ascending=True)
-    if len(df) < args.select_best_N:
-        print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
-    if args.select_best_N > 0:
-        df = df.head(args.select_best_N)
+    df = pd.read_csv(args.csv)
+    
+    if not do_reclassify:
+        if args.select_best_N > 0:
+            df = df.head(args.select_best_N)
+        else:
+            # Get dataframe after filtering for sources within 0.1 degrees distance from each other
+            df = filter_too_nearest_neighbours(args.csv)
 
-
-    for source in df.set_index('source').iterrows():
+            # Sort values
+            df = df.sort_values("spd_score", ascending=True)
+            if len(df) < args.select_best_N:
+                print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
+    else:
+        print(f"Reclassifying invalidated sources from {args.reclassify_from} to {args.suffix}.")
+        df = df[~(df["accept_solutions"] & df["accept_image"])]
+    itercol = "source_id" if do_reclassify else "source"
+    for source in df.set_index(itercol).iterrows():
         name = source[0]
+        if do_reclassify:
+            ms_name = match_source_id(args.ms, name)
+            rename_folder(ms_name, ms_name.replace(args.reclassify_from, args.suffix))
+            continue
         score = source[1]['spd_score']
         if score <= args.strong_score:
             ms_name = match_source_id(args.ms, name)
