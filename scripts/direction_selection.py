@@ -160,6 +160,7 @@ def main():
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
     else:
+        df = filter_too_nearest_neighbours(args.csv)
         df = df[~(df["accept_solutions"] & df["accept_image"])]
         for source in df.set_index("source_id").iterrows():
             name = source[0]
