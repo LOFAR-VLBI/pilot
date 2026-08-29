@@ -6,6 +6,9 @@ doc: |
     Validation is based on phase noise statistics and image inspection using peak flux,
     RMS, and neural network image validation.
 
+requirements:
+  - class: ScatterFeatureRequirement
+
 inputs:
   - id: images
     type: File[]
@@ -44,13 +47,24 @@ steps:
     out:
        - validation_csv
     run: ../../steps/validate_solutions.cwl
+    scatter: solutions
+
+  - id: concat_validation_csvs
+    in:
+      - id: input_csvs
+        source: validate_solutions/validation_csv
+      - id: output_csv_name
+        default: "validation_solutions.csv"
+    out:
+      - id: concat_csv
+    run: ../../steps/concat_csv.cwl
 
   - id: final_validation
     in:
        - id: validation_images_csv
          source: validate_images/validation_csv
        - id: validation_solutions_csv
-         source: validate_solutions/validation_csv
+         source: concat_validation_csvs/concat_csv
        - id: solutions
          source: h5parm
        - id: images
