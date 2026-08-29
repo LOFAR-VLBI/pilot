@@ -58,7 +58,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         amplitude_smoothness = 10.0
 
     # Check number of components in VLASS model
-    with open( inputmodel, 'r' ) as f:
+    with open(inputmodel, 'r') as f:
         N_comp = max(len(f.readlines()) - 1, 1)
 
     configdict = {}
