@@ -28,14 +28,14 @@ inputs:
       inputBinding:
         prefix: "--best_score"
         position: 3
-    - id: demoted_from
+    - id: demote_from
       type: string
       default: "strong"
       doc: The current classification of the calibrators.
       inputBinding:
         prefix: "--reclassify_from"
         position: 4
-    - id: demoted_to
+    - id: demote_to
       type: string
       default: "weak"
       doc: The new classification of the calibrators.

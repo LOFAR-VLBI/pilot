@@ -162,6 +162,10 @@ steps:
         - id: validation_csv
           source: validation_strong/validate_csv
           pickValue: first_non_null
+        - id: demote_from
+          default: "strong"
+        - id: demote_to
+          default: "weak"
       out:
         - msout
       run: ../steps/demote_selection.cwl
@@ -235,6 +239,10 @@ steps:
         - id: validation_csv
           source: validation_weak/validate_csv
           pickValue: first_non_null
+        - id: demote_from
+          default: "weak"
+        - id: demote_to
+          default: "unreliable"
       out:
         - msout
       run: ../steps/demote_selection.cwl
