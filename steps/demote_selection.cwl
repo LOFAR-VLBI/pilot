@@ -51,7 +51,7 @@ outputs:
       type: Directory[]
       doc: Best directions
       outputBinding:
-        glob: "ILTJ*$(inputs.demoted_to).ms"
+        glob: "ILTJ*$(inputs.demote_to).ms"
 
 requirements:
   - class: InitialWorkDirRequirement
