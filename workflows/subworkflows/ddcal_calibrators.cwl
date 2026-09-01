@@ -8,9 +8,13 @@ inputs:
     type: Directory[]
     doc: Input MeasurementSets from individual calibrator directions.
 
-  - id: dd_dutch_solutions
+  - id: dd_precorrections
     type: File?
     doc: Multi-directional h5parm with Dutch DD solutions.
+
+  - id: freeze_dutch_solutions
+    type: boolean
+    doc: Leave the Dutch stations untouched during selfcal. Useful if pre-applying Dutch station corrections.
 
   - id: phasediff_score_csv
     type: File?
@@ -25,8 +29,10 @@ steps:
       in:
         - id: msin
           source: msin
-        - id: dd_dutch_solutions
-          source: dd_dutch_solutions
+        - id: dd_precorrections
+          source: dd_precorrections
+        - id: freeze_dutch_solutions
+          source: freeze_dutch_solutions
         - id: phasediff_score_csv
           source: phasediff_score_csv
         - id: model_cache
