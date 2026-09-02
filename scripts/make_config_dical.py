@@ -202,14 +202,15 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
         bandpass: bool
         phaseup: bool
     """
-    im_t = Table.read(imagecat)
 
     bandpass = False # Default option
     phaseup = True # Default option
 
     if not im_t:
-        return bandpass, phaseup
-    
+        return bandpass, phaseup, 0
+    else:
+        im_t = Table.read(imagecat)
+
     with ct.table(f"{ms}/FIELD", readonly=True, ack=False) as field_table:
         phase_dir = field_table.getcol('PHASE_DIR')[0, 0]  # shape: (n_fields, 1, 2)
         ra_rad, dec_rad = phase_dir
