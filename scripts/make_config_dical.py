@@ -61,6 +61,11 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     with open(inputmodel, 'r') as f:
         N_comp = max(len(f.readlines()) - 1, 1)
 
+    # This strategy follows:
+    # scalarphasediff to solve for differential Faraday rotation
+    # scalarphase with short solints and large smoothness (reduces degrees of freedom)
+    # scalarphase with large solints and short smoothness (reduces degrees of freedom)
+    # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
     configdict['imagename'] = filename
     configdict['imsize'] = 1024
@@ -94,6 +99,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     soltypecycle_fulljones = max(configdict['soltypecycles_list'][-1] + 1, 5)
 
     # Add Leakage calibration if requested
+    # If the peak intensity is less than 1 Jy/beam we perform complexgain + leakage to reduce the degrees of freedom
+    # If the peak intensity is larger than 1 Jy/beam we perform a direct fulljones calibration step, assuming we have enough S/N
     if calibrate_leakage:
         configdict['makeimage_fullpol'] = 'True'
         if peak_flux <= 1:
@@ -101,7 +108,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
             configdict['smoothnessconstraint_list'].extend([amplitude_smoothness, amplitude_smoothness])
             configdict['smoothnessreffrequency_list'].extend([0.0, 0.0])
-            configdict['antennaconstraint_list'].extend([None, None]) # Instead of alldutch
+            configdict['antennaconstraint_list'].extend([None, None])
             configdict['nchan_list'].extend([1, 1])
             configdict['soltype_list'].extend(['complexgain', 'leakage'])
             configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
@@ -111,7 +118,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['solint_list'].append(amplitude_solint)
             configdict['smoothnessconstraint_list'].append(amplitude_smoothness)
             configdict['smoothnessreffrequency_list'].append(0.0)
-            configdict['antennaconstraint_list'].append(None) # Instead of alldutch
+            configdict['antennaconstraint_list'].append(None)
             configdict['nchan_list'].append(1)
             configdict['soltype_list'].append('fulljones')
             configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
@@ -126,7 +133,6 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         configdict['smoothnessconstraint_list'].append(0)
         configdict['smoothnessreffrequency_list'].append(0)
         configdict['antennaconstraint_list'].append(None)
-        configdict['resetsols_list'].append(None)
 
     # average to smallest solution interval if that is larger than data resolution
     avgstep = int(np.ceil(max(phase_solint, deltime))) // int(deltime) # Converting to seconds
