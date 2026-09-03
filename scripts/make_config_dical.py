@@ -64,7 +64,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     # This strategy follows:
     # scalarphasediff to solve for differential Faraday rotation
     # scalarphase with short solints and large smoothness (reduces degrees of freedom)
-    # scalarphase with large solints and short smoothness (reduces degrees of freedom)
+    # scalarphase with long solints and small smoothness (reduces degrees of freedom)
     # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
     configdict['imagename'] = filename
