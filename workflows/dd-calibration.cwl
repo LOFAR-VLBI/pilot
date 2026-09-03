@@ -132,6 +132,7 @@ steps:
         - config_files
         - validation_csv
       run: ./subworkflows/ddcal_calibrators.cwl
+      when: $(inputs.msin != null && inputs.msin.length > 0)
 
     - id: multidir_merge_strong
       in:
@@ -192,6 +193,7 @@ steps:
         - config_files
         - validation_csv
       run: ./subworkflows/ddcal_calibrators.cwl
+      when: $(inputs.msin != null && inputs.msin.length > 0)
 
     - id: multidir_merge_weak
       in:
@@ -247,6 +249,7 @@ steps:
         - solution_inspection_images
         - config_files
       run: ./subworkflows/ddcal_calibrators.cwl
+      when: $(inputs.msin != null && inputs.msin.length > 0)
 
     - id: store_configs
       label: Store selfcal config files
