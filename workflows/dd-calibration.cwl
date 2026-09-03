@@ -120,41 +120,23 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: validate
+          source: validate
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
       out:
         - h5parms
         - selfcal_images
         - selfcal_inspection_images
         - solution_inspection_images
         - config_files
+        - validation_csv
       run: ./subworkflows/ddcal_calibrators.cwl
-
-    - id: validation_strong
-      in:
-        - id: images
-          source:
-            - ddcal_int_strong/selfcal_images
-        - id: h5parm
-          source: ddcal_int_strong/h5parms
-        - id: model_cache
-          source: model_cache
-        - id: validate
-          source: validate
-        - id: max_rejected_fraction
-          source: max_rejected_fraction
-      out:
-        - h5parm_selected
-        - images_selected
-        - validate_csv
-      when: $(inputs.validate)
-      run: ./subworkflows/ddcal_validation.cwl
 
     - id: multidir_merge_strong
       in:
         - id: h5parms
-          source:
-            - validation_strong/h5parm_selected
-            - ddcal_int_strong/h5parms
-          pickValue: first_non_null
+          source: ddcal_int_strong/h5parms
       out:
         - multidir_h5
       run: ../steps/multidir_merger.cwl
@@ -162,13 +144,12 @@ steps:
     - id: demote_strong_to_weak
       label: Identify strong sources which failed validation
       in:
-        - id: validate
-          source: validate
         - id: msin
           source: split_directions/msout_concat_strong
         - id: validation_csv
-          source: validation_strong/validate_csv
-          pickValue: first_non_null
+          source: ddcal_int_strong/validation_csv
+          # The step is conditional on this file being present, but cwl doesn't properly deduce this.
+          valueFrom: $(self)
         - id: demote_from
           default: "strong"
         - id: demote_to
@@ -176,7 +157,7 @@ steps:
       out:
         - msout
       run: ../steps/demote_selection.cwl
-      when: $(inputs.validate)
+      when: $(inputs.validation_csv != null)
 
     # Weak calibrators
     - id: ddcal_int_weak
@@ -199,41 +180,23 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: validate
+          source: validate
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
       out:
         - h5parms
         - selfcal_images
         - selfcal_inspection_images
         - solution_inspection_images
         - config_files
+        - validation_csv
       run: ./subworkflows/ddcal_calibrators.cwl
-
-    - id: validation_weak
-      in:
-        - id: images
-          source:
-            - ddcal_int_weak/selfcal_images
-        - id: h5parm
-          source: ddcal_int_weak/h5parms
-        - id: model_cache
-          source: model_cache
-        - id: validate
-          source: validate
-        - id: max_rejected_fraction
-          source: max_rejected_fraction
-      out:
-        - id: h5parm_selected
-        - id: images_selected
-        - id: validate_csv
-      when: $(inputs.validate)
-      run: ./subworkflows/ddcal_validation.cwl
 
     - id: multidir_merge_weak
       in:
         - id: h5parms
-          source:
-            - validation_strong/h5parm_selected
-            - validation_weak/h5parm_selected
-          pickValue: first_non_null
+          source: ddcal_int_weak/h5parms
       out:
         - id: multidir_h5
       run: ../steps/multidir_merger.cwl
@@ -241,13 +204,12 @@ steps:
     - id: demote_weak_to_unreliable
       label: Identify weak sources which failed validation
       in:
-        - id: validate
-          source: validate
         - id: msin
           source: split_directions/msout_concat_weak
         - id: validation_csv
-          source: validation_weak/validate_csv
-          pickValue: first_non_null
+          source: ddcal_int_weak/validation_csv
+          # The step is conditional on this file being present, but cwl doesn't properly deduce this.
+          valueFrom: $(self)
         - id: demote_from
           default: "weak"
         - id: demote_to
@@ -255,7 +217,7 @@ steps:
       out:
         - msout
       run: ../steps/demote_selection.cwl
-      when: $(inputs.validate)
+      when: $(inputs.validation_csv != null)
 
     # Unreliable calibrators
     - id: ddcal_int_unreliable
@@ -304,21 +266,20 @@ steps:
     - id: concat_validation_csvs
       label: Merge strong and weak validation
       in:
-        - id: validate
-          source: validate
         - id: input_csvs
           source:
-            - validation_strong/validate_csv
-            - validation_weak/validate_csv
+            - ddcal_int_strong/validation_csv
+            - ddcal_int_weak/validation_csv
           pickValue: all_non_null
           linkMerge: merge_flattened
+          valueFrom: $(self)
         - id: output_csv_name
           default: validation.csv
       out:
         - id: concat_csv
         - id: logfile
       run: ../steps/concat_csv.cwl
-      when: $(inputs.validate)
+      when: $(inputs.input_csvs.length > 0)
 
 outputs:
     - id: final_merged_h5
@@ -339,8 +300,6 @@ outputs:
     - id: FITS_images
       type: File[]
       outputSource:
-        - validation_strong/images_selected
-        - validation_weak/images_selected
         - ddcal_int_strong/selfcal_images
         - ddcal_int_weak/selfcal_images
         - ddcal_int_unreliable/selfcal_images

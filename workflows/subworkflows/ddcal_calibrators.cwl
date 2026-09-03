@@ -24,6 +24,18 @@ inputs:
     type: string?
     doc: Neural network cache directory.
 
+  - id: validate
+    type: boolean
+    default: true
+    doc: If set to true the pipeline will perform validation of the direction-dependent calibrator selection.
+
+  - id: max_rejected_fraction
+    type: float?
+    default: 0.3
+    doc: |
+       Maximum fraction of bad solutions when validating. Lower value is stricter.
+       Workflow crashes if fraction is exceeded.
+
 steps:
     - id: ddcal
       in:
@@ -62,6 +74,25 @@ steps:
         - flattenedarray
       run: ../../steps/flatten.cwl
 
+    - id: validation
+      in:
+        - id: images
+          source: flatten_images/flattenedarray
+        - id: h5parm
+          source: flatten_solutions/flattenedarray
+        - id: model_cache
+          source: model_cache
+        - id: validate
+          source: validate
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
+      out:
+        - h5parm_selected
+        - images_selected
+        - validate_csv
+      when: $(inputs.validate)
+      run: ./ddcal_validation.cwl
+
 requirements:
   - class: ScatterFeatureRequirement
   - class: SubworkflowFeatureRequirement
@@ -69,8 +100,17 @@ requirements:
 outputs:
   - id: h5parms
     type: File[]
-    outputSource: ddcal/merged_h5
+    outputSource:
+      - validation/h5parm_selected
+      - ddcal/merged_h5
+    pickValue: first_non_null
+    linkMerge: merge_nested
     doc: Array of h5parms where each h5parm corresponds to the full cumulative calibration solutions for that calibrator
+
+  - id: validation_csv
+    type: File?
+    outputSource: validation/validate_csv
+    doc: Catalogue with validation results for all sources that were calibrated.
 
   - id: selfcal_images
     type: File[]
