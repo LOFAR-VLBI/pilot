@@ -155,6 +155,19 @@ def write_config(filename: str, configdict: dict[str, object]) -> str:
         Path to the generated configuration file.
     """
     def fmt(value: object, in_list: bool = False) -> str:
+        """
+        Format a single configuration value as a string literal.
+
+        Args:
+            value: The value to format. Supported types are str, int,
+                float, None, or a Sequence of these (for list values).
+            in_list: Whether this value is being formatted as an element
+                inside a list.
+
+        Returns:
+            The string representation of value, ready to be written to
+            the config file.
+        """
         match value:
             case str():
                 return f"'{value}'" if in_list else f'"{value}"'
