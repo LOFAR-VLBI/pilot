@@ -46,7 +46,7 @@ inputs:
     doc: Image to generate an initial delay calibrator model from.
 
   - id: calibrate_leakage
-    type: boolean?
+    type: boolean
     default: false
     doc: Add leakage calibration to the DI configuration file.
 
