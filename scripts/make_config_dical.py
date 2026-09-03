@@ -46,7 +46,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         # Get time array
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
-    phase_solint = int(np.ceil(max(best_solint * 60, deltime)))
+    phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 128)))
     if peak_flux > 1:
         amplitude_solint = '20min'
         amplitude_smoothness = 5.0
@@ -69,9 +69,9 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['maskthreshold'] = [7.0]
     configdict['soltypecycles_list'] = [0, 0, min(4 + N_comp, 8)]
     configdict['soltype_list'] = ['scalarphasediff','scalarphase','scalarcomplexgain']
-    configdict['solint_list'] = [str(8*phase_solint//60)+'min', str(phase_solint)+'s', amplitude_solint]
+    configdict['solint_list'] = [str(min(8*phase_solint//60, 16))+'min', str(phase_solint)+'s', amplitude_solint]
     configdict['nchan_list'] = [1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [max(10*smoothness, 5.0), smoothness, amplitude_smoothness]
+    configdict['smoothnessconstraint_list'] = [min(max(10*smoothness, 5.0), 40.0), smoothness, amplitude_smoothness]
     configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 0.0]
     configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
@@ -81,8 +81,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['channelsout'] = 12
     configdict['fitspectralpol'] = 5
     configdict['update_multiscale'] = 'True'
-    configdict['antenna_averaging_factors_list'] = [None,'core:5,remote:2,international:1','alldutch:2,international:1']
-    configdict['antenna_smoothness_factors_list'] = [None,'core:5,remote:2,international:1','alldutch:2,international:1']
+    configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1','alldutch:2,international:1']
+    configdict['antenna_smoothness_factors_list'] = [None,'core:4,remote:2,international:1','alldutch:2,international:1']
     configdict['stop'] = min(12 + N_comp, 20)
 
     if phaseup:
@@ -311,7 +311,7 @@ def get_smoothing(h5: str) -> float:
 
     freq_per_wrap = total_bw / wrap_count
     smoothness = round(freq_per_wrap / 3., 1) # Sampling 3 times per frequency wrap
-    return smoothness
+    return min(smoothness, 40.0)
 
 
 def parse_args():
