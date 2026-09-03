@@ -49,7 +49,8 @@ inputs:
         separate: true
 
     - id: calibrate_leakage
-      type: boolean?
+      type: boolean
+      default: false
       doc: Add leakage calibration to the configuration file.
       inputBinding:
         prefix: "--calibrate-leakage"

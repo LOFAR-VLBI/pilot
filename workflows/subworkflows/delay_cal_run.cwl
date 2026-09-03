@@ -19,7 +19,7 @@ inputs:
     type: File?
     doc: Input skymodel of delay calibrator
   - id: calibrate_leakage
-    type: boolean?
+    type: boolean
     default: false
     doc: Add leakage calibration to the DI configuration file.
   - id: number_cores
