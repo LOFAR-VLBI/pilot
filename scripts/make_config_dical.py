@@ -46,16 +46,16 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         # Get time array
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
-    phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 128)))
+    phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 96)))
     if peak_flux > 1:
         amplitude_solint = '20min'
-        amplitude_smoothness = 5.0
+        amplitude_smoothness = smoothness * 5
     elif peak_flux > 0.5:
         amplitude_solint = '30min'
-        amplitude_smoothness = 7.5
+        amplitude_smoothness = round(smoothness * 7.5, 1)
     else:
         amplitude_solint = '40min'
-        amplitude_smoothness = 10.0
+        amplitude_smoothness = smoothness * 15
 
     # Check number of components in VLASS model
     with open(inputmodel, 'r') as f:
@@ -67,13 +67,13 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['pixelscale'] = 0.075
     configdict['uvmin'] = 40000
     configdict['maskthreshold'] = [7.0]
-    configdict['soltypecycles_list'] = [0, 0, min(4 + N_comp, 8)]
-    configdict['soltype_list'] = ['scalarphasediff','scalarphase','scalarcomplexgain']
-    configdict['solint_list'] = [str(min(8*phase_solint//60, 16))+'min', str(phase_solint)+'s', amplitude_solint]
-    configdict['nchan_list'] = [1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [min(max(10*smoothness, 5.0), 40.0), smoothness, amplitude_smoothness]
-    configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 0.0]
-    configdict['antennaconstraint_list'] = ['alldutch', None, None]
+    configdict['soltypecycles_list'] = [0, 0, 0, min(4 + N_comp, 8)]
+    configdict['soltype_list'] = ['scalarphasediff','scalarphase', 'scalarphase', 'scalarcomplexgain']
+    configdict['solint_list'] = [str(min(8*phase_solint//60, 16))+'min', str(phase_solint)+'s', str(int(40*phase_solint))+'s', amplitude_solint]
+    configdict['nchan_list'] = [1, 1, 1, 1]
+    configdict['smoothnessconstraint_list'] = [min(max(10*smoothness, 5.0), 40.0), 40.0, smoothness, amplitude_smoothness]
+    configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 120.0, 0.0]
+    configdict['antennaconstraint_list'] = ['alldutch', None, None, None]
     configdict['docircular'] = 'True'
     configdict['forwidefield'] = 'True'
     configdict['paralleldeconvolution'] = 1024
@@ -81,8 +81,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['channelsout'] = 12
     configdict['fitspectralpol'] = 5
     configdict['update_multiscale'] = 'True'
-    configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1','alldutch:2,international:1']
-    configdict['antenna_smoothness_factors_list'] = [None,'core:4,remote:2,international:1','alldutch:2,international:1']
+    configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'core:4,remote:2,international:1', 'alldutch:2,international:1']
+    configdict['antenna_smoothness_factors_list'] = [None, None, 'core:4,remote:2,international:1','alldutch:2,international:1']
     configdict['stop'] = min(12 + N_comp, 20)
 
     if phaseup:
