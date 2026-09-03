@@ -158,15 +158,53 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
         smoothness_phase = 10.0
         smoothness_complex = 20.0
         soltypecycles_list = f"[0,0,{cg_cycle_1},{cg_cycle_2}]"
-        soltype_list = (
-            "['scalarphase','scalarphase','scalarcomplexgain','scalarcomplexgain']"
-        )
-        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s','{int(solint_complexgain_1)}s','{int(solint_complexgain_2)}s']"
-        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_phase*1.25},{smoothness_complex},{smoothness_complex+5.0}]"
-        smoothnessreffrequency_list = "[120.0,120.0,0.0,0.0]"
-        smoothnessspectralexponent_list = "[-1.0,-1.0,-1.0,-1.0]"
+        soltype_list = "['scalarphase','scalarcomplexgain']"
+        solint_list = f"['{int(solint_scalarphase_1)}s','{int(solint_complexgain_1)}s']"
+        smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_complex}]"
+        smoothnessreffrequency_list = "[120.0,0.0]"
+        smoothnessspectralexponent_list = "[-1.0,-1.0]"
         if with_dutch_sols:
             resetsols_list = "['alldutchandclosegerman','alldutch','alldutchandclosegerman','alldutch']"
+            if cg_cycle_1 < 999 and cg_cycle_2 < 999:
+                soltypecycles_list = f"[0,{cg_cycle_1}]"
+                resetsols_list = "['alldutch','alldutch']"
+                soltypecycles_list = "[0,{cg_cycle_1}]"
+                soltype_list = "['scalarphase','scalarcomplegain']"
+                solint_list = (
+                    f"['{int(solint_scalarphase_1)}s,'{int(solint_complexgain_1)}s']"
+                )
+                smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_complex}]"
+                antenna_averaging_factors_list = f"[\
+                    'distantinternational:1,alldutchandclosegerman:{ceil(solint_scalarphase_2/solint_scalarphase_1)}'\
+                    'distantinternational:1,alldutchandclosegerman:{ceil(solint_complexgain_2/solint_complexgain_1)}'\
+                    ]"
+                antenna_smoothness_factors_list = f"[\
+                    'distantinternational:1,alldutchandclosegerman:1.25',\
+                    'distantinternational:1,alldutchandclosegerman:{ceil((smoothness_complex+5.0)/smoothness_complex)}\
+                    ]"
+            elif cg_cycle_1 < 999:
+                soltypecycles_list = f"[0,{cg_cycle_1}]"
+                resetsols_list = "['alldutch','alldutch']"
+                soltypecycles_list = "[0,{cg_cycle_1}]"
+                soltype_list = "['scalarphase','scalarcomplegain']"
+                solint_list = (
+                    f"['{int(solint_scalarphase_1)}s,'{int(solint_complexgain_1)}s']"
+                )
+                smoothnessconstraint_list = f"[{smoothness_phase},{smoothness_complex}]"
+                antenna_averaging_factors_list = f"['distantinternational:1,alldutchandclosegerman:{ceil(solint_scalarphase_2/solint_scalarphase_1)}',None]"
+                antenna_smoothness_factors_list = (
+                    "['distantinternational:1,alldutchandclosegerman:1.25',None]"
+                )
+            else:
+                resetsols_list = "['alldutch']"
+                soltypecycles_list = "[0]"
+                soltype_list = "['scalarphase']"
+                solint_list = f"['{int(solint_scalarphase_1)}s']"
+                smoothnessconstraint_list = f"[{smoothness_phase}]"
+                antenna_averaging_factors_list = f"['distantinternational:1,alldutchandclosegerman:{ceil(solint_scalarphase_2/solint_scalarphase_1)}']"
+                antenna_smoothness_factors_list = (
+                    "['distantinternational:1,alldutchandclosegerman:1.25']"
+                )
         else:
             if cg_cycle_1 < 999 and cg_cycle_2 < 999:
                 soltypecycles_list = f"[0,{cg_cycle_1},{cg_cycle_2}]"
@@ -199,12 +237,8 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
             else:
                 soltypecycles_list = "[0]"
                 soltype_list = "['scalarphase']"
-                solint_list = (
-                    f"['{int(solint_scalarphase_1)}s','{int(solint_scalarphase_2)}s']"
-                )
-                smoothnessconstraint_list = (
-                    f"[{smoothness_phase},{smoothness_phase*1.25}]"
-                )
+                solint_list = f"['{int(solint_scalarphase_1)}s']"
+                smoothnessconstraint_list = f"[{smoothness_phase}]"
                 antenna_averaging_factors_list = f"['international:1,alldutch:{ceil(solint_scalarphase_2/solint_scalarphase_1)}']"
                 antenna_smoothness_factors_list = "['international:1,alldutch:1.25']"
 
