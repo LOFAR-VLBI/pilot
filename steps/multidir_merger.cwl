@@ -7,7 +7,7 @@ baseCommand: h5_merger
 
 inputs:
   - id: h5parms
-    type: File[]
+    type: File[]?
     doc: Input h5parms
     inputBinding:
       prefix: "-in"

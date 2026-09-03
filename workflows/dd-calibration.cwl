@@ -141,6 +141,7 @@ steps:
       out:
         - multidir_h5
       run: ../steps/multidir_merger.cwl
+      when: $(inputs.h5parms != null && inputs.h5parms.length > 0)
 
     - id: demote_strong_to_weak
       label: Identify strong sources which failed validation
@@ -149,8 +150,6 @@ steps:
           source: split_directions/msout_concat_strong
         - id: validation_csv
           source: ddcal_int_strong/validation_csv
-          # The step is conditional on this file being present, but cwl doesn't properly deduce this.
-          valueFrom: $(self)
         - id: demote_from
           default: "strong"
         - id: demote_to
@@ -202,6 +201,7 @@ steps:
       out:
         - id: multidir_h5
       run: ../steps/multidir_merger.cwl
+      when: $(inputs.h5parms != null && inputs.h5parms.length > 0)
 
     - id: demote_weak_to_unreliable
       label: Identify weak sources which failed validation
@@ -210,8 +210,6 @@ steps:
           source: split_directions/msout_concat_weak
         - id: validation_csv
           source: ddcal_int_weak/validation_csv
-          # The step is conditional on this file being present, but cwl doesn't properly deduce this.
-          valueFrom: $(self)
         - id: demote_from
           default: "weak"
         - id: demote_to
@@ -249,7 +247,6 @@ steps:
         - solution_inspection_images
         - config_files
       run: ./subworkflows/ddcal_calibrators.cwl
-      when: $(inputs.msin != null && inputs.msin.length > 0)
 
     - id: store_configs
       label: Store selfcal config files
@@ -260,6 +257,7 @@ steps:
             - ddcal_int_weak/config_files
             - ddcal_int_unreliable/config_files
           linkMerge: merge_flattened
+          pickValue: all_non_null
         - id: sub_directory_name
           default: selfcal_configs
       out:
@@ -286,7 +284,7 @@ steps:
 
 outputs:
     - id: final_merged_h5
-      type: File
+      type: File?
       outputSource: multidir_merge_weak/multidir_h5
       doc: Final multi-directional h5parm containing solutions in the directions of strong and weak 
 
@@ -311,7 +309,7 @@ outputs:
       doc: Best self-calibration image in FITS format
 
     - id: calibration_solutions
-      type: File[]
+      type: File[]?
       outputSource:
         - ddcal_int_strong/h5parms
         - ddcal_int_weak/h5parms
@@ -324,6 +322,7 @@ outputs:
       outputSource:
         - ddcal_int_strong/solution_inspection_images
         - ddcal_int_weak/solution_inspection_images
+        - ddcal_int_unreliable/solution_inspection_images
       pickValue: all_non_null
       linkMerge: merge_flattened
       doc: LoSoTo solution inspection images

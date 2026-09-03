@@ -16,7 +16,7 @@ inputs:
         position: 1
         separate: true
     - id: validation_csv
-      type: File
+      type: File?
       doc: CSV with validation results
       inputBinding:
         prefix: "--csv"
