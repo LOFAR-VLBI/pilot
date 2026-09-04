@@ -66,7 +66,7 @@ steps:
         - flattenedarray
       run: ../../steps/flatten.cwl
 
-    - id: flatten_solutions
+    - id: flatten_solution_plots
       in:
         - id: nestedarray
           source: ddcal/solution_inspection_images
@@ -79,7 +79,7 @@ steps:
         - id: images
           source: flatten_images/flattenedarray
         - id: h5parm
-          source: flatten_solutions/flattenedarray
+          source: ddcal/merged_h5
         - id: model_cache
           source: model_cache
         - id: validate
@@ -124,7 +124,7 @@ outputs:
 
   - id: solution_inspection_images
     type: Directory[]
-    outputSource: flatten_solutions/flattenedarray
+    outputSource: flatten_solution_plots/flattenedarray
     doc: LoSoTo solution inspection images
 
   - id: config_files
