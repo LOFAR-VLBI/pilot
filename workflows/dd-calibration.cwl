@@ -248,6 +248,8 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: validate
+          default: false
       out:
         - h5parms
         - selfcal_images
