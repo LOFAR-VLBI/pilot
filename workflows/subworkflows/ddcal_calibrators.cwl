@@ -77,7 +77,7 @@ steps:
     - id: validation
       in:
         - id: images
-          source: flatten_images/flattenedarray
+          source: ddcal/fits_images
         - id: h5parm
           source: ddcal/merged_h5
         - id: model_cache
