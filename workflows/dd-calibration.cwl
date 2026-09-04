@@ -207,7 +207,11 @@ steps:
       label: Identify weak sources which failed validation
       in:
         - id: msin
-          source: split_directions/msout_concat_weak
+          source:
+            - split_directions/msout_concat_weak
+            - demote_strong_to_weak/msout
+          linkMerge: merge_flattened
+          pickValue: all_non_null
         - id: validation_csv
           source: ddcal_int_weak/validation_csv
         - id: demote_from
