@@ -183,7 +183,7 @@ steps:
         - id: validate
           source: validate
         - id: max_rejected_fraction
-          source: max_rejected_fraction
+          default: 1.0
       out:
         - h5parms
         - selfcal_images
