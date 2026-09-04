@@ -197,7 +197,11 @@ steps:
     - id: multidir_merge_weak
       in:
         - id: h5parms
-          source: ddcal_int_weak/h5parms
+          source:
+            - ddcal_int_weak/h5parms
+            - multidir_merge_strong/multidir_h5
+          linkMerge: merge_flattened
+          pickValue: all_non_null
       out:
         - id: multidir_h5
       run: ../steps/multidir_merger.cwl
