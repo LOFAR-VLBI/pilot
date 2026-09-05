@@ -8,9 +8,13 @@ inputs:
     type: Directory
     doc: Input MeasurementSet from calibrator source.
 
-  - id: dd_dutch_solutions
+  - id: dd_precorrections
     type: File?
-    doc: Provide already obtained direction-dependent h5parm solutions for the Dutch LOFAR array to pre-apply before international LOFAR calibration.
+    doc: Multi-directional h5parm with Dutch DD solutions.
+
+  - id: freeze_dutch_solutions
+    type: boolean
+    doc: Leave the Dutch stations untouched during selfcal. Useful if pre-applying Dutch station corrections.
 
   - id: phasediff_score_csv
     type: File?
@@ -24,7 +28,7 @@ steps:
     - id: find_closest_h5
       in:
         - id: h5parm
-          source: dd_dutch_solutions
+          source: dd_precorrections
         - id: ms
           source: msin
       out:
@@ -62,9 +66,8 @@ steps:
           source: phasediff_score_csv
         - id: ms
           source: msin
-        - id: dd_dutch_solutions
-          source: dd_dutch_solutions
-          valueFrom: $(self != null)
+        - id: reset_dutch_solutions
+          source: freeze_dutch_solutions
       out:
         - dd_config
       run: ../../steps/make_dd_config.cwl

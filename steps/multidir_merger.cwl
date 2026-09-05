@@ -7,13 +7,20 @@ baseCommand: h5_merger
 
 inputs:
   - id: h5parms
-    type: File[]
+    type: File[]?
     doc: Input h5parms
     inputBinding:
       prefix: "-in"
       position: 1
       itemSeparator: " "
       separate: true
+  - id: no_propagate_weights
+    type: boolean
+    default: true
+    doc: Propagate the weights of h5parms.
+    inputBinding:
+      prefix: "--no_weight_prop"
+      position: 1
 
 outputs:
     - id: multidir_h5

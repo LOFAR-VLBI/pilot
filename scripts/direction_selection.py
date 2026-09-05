@@ -110,11 +110,18 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--csv', help='CSV with names and phasediff scores', default=None)
     parser.add_argument('--ms', nargs="+", help='Input MS', default=None)
+    parser.add_argument('--strong_score', type=float,
+                        help='Phasediff score threshold below which calibrators are considered strong.',
+                        default=2.0)
+    parser.add_argument('--weak_score', type=float,
+                        help='Lower limit for strong < score < weak between which which calibrators are considered strong.',
+                        default=2.6)
     parser.add_argument('--best_score', type=float,
                         help='Optimal selection score (See Section 3.3.1 https://arxiv.org/pdf/2407.13247)',
                         default=2.3)
     parser.add_argument('--select_best_N', help='Select the top N best scoring calibrators. If 0, select all.', type=int, default=0)
     parser.add_argument('--suffix', help='suffix', default='_best')
+    parser.add_argument('--reclassify_from', help='suffix', default='')
     return parser.parse_args()
 
 
@@ -125,26 +132,40 @@ def main():
 
     args = parse_args()
 
-    # Get dataframe after filtering for sources within 0.1 degrees distance from each other
-    df = filter_too_nearest_neighbours(args.csv)
+    do_reclassify = bool(args.reclassify_from)
 
-    # Sort values
-    df = df.sort_values("spd_score", ascending=True)
-    if len(df) < args.select_best_N:
-        print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
-    if args.select_best_N > 0:
-        df = df.head(args.select_best_N)
+    df = pd.read_csv(args.csv)
+    
+    if not do_reclassify:
+        if args.select_best_N > 0:
+            df = df.head(args.select_best_N)
+        else:
+            # Get dataframe after filtering for sources within 0.1 degrees distance from each other
+            df = filter_too_nearest_neighbours(args.csv)
 
-
-    for source in df.set_index('source').iterrows():
-        name = source[0]
-        score = source[1]['spd_score']
-        if score < args.best_score:
+            # Sort values
+            df = df.sort_values("spd_score", ascending=True)
+            if len(df) < args.select_best_N:
+                print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
+        for source in df.set_index('source').iterrows():
+            name = source[0]
+            score = source[1]['spd_score']
+            if score <= args.strong_score:
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')
+            elif (score > args.strong_score) and (score <= args.weak_score):
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_weak.ms')
+            elif score > args.weak_score:
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
+    else:
+        df = df[~(df["accept_solutions"] & df["accept_image"])]
+        for source in df.set_index("source_id").iterrows():
+            name = source[0]
+            print(f"Reclassifying {name} from {args.reclassify_from} to {args.suffix}.")
             ms_name = match_source_id(args.ms, name)
-
-            # Rename folder to return best directions in CWL workflow
-            rename_folder(ms_name, ms_name.split('/')[-1]+args.suffix+'.ms')
-
+            rename_folder(ms_name, ms_name.replace(args.reclassify_from, args.suffix))
 
 if __name__ == '__main__':
     main()
