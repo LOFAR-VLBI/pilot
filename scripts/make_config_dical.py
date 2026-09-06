@@ -47,13 +47,13 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
     phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 96)))
-    if peak_flux > 2:
+    if peak_flux > 1:
         amplitude_solint = '15min'
-    elif peak_flux > 1:
-        amplitude_solint = '20min'
     elif peak_flux > 0.5:
+        amplitude_solint = '20min'
+    elif peak_flux > 0.25:
         amplitude_solint = '30min'
-    elif peak_flux > 0.2:
+    elif peak_flux > 0.1:
         amplitude_solint = '40min'
     else:
         amplitude_solint = '1h'
