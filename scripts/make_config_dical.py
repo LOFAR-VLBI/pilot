@@ -17,7 +17,7 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str):
+def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
     """
     Make configuration file for facetselfcal
 
@@ -27,60 +27,107 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
         inputmodel: Input skymodel to be added to configuration file
         ms: MeasurementSet name
+        calibrate_leakage: Perform leakage calibration
     """
+
     # Get the source name
     filename = parse_source_from_h5(os.path.basename(ms))
 
-    # Set defaults
+    # Decide if a bandpass correction is needed
+    if imagecat is not None:
+        bandpass, phaseup, peak_flux = process_catalog(imagecat, ms)
+    else:
+        bandpass = False
+        phaseup = True
+        peak_flux = 0
+
+    # Set solints and smoothness constraints
+    with ct.table(ms, readonly=True, ack=False) as t:
+        # Get time array
+        time = np.unique(t.getcol('TIME'))
+    deltime = np.abs(time[1] - time[0])
+    phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 96)))
+    if peak_flux > 1:
+        amplitude_solint = '15min'
+    elif peak_flux > 0.5:
+        amplitude_solint = '20min'
+    elif peak_flux > 0.25:
+        amplitude_solint = '30min'
+    elif peak_flux > 0.1:
+        amplitude_solint = '40min'
+    else:
+        amplitude_solint = '1h'
+    amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0) if peak_flux > 0 else 40.0
+    scalarphasediff_smoothness = min(max(round(10*smoothness, 1), 10.0), 40.0)
+
+    # Check number of components in VLASS model
+    with open(inputmodel, 'r') as f:
+        N_comp = max(len(f.readlines()) - 1, 1)
+
+    # This strategy follows:
+    # scalarphasediff to solve for differential Faraday rotation
+    # scalarphase with short solints and large smoothness (reduces degrees of freedom)
+    # scalarphase with long solints and small smoothness (reduces degrees of freedom)
+    # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
     configdict['imagename'] = filename
-    configdict['imsize'] = 1600
+    configdict['imsize'] = 1024
     configdict['pixelscale'] = 0.075
-    configdict['robust'] = -0.5
     configdict['uvmin'] = 40000
     configdict['maskthreshold'] = [7.0]
-    configdict['soltype_list'] = ['scalarphasediff','scalarphase','scalarphase','scalarcomplexgain']
-    configdict['soltypecycles_list'] = [0, 0, 0, 2]
-    configdict['solint_list'] = [4, 1, 4, "1h"]
-    configdict['nchan_list'] = [1, 1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [40.0 , 2.0, 40.0, 40.0]
-    configdict['smoothnessreffrequency_list'] = [120.0 , 120.0, 120.0, 0.0]
-    configdict['antennaconstraint_list'] = ['alldutch', None, None, None]
-    configdict['resetsols_list'] = [None, 'alldutch', None, None]
+    configdict['soltypecycles_list'] = [0, 0, min(3 + N_comp, 8)]
+    configdict['soltype_list'] = ['scalarphasediff', 'scalarphase', 'scalarcomplexgain']
+    configdict['solint_list'] = [str(min(8*phase_solint//60, 16))+'min', str(phase_solint)+'s', amplitude_solint]
+    configdict['nchan_list'] = [1, 1, 1]
+    configdict['smoothnessconstraint_list'] = [scalarphasediff_smoothness, smoothness, amplitude_smoothness]
+    configdict['smoothnessreffrequency_list'] = [120.0, 120.0, 0.0]
+    configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
     configdict['forwidefield'] = 'True'
-    configdict['stop'] = 10
-    configdict['phaseupstations'] = "'core'"
     configdict['paralleldeconvolution'] = 1024
     configdict['parallelgridding'] = 6
     configdict['channelsout'] = 12
     configdict['fitspectralpol'] = 5
     configdict['update_multiscale'] = 'True'
+    configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'alldutch:2,international:1']
+    configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
+    configdict['stop'] = min(12 + N_comp + int(peak_flux*5), 20)
 
+    if phaseup:
+        configdict['phaseupstations'] = "core"
+        configdict['robust'] = -0.4
+    else:
+        configdict['robust'] = -1.4
 
-    # Check number of components in VLASS model
-    with open( inputmodel, 'r' ) as f:
-        lines = f.readlines()
-    if len(lines) > 3:
-        # there is more than one component (after the two header lines)
-        # start scalarcomplex gain at cycle 7 and then add on another 5 cycles
-        configdict['soltypecycles_list'] = [0, 0, 0, 7]
-        configdict['stop'] = 15
+    soltypecycle_fulljones = max(configdict['soltypecycles_list'][-1] + 1, 5)
 
-    # Get time array
-    with ct.table(ms, readonly=True, ack=False) as t:
-        time = np.unique(t.getcol('TIME'))
-    deltime = np.abs(time[1] - time[0])
+    # Add Leakage calibration if requested
+    # If the peak intensity is less than 1 Jy/beam we perform complexgain + leakage to reduce the degrees of freedom
+    # If the peak intensity is larger than 1 Jy/beam we perform a direct fulljones calibration step, assuming we have enough S/N
+    if calibrate_leakage:
+        configdict['makeimage_fullpol'] = 'True'
+        if peak_flux <= 1:
+            configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
+            configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
+            configdict['smoothnessconstraint_list'].extend([amplitude_smoothness, amplitude_smoothness])
+            configdict['smoothnessreffrequency_list'].extend([0.0, 0.0])
+            configdict['antennaconstraint_list'].extend([None, None])
+            configdict['nchan_list'].extend([1, 1])
+            configdict['soltype_list'].extend(['complexgain', 'leakage'])
+            configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
+            configdict['antenna_smoothness_factors_list'].extend(['alldutch:2,international:1', 'alldutch:2,international:1'])
+        elif calibrate_leakage:
+            configdict['soltypecycles_list'].append(soltypecycle_fulljones)
+            configdict['solint_list'].append(amplitude_solint)
+            configdict['smoothnessconstraint_list'].append(amplitude_smoothness)
+            configdict['smoothnessreffrequency_list'].append(0.0)
+            configdict['antennaconstraint_list'].append(None)
+            configdict['nchan_list'].append(1)
+            configdict['soltype_list'].append('fulljones')
+            configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
+            configdict['antenna_smoothness_factors_list'].append('alldutch:2,international:1')
 
-    # Decide if a bandpass correction is needed
-    if imagecat is not None:
-        bandpass, phaseup = process_catalog(imagecat, ms)
-    else: 
-        bandpass = False
-        phaseup = True
-
-    print(f"bandpass correction: {bandpass} ---- phaseup: {phaseup}")
-
+    # Add bandpass if requested
     if bandpass:
         configdict['soltype_list'].append('scalarcomplexgain')
         configdict['solint_list'].append("9h")
@@ -89,35 +136,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         configdict['smoothnessconstraint_list'].append(0)
         configdict['smoothnessreffrequency_list'].append(0)
         configdict['antennaconstraint_list'].append(None)
-        configdict['resetsols_list'].append(None)
 
-    if not phaseup:
-        del configdict['phaseupstations']
-        reset_idx = [ i for i, val in enumerate(configdict['resetsols_list']) if val == 'alldutch' ][0] + 1
-        ## insert another scalarphase
-        configdict['soltype_list'].insert(reset_idx,'scalarphase')
-        configdict['solint_list'].insert(reset_idx,1)
-        configdict['soltypecycles_list'].insert(reset_idx,0)
-        configdict['nchan_list'].insert(reset_idx,1)
-        configdict['smoothnessconstraint_list'].insert(reset_idx,40.0)
-        configdict['smoothnessreffrequency_list'].insert(reset_idx,120.0)
-        configdict['antennaconstraint_list'].insert(reset_idx,None)
-        configdict['resetsols_list'].insert(reset_idx,'core')
-        configdict['robust'] = -1.5
-
-    ## Adjust solution intervals based on best_solint
-    best_solint = best_solint * 60 # convert to seconds
-    for i in range(len(configdict['soltype_list'])):
-        if configdict['soltype_list'] == 'scalarphase':
-            configdict['solint_list'][i] = str(int(np.ceil(max(best_solint,deltime))))+'s'
-            
-
-    ## Update smoothness constraints based on ionospheric conditions
-    configdict = update_smoothness(smoothness, configdict)
-
-    ## average to smallest solution interval if that is larger than data resolution
-    phase_inds = [i for i, val in enumerate(configdict['soltype_list']) if val == 'scalarphase'] # Getting indexes for scalarphase
-    phase_solint = configdict['solint_list'][phase_inds[0]]
+    # average to smallest solution interval if that is larger than data resolution
     avgstep = int(np.ceil(max(phase_solint, deltime))) // int(deltime) # Converting to seconds
     if avgstep > 1:
         configdict['avgtimestep'] = avgstep
@@ -131,38 +151,41 @@ def write_config(filename: str, configdict: dict[str, object]) -> str:
     Write configuration parameters to a text file.
 
     Args:
-        filename : Base name of the output configuration file.
-        configdict : Dictionary containing configuration parameters to write.
+        filename: Base name of the output configuration file.
+        configdict: Dictionary containing configuration parameters to write.
 
-    Returns
+    Returns:
         Path to the generated configuration file.
     """
-    ## write out the config file
-    with open(filename + ".config.txt", "w") as f:
-        keys = configdict.keys()
-        for key in keys:
-            ## string, int, float, or array
-            value = configdict[key]
-            match value:
-              case str():
-                f.write(f'{key} = "{value}"\n')
-              case int() | float():
-                f.write(f'{key} = {value}\n')
-              case Sequence():
-                ss = []
-                for aa in value:
-                    match aa:
-                      case None | int() | float():
-                        # The casting to string is needed for the case of None
-                        ss.append(str(aa))
-                      case str():
-                        ss.append("'" + aa + "'")
-                      case _:
-                        raise ValueError(f"Element of unexpected type found in {value}")
-                f.write(f'{key} = [{','.join(ss)}]\n')
-              case _:
-                raise ValueError(f"Value of unexpected type found in {configdict}")
-    return filename + ".config.txt"
+    def fmt(value: object, in_list: bool = False) -> str:
+        """
+        Format a single configuration value as a string literal.
+
+        Args:
+            value: The value to format. Supported types are str, int,
+                float, None, or a Sequence of these (for list values).
+            in_list: Whether this value is being formatted as an element
+                inside a list.
+
+        Returns:
+            The string representation of value, ready to be written to
+            the config file.
+        """
+        match value:
+            case str():
+                return f"'{value}'" if in_list else f'"{value}"'
+            case int() | float() | None:
+                return str(value)
+            case Sequence() if not in_list:
+                return "[" + ",".join(fmt(v, in_list=True) for v in value) + "]"
+            case _:
+                raise ValueError(f"Value of unexpected type found: {value!r}")
+
+    outpath = f"{filename}.config.txt"
+    with open(outpath, "w") as f:
+        for key, value in configdict.items():
+            f.write(f"{key} = {fmt(value)}\n")
+    return outpath
 
 
 def get_best_solint(ms: str, phasediff_output: str) -> float:
@@ -187,7 +210,7 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
 
-def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
+def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
     """
     Search through image_catalogue.csv for two purposes.
     1. Is calibrator bright enough for final bandpass solve
@@ -200,15 +223,17 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
     Returns:
         bandpass: bool
         phaseup: bool
+        peak_flux: float (in Janksy)
     """
+
     im_t = Table.read(imagecat)
 
     bandpass = False # Default option
     phaseup = True # Default option
 
     if not im_t:
-        return bandpass, phaseup
-    
+        return bandpass, phaseup, 0
+
     with ct.table(f"{ms}/FIELD", readonly=True, ack=False) as field_table:
         phase_dir = field_table.getcol('PHASE_DIR')[0, 0]  # shape: (n_fields, 1, 2)
         ra_rad, dec_rad = phase_dir
@@ -232,37 +257,35 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
     with ct.table(ms, readonly=True, ack=False) as t:
         time = np.unique(t.getcol('TIME'))
         full_time = np.abs(time[-1] - time[0])
-
    
     im_t = im_t[1:]
 
     # 8 hours requires 0.5Jy
+    total_flux = delay_cal["Total_flux"]
     scaling = full_time/(8 * 60 * 60)
     min_flux = 500/np.sqrt(scaling) # This is minimum flux for bandpass solve
-    if delay_cal["Total_flux"] > min_flux:
+    if total_flux > min_flux:
         bandpass = True
 
-
-    # Some sort of logic for flux weighted - we are imaging a 2arcmin box
+    # Some sort of logic for flux weighted
     # Anything 2-10 arcmins and bright could be a problem 
 
     #Filter catalogue to only those bright enough to be a problem
-    im_t = im_t[im_t['Total_flux'] > delay_cal['Total_flux']*0.25]
+    im_t = im_t[im_t['Total_flux'] > total_flux*0.25]
 
     # Search within 2 arcmin
     small_search = im_t[im_t['separation_arcsec'] < 2*60]
 
     # Search within 10 arcmin
     large_search = im_t[im_t['separation_arcsec'] < 10*60]
-    large_search = large_search[large_search['Total_flux'] > delay_cal['Total_flux']]
+    large_search = large_search[large_search['Total_flux'] > total_flux]
 
     if(len(small_search) == 0) and (len(large_search) == 0):
         phaseup = False 
-    
 
-    print('Minimum flux for bandpass: ', min_flux)
-    print('Delay cal flux: ', delay_cal['Total_flux'])
-    return bandpass, phaseup
+    print('Minimum flux density for bandpass: ', min_flux)
+    print('Delay cal flux density: ', total_flux)
+    return bandpass, phaseup, delay_cal["Peak_flux"]/1000
 
 
 def make_utf8(inp: bytes | str) -> str:
@@ -280,46 +303,6 @@ def make_utf8(inp: bytes | str) -> str:
         return inp.decode("utf-8")
     return inp
 
-
-def get_scalarphase(ms: str) -> str:
-    """
-    Solve for scalar phase solutions using DP3 ddecal.
-
-    Args
-        ms : str
-            Input Measurement Set.
-
-    Returns
-        Path to the output H5Parm file containing the scalar phase
-        solutions.
-    """
-    outh5 = 'test_phases_'+ms+'.h5'
-    with open( 'test_dp3_phasesolve.parset', 'w') as f:
-        f.write('msin={:s}\n'.format(ms))
-        f.write('msin.datacolumn=DATA\n')
-        f.write('msout=.\n')
-        f.write('msin.weightcolumn=WEIGHT_SPECTRUM\n')
-        f.write('msout.storagemanager=dysco\n')
-        f.write('msout.storagemanager.weightbitrate=16\n')
-        f.write('steps=[ddecal]\n')
-        f.write('ddecal.type=ddecal\n')
-        f.write('ddecal.sourcedb=skymodel.txt\n')
-        f.write('ddecal.mode=scalarphase\n')
-        f.write('ddecal.datause=single\n')
-        f.write('ddecal.solveralgorithm=directioniterative\n')
-        f.write('ddecal.maxiter=100\n')
-        f.write('ddecal.propagatesolutions=True\n')
-        f.write('ddecal.solint=1\n')
-        f.write('ddecal.nchan=1\n')
-        f.write('ddecal.h5parm={:s}\n'.format(outh5))
-        f.write('ddecal.uvlambdamin=40000\n')
-        f.write('ddecal.smoothnessconstraint=2000000.0\n')
-        f.write('ddecal.smoothnessreffrequency=0.0\n')
-        f.write('ddecal.smoothnessspectralexponent=-1.0\n')
-        f.write('ddecal.smoothnessrefdistance=0.0\n')
-        f.write('ddecal.tolerance=0.0001\n')
-    os.system( 'DP3 test_dp3_phasesolve.parset')
-    return outh5
 
 def get_smoothing(h5: str) -> float:
     """
@@ -344,44 +327,14 @@ def get_smoothing(h5: str) -> float:
     ref_phase = np.take(phase_sols, [0], axis=axes.index('ant'))
     phase_sols -= ref_phase
 
-    phase_freq_diff = ( np.diff(phase_sols, axis=axes.index('freq')) - np.pi ) % (np.pi*2) - np.pi
-    freqsum = np.nansum(phase_freq_diff/(2*np.pi), axis=axes.index('freq') )
+    phase_freq_diff = (np.diff(phase_sols, axis=axes.index('freq')) - np.pi) % (np.pi*2) - np.pi
+    freqsum = np.nansum(phase_freq_diff/(2*np.pi), axis=axes.index('freq'))
     abssum = np.abs(freqsum)
     wrap_count = np.max(abssum)
 
     freq_per_wrap = total_bw / wrap_count
-    smoothness = round( freq_per_wrap / 3., 1) # Sampling 3 times per frequency wrap
-    return smoothness
-
-
-def update_smoothness(smoothness: float, cfgdict: dict[str, Any]) -> dict[str, Any]:
-    """
-    Update smoothness constraints for scalarphase solutions in a DP3-style configuration dictionary.
-
-    Parameters
-        smoothness : float
-            Smoothness constraint value (typically derived from phase wrap analysis).
-        cfgdict : dict
-            Configuration dictionary containing DP3 solver settings. Expected keys:
-            - soltype_list
-            - resetsols_list
-            - smoothnessconstraint_list
-            - smoothnessreffrequency_list
-
-    Returns
-        Updated configuration dictionary (modified in place and also returned).
-    """
-    scalarphase_indices = [
-        i for i, val in enumerate(cfgdict.get("soltype_list", []))
-        if val == "scalarphase"
-    ]
-
-    for i in scalarphase_indices:
-        if cfgdict["resetsols_list"][i] == "alldutch":
-            cfgdict["smoothnessconstraint_list"][i] = smoothness
-            cfgdict["smoothnessreffrequency_list"][i] = 120.0
-
-    return cfgdict
+    smoothness = round(freq_per_wrap / 3., 1) # Sampling 3 times per frequency wrap
+    return min(smoothness, 40.0)
 
 
 def parse_args():
@@ -397,6 +350,7 @@ def parse_args():
     parser.add_argument('--inputmodel', type=str, help='Input skymodel')
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output')
     parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions')
+    parser.add_argument('--calibrate-leakage', action="store_true", help='Perform leakage calibration')
     return parser.parse_args()
 
 
@@ -409,7 +363,7 @@ def main():
 
     best_solint = get_best_solint(args.ms, args.phasediff_output)
     smoothness = get_smoothing(args.scalarphase_h5)
-    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms)
+    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
 
 if __name__ == "__main__":
     main()
