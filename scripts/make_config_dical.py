@@ -47,15 +47,17 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
     phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 96)))
-    if peak_flux > 1:
+    if peak_flux > 2:
+        amplitude_solint = '15min'
+    elif peak_flux > 1:
         amplitude_solint = '20min'
-        amplitude_smoothness = smoothness * 5
     elif peak_flux > 0.5:
         amplitude_solint = '30min'
-        amplitude_smoothness = smoothness * 7.5
-    else:
+    elif peak_flux > 0.2:
         amplitude_solint = '40min'
-        amplitude_smoothness = smoothness * 15
+    else:
+        amplitude_solint = '1h'
+    amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0)
 
     # Check number of components in VLASS model
     with open(inputmodel, 'r') as f:
@@ -72,11 +74,11 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['pixelscale'] = 0.075
     configdict['uvmin'] = 40000
     configdict['maskthreshold'] = [7.0]
-    configdict['soltypecycles_list'] = [0, 0, min(4 + N_comp, 8)]
+    configdict['soltypecycles_list'] = [0, 0, min(3 + N_comp, 8)]
     configdict['soltype_list'] = ['scalarphasediff', 'scalarphase', 'scalarcomplexgain']
     configdict['solint_list'] = [str(min(8*phase_solint//60, 16))+'min', str(phase_solint)+'s', amplitude_solint]
     configdict['nchan_list'] = [1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [min(max(10*smoothness, 5.0), 40.0), smoothness, round(amplitude_smoothness, 1)]
+    configdict['smoothnessconstraint_list'] = [min(max(10*smoothness, 5.0), 40.0), smoothness, amplitude_smoothness]
     configdict['smoothnessreffrequency_list'] = [120.0, 120.0, 0.0]
     configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
@@ -220,6 +222,7 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
     Returns:
         bandpass: bool
         phaseup: bool
+        peak_flux: float (in Janksy)
     """
 
     im_t = Table.read(imagecat)
@@ -281,7 +284,7 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
 
     print('Minimum flux density for bandpass: ', min_flux)
     print('Delay cal flux density: ', total_flux)
-    return bandpass, phaseup, delay_cal["Peak_flux"]
+    return bandpass, phaseup, delay_cal["Peak_flux"]/1000
 
 
 def make_utf8(inp: bytes | str) -> str:
