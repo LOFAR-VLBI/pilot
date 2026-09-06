@@ -57,7 +57,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         amplitude_solint = '40min'
     else:
         amplitude_solint = '1h'
-    amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0)
+    amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0) if peak_flux > 0 else 40.0
     scalarphasediff_smoothness = min(max(round(10*smoothness, 1), 10.0), 40.0)
 
     # Check number of components in VLASS model
