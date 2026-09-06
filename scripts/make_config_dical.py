@@ -58,6 +58,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     else:
         amplitude_solint = '1h'
     amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0)
+    scalarphasediff_smoothness = min(max(round(10*smoothness, 1), 10.0), 40.0)
 
     # Check number of components in VLASS model
     with open(inputmodel, 'r') as f:
@@ -78,7 +79,7 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['soltype_list'] = ['scalarphasediff', 'scalarphase', 'scalarcomplexgain']
     configdict['solint_list'] = [str(min(8*phase_solint//60, 16))+'min', str(phase_solint)+'s', amplitude_solint]
     configdict['nchan_list'] = [1, 1, 1]
-    configdict['smoothnessconstraint_list'] = [min(max(10*smoothness, 5.0), 40.0), smoothness, amplitude_smoothness]
+    configdict['smoothnessconstraint_list'] = [scalarphasediff_smoothness, smoothness, amplitude_smoothness]
     configdict['smoothnessreffrequency_list'] = [120.0, 120.0, 0.0]
     configdict['antennaconstraint_list'] = ['alldutch', None, None]
     configdict['docircular'] = 'True'
