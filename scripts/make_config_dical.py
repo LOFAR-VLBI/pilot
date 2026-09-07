@@ -136,6 +136,8 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         configdict['smoothnessconstraint_list'].append(0)
         configdict['smoothnessreffrequency_list'].append(0)
         configdict['antennaconstraint_list'].append(None)
+        configdict['antenna_averaging_factors_list'].append(None)
+        configdict['antenna_smoothness_factors_list'].append(None)
 
     # average to smallest solution interval if that is larger than data resolution
     avgstep = int(np.ceil(max(phase_solint, deltime))) // int(deltime) # Converting to seconds
