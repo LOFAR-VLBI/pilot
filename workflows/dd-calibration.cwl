@@ -258,6 +258,22 @@ steps:
         - config_files
       run: ./subworkflows/ddcal_calibrators.cwl
 
+    - id: filter_selfcal_fits
+      in:
+        - id: fits_strong
+          source: ddcal_int_strong/selfcal_images
+        - id: fits_weak
+          source: ddcal_int_weak/selfcal_images
+        - id: fits_unreliable
+          source: ddcal_int_unreliable/selfcal_images
+        - id: sub_directory_name
+          default: selfcal_configs
+      out:
+        - id: final_fits_strong
+        - id: final_fits_weak
+        - id: final_fits_unreliable
+      run: ../steps/select_final_images.cwl
+
     - id: store_configs
       label: Store selfcal config files
       in:
@@ -309,11 +325,11 @@ outputs:
       doc: Validation CSV file
 
     - id: FITS_images
-      type: File[]
+      type: File[]?
       outputSource:
-        - ddcal_int_strong/selfcal_images
-        - ddcal_int_weak/selfcal_images
-        - ddcal_int_unreliable/selfcal_images
+        - filter_selfcal_fits/final_fits_strong
+        - filter_selfcal_fits/final_fits_weak
+        - filter_selfcal_fits/final_fits_unreliable
       pickValue: all_non_null
       linkMerge: merge_flattened
       doc: Best self-calibration image in FITS format
