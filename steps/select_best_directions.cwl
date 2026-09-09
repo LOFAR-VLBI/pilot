@@ -22,12 +22,19 @@ inputs:
       inputBinding:
         prefix: "--csv"
         position: 2
-    - id: phasediff_score
+    - id: phasediff_score_strong
       type: float
-      default: 2.3
+      default: 1.5
       doc: Phasediff score, see Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/abs/2407.13247)
       inputBinding:
-        prefix: "--best_score"
+        prefix: "--strong_score"
+        position: 3
+    - id: phasediff_score_weak
+      type: float
+      default: 2.6
+      doc: Phasediff score, see Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/abs/2407.13247)
+      inputBinding:
+        prefix: "--weak_score"
         position: 3
     - id: select_best_n
       type: int?

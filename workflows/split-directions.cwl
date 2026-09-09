@@ -30,11 +30,17 @@ inputs:
       type: boolean?
       default: false
       doc: If set to true the pipeline will generate phasediff scores for direction-dependent calibrator selection.
-    - id: phasediff_score
+    - id: phasediff_score_strong
       type: float
-      default: 2.3
+      default: 1.5
       doc: |
-         Phasediff-score for calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+         Phasediff-score for calibrator selection <1.5 good for strong DD-calibrators and <0.7 good for DI-calibrators.
+         Only used when dd_selection==true.
+    - id: phasediff_score_weak
+      type: float
+      default: 2.6
+      doc: |
+         Phasediff-score for calibrator selection <1.5 good for strong DD-calibrators and <0.7 good for DI-calibrators.
          Only used when dd_selection==true.
     - id: select_best_n
       type: int?
@@ -125,8 +131,10 @@ steps:
           source: flatten_msout/flattenedarray
         - id: dd_selection
           source: dd_selection
-        - id: phasediff_score
-          source: phasediff_score
+        - id: phasediff_score_strong
+          source: phasediff_score_strong
+        - id: phasediff_score_weak
+          source: phasediff_score_weak
         - id: select_best_n
           source: select_best_n
       out:

@@ -40,14 +40,22 @@ inputs:
       default: true
       doc: If set to true the pipeline will perform validation of the direction-dependent calibrator selection.
 
-    - id: phasediff_score
+    - id: phasediff_score_strong
       type: float
-      default: 2.3
+      default: 1.5
       doc: |
-         Phasediff-score to select good calibrators and control the DD calibrator selection.
+         Phasediff-score to select strong calibrators and control the DD calibrator selection.
          See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
-         For calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
-         If all sources should be selected, set this to a value >6.
+         For calibrator selection <1.5 is good for strong DD-calibrators and <0.7 good for DI-calibrators.
+
+    - id: phasediff_score_weak
+      type: float
+      default: 2.6
+      doc: |
+         Phasediff-score to select strong calibrators and control the DD calibrator selection.
+         See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
+         For calibrator selection 1.5<score<2.6 is good for weak DD-calibrators assuming
+         strong solutions will be applied beforehand.
 
     - id: custom_phasediff_score_csv
       type: File?
@@ -86,8 +94,10 @@ steps:
           source: delay_solset
         - id: image_cat
           source: source_catalogue
-        - id: phasediff_score
-          source: phasediff_score
+        - id: phasediff_score_strong
+          source: phasediff_score_strong
+        - id: phasediff_score_weak
+          source: phasediff_score_weak
         - id: peak_flux_cut
           source: peak_flux_cut
         - id: custom_phasediff_score_csv
