@@ -33,15 +33,19 @@ steps:
       in:
         - id: msin
           source: msin
+        - id: freq_resolution
+          default: 1953.6kHz
+        - id: time_resolution
+          default: 120
       out:
-        - id: phasediff_ms
-      run: ../../steps/dp3_prep_phasediff.cwl
+        - id: dp3_avg_ms
+      run: ../../steps/dp3_avg.cwl
       scatter: msin
 
     - id: calc_phasediff
       in:
         - id: phasediff_ms
-          source: dp3_prep_phasediff/phasediff_ms
+          source: dp3_prep_phasediff/dp3_avg_ms
       out:
         - id: phasediff_score_csv
       run: ../../steps/get_phasediff.cwl

@@ -31,5 +31,9 @@ outputs:
     type:
       - File[]?
 
+hints:
+  - class: DockerRequirement
+    dockerPull: vlbi-cwl
+
 stdout: match_files_to_ms.log
 stderr: match_files_to_ms_err.log

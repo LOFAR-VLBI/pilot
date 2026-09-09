@@ -69,9 +69,9 @@ steps:
         valueFrom: $(self[0])
       - id: ddf_solsdir
         source: solsdir
-        valueFrom: $(self)
     out:
       - id: dis2_h5parm
+      - id: solsdir
     run: ../steps/gatherdis2.cwl
 
   - id: dp3_applycal_ddf
@@ -92,7 +92,7 @@ steps:
       - id: msin
         source: dp3_applycal_ddf/output_data
       - id: solsdir
-        source: solsdir
+        source: convert_ddf_dis2/solsdir
       - id: ddf_rundir
         source: ddf_rundir
       - id: box_size
@@ -119,4 +119,5 @@ requirements:
   - class: StepInputExpressionRequirement
   - class: SubworkflowFeatureRequirement
   - class: InlineJavascriptRequirement
+  - class: MultipleInputFeatureRequirement
 

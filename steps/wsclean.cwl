@@ -5,7 +5,7 @@ label: WSClean
 doc: Runs WSClean on the input data to produce an image.
 
 baseCommand: wsclean
-arguments: [-verbose, -log-time, -no-update-model-required, -reorder]
+arguments: [-verbose, -log-time, -no-update-model-required, -reorder, -shared-facet-reads, -shared-facet-writes]
 
 inputs:
   - id: msin
@@ -26,11 +26,12 @@ inputs:
       prefix: '-temp-dir'
   - id: ncpu
     type: int?
-    default: 24
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-j'
+      valueFrom: |
+        ${ return self !== null ? self : runtime.cores; }
   - id: size
     type: int[]?
     default: [22500, 22500]
@@ -51,13 +52,13 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-minuv-l'
-  - id: weight
-    type: string?
-    default: briggs -1.4
+  - id: briggs
+    type: float?
+    default: -1.4
     inputBinding:
       position: 1
       shellQuote: false
-      prefix: '-weight'
+      prefix: '-weight briggs'
   - id: weighting-rank-filter
     type: int?
     default: 3
@@ -137,7 +138,7 @@ inputs:
       prefix: '-niter'
   - id: multiscale-scale-bias
     type: float?
-    default: 0.7
+    default: 0.6
     inputBinding:
       position: 1
       shellQuote: false
@@ -329,9 +330,7 @@ outputs:
     outputBinding:
       glob: '$(inputs.name)-MFS-model.fits'
   - id: MFS_psf
-    type:
-      - File
-      - File[]
+    type: File[]
     doc: The MFS psf image, or images per psf direction if a direction-dependent psf is used.
     outputBinding:
       glob: '$(inputs.name)*-MFS-psf.fits'
@@ -347,11 +346,21 @@ hints:
 
 requirements:
   - class: ShellCommandRequirement
+  - class: InlineJavascriptRequirement
+    expressionLib:
+      - |
+        function wsclean_cores(size) {
+          var imsize = Math.max(size[0], size[1]);
+          var raw = imsize / 512.0;
+          var cores = Math.round(raw / 4.0) * 4;   // nearest multiple of 4
+          return Math.max(8, Math.min(64, cores));
+        }
+  - class: ResourceRequirement
+    coresMin: |
+      ${ return inputs.ncpu !== null ? inputs.ncpu : wsclean_cores(inputs.size); }
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.msin)
-  - class: ResourceRequirement
-    coresMin: $(inputs.ncpu)
 
 stdout: wsclean.log
 stderr: wsclean_err.log

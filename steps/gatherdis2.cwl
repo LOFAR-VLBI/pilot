@@ -31,6 +31,10 @@ outputs:
     doc: The direction independent solutions from DDF-pipeline.
     outputBinding:
       glob: DIS2_full.h5
+  - id: solsdir
+    type: Directory
+    outputBinding:
+      outputEval: $(inputs.ddf_solsdir)
 
 hints:
   - class: DockerRequirement
