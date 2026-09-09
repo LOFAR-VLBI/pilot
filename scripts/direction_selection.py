@@ -116,9 +116,6 @@ def parse_args():
     parser.add_argument('--weak_score', type=float,
                         help='Lower limit for strong < score < weak between which which calibrators are considered strong.',
                         default=2.6)
-    parser.add_argument('--best_score', type=float,
-                        help='Optimal selection score (See Section 3.3.1 https://arxiv.org/pdf/2407.13247)',
-                        default=2.3)
     parser.add_argument('--select_best_N', help='Select the top N best scoring calibrators. If 0, select all.', type=int, default=0)
     parser.add_argument('--suffix', help='suffix', default='_best')
     parser.add_argument('--reclassify_from', help='suffix', default='')
