@@ -349,7 +349,11 @@ outputs:
       doc: Best self-calibration image in FITS format
 
     - id: calibration_solutions
-      type: File[]?
+      type:
+        - type: array
+          items:
+            - "null"
+            - File
       outputSource:
         - ddcal_int_strong/h5parms
         - ddcal_int_weak/h5parms
