@@ -335,13 +335,17 @@ outputs:
       doc: Validation CSV file
 
     - id: FITS_images
-      type: File[]?
+      type:
+        - type: array
+          items:
+            type: array
+            items:
+              - "null"
+              - File
       outputSource:
         - filter_selfcal_fits/final_fits_strong
         - filter_selfcal_fits/final_fits_weak
         - filter_selfcal_fits/final_fits_unreliable
-      pickValue: all_non_null
-      linkMerge: merge_flattened
       doc: Best self-calibration image in FITS format
 
     - id: calibration_solutions

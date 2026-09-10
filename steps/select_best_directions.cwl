@@ -6,7 +6,6 @@ doc: This step uses the phasediff scores to select the best input directions by 
 
 baseCommand:
   - direction_selection.py
-  - --best_score=2.3
 
 inputs:
     - id: msin
