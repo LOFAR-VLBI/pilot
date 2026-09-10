@@ -6,11 +6,6 @@ doc: Selects the final selfcal images from overlapping sets of sources
 
 baseCommand: select_final_images.py
 
-arguments:
-  - valueFrom: $(inputs.fits_strong)
-    prefix: --output_filename
-    separate: true
-
 inputs:
   - id: fits_strong
     type: File[]?
@@ -59,5 +54,5 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
 
-stdout: filter_ms_by_group.log
-stderr: filter_ms_by_group_err.log
+stdout: select_final_images.log
+stderr: select_final_images_err.log
