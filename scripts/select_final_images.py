@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 from argparse import ArgumentParser
 import json
 import os
@@ -16,7 +16,7 @@ def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
                 name = os.path.basename(source).split("_")[1]
             else:
                 raise RuntimeError("Unknown file type encountered.")
-            retain_weak = list(filter(lambda x: name in x, weak))
+            retain_weak = list(filter(lambda x: name not in x, weak))
 
     retain_strong = []
     if not retain_weak:
@@ -31,7 +31,7 @@ def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
                 name = os.path.basename(source).split("_")[1]
             else:
                 raise RuntimeError("Unknown file type encountered.")
-            retain_strong = list(filter(lambda x: name in x, strong))
+            retain_strong = list(filter(lambda x: name not in x, strong))
 
     return retain_weak, retain_strong
 
@@ -61,6 +61,12 @@ if __name__ == "__main__":
         args.images_strong, args.images_weak, args.images_unreliable
     )
 
+    if args.images_unreliable:
+        cwl_files_unreliable = [
+            {"class": "File", "path": f} for f in args.images_unreliable
+        ]
+    else:
+        cwl_files_unreliable = None
     if final_weak:
         cwl_files_weak = [{"class": "File", "path": f} for f in final_weak]
     else:
@@ -71,4 +77,11 @@ if __name__ == "__main__":
         cwl_files_strong = None
 
     with open("cwl.output.json", "w") as f:
-        json.dump({"final_weak": cwl_files_weak, "final_strong": cwl_files_strong}, f)
+        json.dump(
+            {
+                "final_fits_unreliable": cwl_files_unreliable,
+                "final_fits_weak": cwl_files_weak,
+                "final_fits_strong": cwl_files_strong,
+            },
+            f,
+        )
