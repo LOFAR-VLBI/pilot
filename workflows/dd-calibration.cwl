@@ -276,12 +276,24 @@ steps:
           source: ddcal_int_weak/selfcal_images
         - id: fits_unreliable
           source: ddcal_int_unreliable/selfcal_images
-        - id: sub_directory_name
-          default: selfcal_configs
       out:
-        - id: final_fits_strong
-        - id: final_fits_weak
-        - id: final_fits_unreliable
+        - id: final_images_strong
+        - id: final_images_weak
+        - id: final_images_unreliable
+      run: ../steps/select_final_images.cwl
+
+    - id: filter_selfcal_pngs
+      in:
+        - id: fits_strong
+          source: ddcal_int_strong/selfcal_inspection_images
+        - id: fits_weak
+          source: ddcal_int_weak/selfcal_inspection_images
+        - id: fits_unreliable
+          source: ddcal_int_unreliable/selfcal_inspection_images
+      out:
+        - id: final_images_strong
+        - id: final_images_weak
+        - id: final_images_unreliable
       run: ../steps/select_final_images.cwl
 
     - id: store_configs
@@ -343,9 +355,9 @@ outputs:
               - "null"
               - File
       outputSource:
-        - filter_selfcal_fits/final_fits_strong
-        - filter_selfcal_fits/final_fits_weak
-        - filter_selfcal_fits/final_fits_unreliable
+        - filter_selfcal_fits/final_images_strong
+        - filter_selfcal_fits/final_images_weak
+        - filter_selfcal_fits/final_images_unreliable
       doc: Best self-calibration image in FITS format
 
     - id: calibration_solutions
@@ -372,13 +384,17 @@ outputs:
       doc: LoSoTo solution inspection images
 
     - id: selfcal_PNG_images
-      type: File[]
+      type:
+        - type: array
+          items:
+            type: array
+            items:
+              - "null"
+              - File
       outputSource:
-        - ddcal_int_strong/selfcal_inspection_images
-        - ddcal_int_weak/selfcal_inspection_images
-        - ddcal_int_unreliable/selfcal_inspection_images
-      pickValue: all_non_null
-      linkMerge: merge_flattened
+        - filter_selfcal_pngs/final_images_strong
+        - filter_selfcal_pngs/final_images_weak
+        - filter_selfcal_pngs/final_images_unreliable
       doc: Self-calibration images in PNG format
 
     - id: selfcal_configs

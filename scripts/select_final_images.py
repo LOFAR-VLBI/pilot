@@ -79,9 +79,9 @@ if __name__ == "__main__":
     with open("cwl.output.json", "w") as f:
         json.dump(
             {
-                "final_fits_unreliable": cwl_files_unreliable,
-                "final_fits_weak": cwl_files_weak,
-                "final_fits_strong": cwl_files_strong,
+                "final_images_unreliable": cwl_files_unreliable,
+                "final_images_weak": cwl_files_weak,
+                "final_images_strong": cwl_files_strong,
             },
             f,
         )

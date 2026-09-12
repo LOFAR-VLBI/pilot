@@ -38,13 +38,13 @@ inputs:
         MeasurementSets should be combined.
 
 outputs:
-  - id: final_fits_strong
+  - id: final_images_strong
     type: File[]?
     doc: The final images of strong calibrators.
-  - id: final_fits_weak
+  - id: final_images_weak
     type: File[]?
     doc: The final images of weak calibrators.
-  - id: final_fits_unreliable
+  - id: final_images_unreliable
     type: File[]?
     doc: The final images of unreliable calibrators.
 
