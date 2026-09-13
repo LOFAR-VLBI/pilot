@@ -14,6 +14,9 @@ def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
             elif source.endswith(".fits"):
                 # FITS file naming follows e.g. best_ILTJ*_003-MFS-image.fits
                 name = os.path.basename(source).split("_")[1]
+            elif source.endswith(".h5"):
+                # h5parm file naming follows e.g. select_best_ILTJ*.h5
+                name = os.path.basename(source).split("_")[2]
             else:
                 raise RuntimeError("Unknown file type encountered.")
             retain_weak = list(filter(lambda x: name not in x, weak))
