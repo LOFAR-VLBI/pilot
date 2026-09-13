@@ -8,7 +8,6 @@ baseCommand: h5_merger
 inputs:
   - id: h5parms
     type:
-      - File?
       - File[]?
     doc: Input h5parms
     inputBinding:

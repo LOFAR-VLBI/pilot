@@ -277,10 +277,10 @@ steps:
         - id: fits_unreliable
           source: ddcal_int_unreliable/selfcal_images
       out:
-        - id: final_images_strong
-        - id: final_images_weak
-        - id: final_images_unreliable
-      run: ../steps/select_final_images.cwl
+        - id: final_files_strong
+        - id: final_files_weak
+        - id: final_files_unreliable
+      run: ../steps/select_final_files.cwl
 
     - id: filter_selfcal_pngs
       in:
@@ -291,10 +291,21 @@ steps:
         - id: fits_unreliable
           source: ddcal_int_unreliable/selfcal_inspection_images
       out:
-        - id: final_images_strong
-        - id: final_images_weak
-        - id: final_images_unreliable
-      run: ../steps/select_final_images.cwl
+        - id: final_files_strong
+        - id: final_files_weak
+        - id: final_files_unreliable
+      run: ../steps/select_final_files.cwl
+
+    - id: filter_selfcal_h5parms
+      in:
+        - id: fits_strong
+          source: ddcal_int_strong/h5parms
+        - id: fits_weak
+          source: ddcal_int_weak/h5parms
+      out:
+        - id: final_files_strong
+        - id: final_files_weak
+      run: ../steps/select_final_files.cwl
 
     - id: store_configs
       label: Store selfcal config files
@@ -355,9 +366,9 @@ outputs:
               - "null"
               - File
       outputSource:
-        - filter_selfcal_fits/final_images_strong
-        - filter_selfcal_fits/final_images_weak
-        - filter_selfcal_fits/final_images_unreliable
+        - filter_selfcal_fits/final_files_strong
+        - filter_selfcal_fits/final_files_weak
+        - filter_selfcal_fits/final_files_unreliable
       doc: Best self-calibration image in FITS format
 
     - id: calibration_solutions
@@ -367,8 +378,8 @@ outputs:
             - "null"
             - File
       outputSource:
-        - ddcal_int_strong/h5parms
-        - ddcal_int_weak/h5parms
+        - filter_selfcal_h5parms/final_files_strong
+        - filter_selfcal_h5parms/final_files_weak
       pickValue: all_non_null
       linkMerge: merge_flattened
       doc: Best self-calibration solutions in h5parm format
@@ -392,9 +403,9 @@ outputs:
               - "null"
               - File
       outputSource:
-        - filter_selfcal_pngs/final_images_strong
-        - filter_selfcal_pngs/final_images_weak
-        - filter_selfcal_pngs/final_images_unreliable
+        - filter_selfcal_pngs/final_files_strong
+        - filter_selfcal_pngs/final_files_weak
+        - filter_selfcal_pngs/final_files_unreliable
       doc: Self-calibration images in PNG format
 
     - id: selfcal_configs
