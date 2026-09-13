@@ -6,7 +6,6 @@ doc: This step uses the phasediff scores to select the best input directions by 
 
 baseCommand:
   - direction_selection.py
-  - --best_score=2.3
 
 inputs:
     - id: msin
@@ -22,12 +21,19 @@ inputs:
       inputBinding:
         prefix: "--csv"
         position: 2
-    - id: phasediff_score
+    - id: phasediff_score_strong
       type: float
-      default: 2.3
+      default: 1.5
       doc: Phasediff score, see Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/abs/2407.13247)
       inputBinding:
-        prefix: "--best_score"
+        prefix: "--strong_score"
+        position: 3
+    - id: phasediff_score_weak
+      type: float
+      default: 2.6
+      doc: Phasediff score, see Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/abs/2407.13247)
+      inputBinding:
+        prefix: "--weak_score"
         position: 3
     - id: select_best_n
       type: int?
@@ -40,11 +46,21 @@ inputs:
 
 
 outputs:
-    - id: best_ms
+    - id: strong_ms
       type: Directory[]
       doc: Best directions
       outputBinding:
-        glob: "*_best.ms"
+        glob: "*_strong.ms"
+    - id: weak_ms
+      type: Directory[]
+      doc: Best directions
+      outputBinding:
+        glob: "*_weak.ms"
+    - id: unreliable_ms
+      type: Directory[]
+      doc: Best directions
+      outputBinding:
+        glob: "*_unreliable.ms"
     - id: logfile
       type: File[]
       doc: Log files corresponding to this step

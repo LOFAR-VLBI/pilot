@@ -1,0 +1,2 @@
+source_id,Peak_flux,Dyn_range,RMS,NN_score,accept_image,amp_score,phase_score,wrap_count,comment,accept_solutions
+ILTJ103914.20+591425.8,0.007889711,0.022139693,3.718155e-05,0.283203125,False,0.9479520612888144,0.8301634469310146,1.6421946133512824,,True

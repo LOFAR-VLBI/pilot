@@ -19,9 +19,13 @@ inputs:
     - id: msin
       type: Directory[]
       doc: The input concatenated MS.
-    - id: phasediff_score
+    - id: phasediff_score_strong
       type: float
-      default: 2.3
+      default: 1.5
+      doc: Phasediff-score for calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+    - id: phasediff_score_weak
+      type: float
+      default: 2.6
       doc: Phasediff-score for calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
     - id: select_best_n
       type: int?
@@ -68,12 +72,16 @@ steps:
           source: concat_phasediff_csvs/concat_csv
         - id: msin
           source: msin
-        - id: phasediff_score
-          source: phasediff_score
+        - id: phasediff_score_strong
+          source: phasediff_score_strong
+        - id: phasediff_score_weak
+          source: phasediff_score_weak
         - id: select_best_n
           source: select_best_n
       out:
-        - best_ms
+        - strong_ms
+        - weak_ms
+        - unreliable_ms
       run: ../../steps/select_best_directions.cwl
 
 outputs:
@@ -81,7 +89,15 @@ outputs:
       type: File
       outputSource: concat_phasediff_csvs/concat_csv
       doc: csv with scores
-    - id: best_ms
+    - id: strong_ms
       type: Directory[]
-      outputSource: select_best_directions/best_ms
-      doc: Final MS selection
+      outputSource: select_best_directions/strong_ms
+      doc: Final MS selection for strong calibrators.
+    - id: weak_ms
+      type: Directory[]
+      outputSource: select_best_directions/weak_ms
+      doc: Final MS selection for weak calibrators.
+    - id: unreliable_ms
+      type: Directory[]
+      outputSource: select_best_directions/unreliable_ms
+      doc: Final MS selection for unreliable calibrators.

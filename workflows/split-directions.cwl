@@ -30,11 +30,17 @@ inputs:
       type: boolean?
       default: false
       doc: If set to true the pipeline will generate phasediff scores for direction-dependent calibrator selection.
-    - id: phasediff_score
+    - id: phasediff_score_strong
       type: float
-      default: 2.3
+      default: 1.5
       doc: |
-         Phasediff-score for calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+         Phasediff-score for calibrator selection <1.5 good for strong DD-calibrators and <0.7 good for DI-calibrators.
+         Only used when dd_selection==true.
+    - id: phasediff_score_weak
+      type: float
+      default: 2.6
+      doc: |
+         Phasediff-score for calibrator selection <1.5 good for strong DD-calibrators and <0.7 good for DI-calibrators.
          Only used when dd_selection==true.
     - id: select_best_n
       type: int?
@@ -125,23 +131,39 @@ steps:
           source: flatten_msout/flattenedarray
         - id: dd_selection
           source: dd_selection
-        - id: phasediff_score
-          source: phasediff_score
+        - id: phasediff_score_strong
+          source: phasediff_score_strong
+        - id: phasediff_score_weak
+          source: phasediff_score_weak
         - id: select_best_n
           source: select_best_n
       out:
         - id: phasediff_score_csv
-        - id: best_ms
+        - id: strong_ms
+        - id: weak_ms
+        - id: unreliable_ms
       when: $(inputs.dd_selection)
       run: ./subworkflows/phasediff_selection.cwl
 
 outputs:
-    - id: msout_concat
+    - id: msout_concat_strong
       type: Directory[]
       outputSource:
-        - phasediff_selection/best_ms
-        - flatten_msout/flattenedarray
-      pickValue: first_non_null
+        - phasediff_selection/strong_ms
+      pickValue: all_non_null
+      linkMerge: merge_flattened
+    - id: msout_concat_weak
+      type: Directory[]
+      outputSource:
+        - phasediff_selection/weak_ms
+      pickValue: all_non_null
+      linkMerge: merge_flattened
+    - id: msout_concat_unreliable
+      type: Directory[]
+      outputSource:
+        - phasediff_selection/unreliable_ms
+      pickValue: all_non_null
+      linkMerge: merge_flattened
     - id: phasediff_score_csv
       type: File?
       outputSource: phasediff_selection/phasediff_score_csv
