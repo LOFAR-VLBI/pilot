@@ -82,9 +82,9 @@ if __name__ == "__main__":
     with open("cwl.output.json", "w") as f:
         json.dump(
             {
-                "final_images_unreliable": cwl_files_unreliable,
-                "final_images_weak": cwl_files_weak,
-                "final_images_strong": cwl_files_strong,
+                "final_files_unreliable": cwl_files_unreliable,
+                "final_files_weak": cwl_files_weak,
+                "final_files_strong": cwl_files_strong,
             },
             f,
         )
