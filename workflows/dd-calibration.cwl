@@ -52,7 +52,7 @@ inputs:
       type: float
       default: 2.6
       doc: |
-         Phasediff-score to select strong calibrators and control the DD calibrator selection.
+         Phasediff-score to weak calibrators and control the DD calibrator selection.
          See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
          For calibrator selection 1.5<score<2.6 is good for weak DD-calibrators assuming
          strong solutions will be applied beforehand.
