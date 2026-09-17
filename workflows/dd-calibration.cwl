@@ -270,11 +270,11 @@ steps:
 
     - id: filter_selfcal_fits
       in:
-        - id: fits_strong
+        - id: files_strong
           source: ddcal_int_strong/selfcal_images
-        - id: fits_weak
+        - id: files_weak
           source: ddcal_int_weak/selfcal_images
-        - id: fits_unreliable
+        - id: files_unreliable
           source: ddcal_int_unreliable/selfcal_images
       out:
         - id: final_files_strong
@@ -284,11 +284,11 @@ steps:
 
     - id: filter_selfcal_pngs
       in:
-        - id: fits_strong
+        - id: files_strong
           source: ddcal_int_strong/selfcal_inspection_images
-        - id: fits_weak
+        - id: files_weak
           source: ddcal_int_weak/selfcal_inspection_images
-        - id: fits_unreliable
+        - id: files_unreliable
           source: ddcal_int_unreliable/selfcal_inspection_images
       out:
         - id: final_files_strong
@@ -298,9 +298,9 @@ steps:
 
     - id: filter_selfcal_h5parms
       in:
-        - id: fits_strong
+        - id: files_strong
           source: ddcal_int_strong/h5parms
-        - id: fits_weak
+        - id: files_weak
           source: ddcal_int_weak/h5parms
       out:
         - id: final_files_strong

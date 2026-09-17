@@ -1,37 +1,37 @@
 class: CommandLineTool
 cwlVersion: v1.2
-id: select_final_images
-label: Select final selfcal images.
-doc: Selects the final selfcal images from overlapping sets of sources
+id: select_final_files
+label: Select final selfcal files.
+doc: Selects the final selfcal files from overlapping sets of sources
 
 baseCommand: select_final_files.py
 
 inputs:
-  - id: fits_strong
+  - id: files_strong
     type: File[]?
     inputBinding:
       position: 1
-      prefix: --images-strong
+      prefix: --files-strong
       separate: true
     doc: |
         A string that determines which
         MeasurementSets should be combined.
 
-  - id: fits_weak
+  - id: files_weak
     type: File[]?
     inputBinding:
       position: 1
-      prefix: --images-weak
+      prefix: --files-weak
       separate: true
     doc: |
         A string that determines which
         MeasurementSets should be combined.
 
-  - id: fits_unreliable
+  - id: files_unreliable
     type: File[]?
     inputBinding:
       position: 1
-      prefix: --images-unreliable
+      prefix: --files-unreliable
       separate: true
     doc: |
         A string that determines which

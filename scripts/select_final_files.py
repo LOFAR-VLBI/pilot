@@ -41,32 +41,32 @@ def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
 
 if __name__ == "__main__":
     parser = ArgumentParser(
-        "Filter only the final appropriate images from layered dd calibration."
+        "Filter only the final appropriate files from layered dd calibration."
     )
     parser.add_argument(
-        "--images-strong",
+        "--files-strong",
         nargs="*",
-        help="Best cycle FITS images for strong sources.",
+        help="Best cycle FITS files for strong sources.",
     )
     parser.add_argument(
-        "--images-weak",
+        "--files-weak",
         nargs="*",
-        help="Best cycle FITS images for weak sources.",
+        help="Best cycle FITS files for weak sources.",
     )
     parser.add_argument(
-        "--images-unreliable",
+        "--files-unreliable",
         nargs="*",
-        help="Best cycle FITS images for unreliable sources.",
+        help="Best cycle FITS files for unreliable sources.",
     )
 
     args = parser.parse_args()
     final_weak, final_strong = filter_sources(
-        args.images_strong, args.images_weak, args.images_unreliable
+        args.files_strong, args.files_weak, args.files_unreliable
     )
 
-    if args.images_unreliable:
+    if args.files_unreliable:
         cwl_files_unreliable = [
-            {"class": "File", "path": f} for f in args.images_unreliable
+            {"class": "File", "path": f} for f in args.files_unreliable
         ]
     else:
         cwl_files_unreliable = None
