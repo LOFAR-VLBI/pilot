@@ -5,7 +5,12 @@ import os
 
 
 def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
-    retain_weak = []
+    """Filter calibration products based on the final layer that they reached.
+
+    They are kept in order of: unreliable, weak, strong.
+    """
+    retain_weak = weak
+    reject_names = []
     if unreliable:
         for source in unreliable:
             if source.endswith(".png"):
@@ -19,11 +24,18 @@ def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
                 name = os.path.basename(source).split("_")[2]
             else:
                 raise RuntimeError("Unknown file type encountered.")
-            retain_weak = list(filter(lambda x: name not in x, weak))
+            reject_names.append(name)
+        retain_weak = list(
+            filter(
+                lambda source_names: any(
+                    source not in reject_names for source in source_names
+                ),
+                weak,
+            )
+        )
 
     retain_strong = []
-    if not retain_weak:
-        retain_weak = weak
+    reject_names = []
     if retain_weak:
         for source in retain_weak:
             if source.endswith(".png"):
@@ -34,7 +46,15 @@ def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
                 name = os.path.basename(source).split("_")[1]
             else:
                 raise RuntimeError("Unknown file type encountered.")
-            retain_strong = list(filter(lambda x: name not in x, strong))
+            reject_names.append(name)
+        retain_strong = list(
+            filter(
+                lambda source_names: any(
+                    source not in reject_names for source in source_names
+                ),
+                weak,
+            )
+        )
 
     return retain_weak, retain_strong
 
