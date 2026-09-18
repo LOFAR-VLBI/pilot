@@ -60,6 +60,7 @@ def filter_too_nearest_neighbours(csv: str, sep: float = 0.06, keep_close_source
         filtered_df = df.drop(index=to_remove).reset_index(drop=True)
         return filtered_df
     else:
+        print("Keeping close-by sources for general imaging")
         df.loc[list(to_remove), 'spd_score'] = 10.0
         return df
 
@@ -127,6 +128,7 @@ def parse_args():
     parser.add_argument('--reclassify_from', help='Suffix that will be rename to that given by --suffix.', default='')
     parser.add_argument('--min-separation', help='Minimum allowed separation in degrees between sources. The best scoring source is kept.', default=0.06)
     parser.add_argument('--keep-close-sources', help='Keeps sources that are too close to a calibrator such that they can still be imaged with the nearest solutions.', default='')
+    parser.add_argument('--keep-close-sources', action="store_true", help='Keeps sources that are too close to a calibrator such that they can still be imaged with the nearest solutions.', default='')
     return parser.parse_args()
 
 
@@ -149,16 +151,21 @@ def main():
             df = df.sort_values("spd_score", ascending=True)
             if len(df) < args.select_best_N:
                 print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
+
+        df = df.sort_values("spd_score", ascending=True)
         for source in df.set_index('source').iterrows():
             name = source[0]
             score = source[1]['spd_score']
             if score <= args.strong_score:
+                print(f"Marking {name} as strong")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')
             elif (score > args.strong_score) and (score <= args.weak_score):
+                print(f"Marking {name} as weak")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_weak.ms')
             elif score > args.weak_score:
+                print(f"Marking {name} as unreliable")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
     else:
