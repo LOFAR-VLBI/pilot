@@ -1,60 +1,27 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 import json
-import os
+
+from make_config_international import parse_source_id
 
 
-def filter_sources(strong: list[str], weak: list[str], unreliable: list[str]):
+def filter_sources(
+    strong: list[str] = [], weak: list[str] = [], unreliable: list[str] = []
+):
     """Filter calibration products based on the final layer that they reached.
 
     They are kept in order of: unreliable, weak, strong.
     """
-    retain_weak = weak
-    reject_names = []
-    if unreliable:
-        for source in unreliable:
-            if source.endswith(".png"):
-                # PNG file naming follows e.g. ILTJ*_003.png
-                name = os.path.basename(source).split("_")[0]
-            elif source.endswith(".fits"):
-                # FITS file naming follows e.g. best_ILTJ*_003-MFS-image.fits
-                name = os.path.basename(source).split("_")[1]
-            elif source.endswith(".h5"):
-                # h5parm file naming follows e.g. select_best_ILTJ*.h5
-                name = os.path.basename(source).split("_")[2]
-            else:
-                raise RuntimeError("Unknown file type encountered.")
-            reject_names.append(name)
-        retain_weak = list(
-            filter(
-                lambda source_names: any(
-                    source not in reject_names for source in source_names
-                ),
-                weak,
-            )
-        )
+    unreliable_names: set[str] = {parse_source_id(source) for source in unreliable}
+    retain_weak = [
+        file for file in weak if parse_source_id(file) not in unreliable_names
+    ]
+    weak_names: set[str] = {parse_source_id(source) for source in retain_weak}
 
-    retain_strong = []
-    reject_names = []
-    if retain_weak:
-        for source in retain_weak:
-            if source.endswith(".png"):
-                # PNG file naming follows e.g. ILTJ*_003.png
-                name = os.path.basename(source).split("_")[0]
-            elif source.endswith(".fits"):
-                # FITS file naming follows e.g. best_ILTJ*_003-MFS-image.fits
-                name = os.path.basename(source).split("_")[1]
-            else:
-                raise RuntimeError("Unknown file type encountered.")
-            reject_names.append(name)
-        retain_strong = list(
-            filter(
-                lambda source_names: any(
-                    source not in reject_names for source in source_names
-                ),
-                weak,
-            )
-        )
+    reject_names: set[str] = unreliable_names | weak_names
+    retain_strong = [
+        file for file in strong if parse_source_id(file) not in reject_names
+    ]
 
     return retain_weak, retain_strong
 
@@ -66,16 +33,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "--files-strong",
         nargs="*",
+        default=[],
         help="Best cycle FITS files for strong sources.",
     )
     parser.add_argument(
         "--files-weak",
         nargs="*",
+        default=[],
         help="Best cycle FITS files for weak sources.",
     )
     parser.add_argument(
         "--files-unreliable",
         nargs="*",
+        default=[],
         help="Best cycle FITS files for unreliable sources.",
     )
 
