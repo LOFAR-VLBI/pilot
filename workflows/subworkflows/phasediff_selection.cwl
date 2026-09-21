@@ -22,15 +22,15 @@ inputs:
     - id: phasediff_score_strong
       type: float
       default: 1.5
-      doc: Phasediff-score for calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+      doc: Phasediff score threshold for strong calibrator selection.
     - id: phasediff_score_weak
       type: float
       default: 2.6
-      doc: Phasediff-score for calibrator selection <2.3 good for DD-calibrators and <0.7 good for DI-calibrators.
+      doc: Phasediff score threshold for weak calibrator selection.
     - id: select_best_n
       type: int?
       default: 1
-      doc: Return this number of best sources according to the selection metric.
+      doc: Return this number of best sources according to the selection metrics.
     - id: min_source_separation
       type: float
       default: 0.06
