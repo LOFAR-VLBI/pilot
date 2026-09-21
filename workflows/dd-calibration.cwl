@@ -362,6 +362,32 @@ steps:
         - id: dir
       run: ../steps/collectfiles.cwl
 
+    - id: flatten_solution_plots
+      in:
+        - id: nestedarray
+          source:
+            - ddcal_int_strong/solution_inspection_images
+            - ddcal_int_weak/solution_inspection_images
+            - ddcal_int_unreliable/solution_inspection_images
+          pickValue: all_non_null
+          # This valueFrom helps suppress warnings about CWL not being able to verify
+          # the (non-)nullness of the input.
+          valueFrom: $(self)
+      out:
+        - flattenedarray
+      run: ../steps/flatten.cwl
+
+    - id: store_solution_plots
+      label: Store selfcal PNG
+      in:
+        - id: files
+          source: flatten_solution_plots/flattenedarray
+        - id: sub_directory_name
+          default: selfcal_solution_plots
+      out:
+        - id: dir
+      run: ../steps/collectfiles.cwl
+
     - id: concat_validation_csvs
       label: Merge strong and weak validation
       in:
@@ -442,6 +468,11 @@ outputs:
       type: Directory
       outputSource: store_configs/dir
       doc: Configuration files used by facetselfcal.
+
+    - id: selfcal_solution_plots
+      type: Directory
+      outputSource: store_solution_plots/dir
+      doc: Selfcal solution plots resulting from facetselfcal.
 
     - id: msout
       type: Directory[]
