@@ -2,7 +2,7 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: demote_selection
 label: Decreases calibrator strength qualifier
-doc: This step uses reclassifies a calibrator source from e.g. strong to weak, such that the MSes can be used in another step.
+doc: This step reclassifies a calibrator source from e.g. strong to weak, such that the MSes can be used in another step.
 
 baseCommand:
   - direction_selection.py
