@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from argparse import ArgumentParser
 import json
+from argparse import ArgumentParser
 
 from make_config_international import parse_source_id
 
@@ -26,7 +26,7 @@ def filter_sources(
     return retain_weak, retain_strong
 
 
-if __name__ == "__main__":
+def main():
     parser = ArgumentParser(
         "Filter only the final appropriate files from layered dd calibration."
     )
@@ -78,3 +78,7 @@ if __name__ == "__main__":
             },
             f,
         )
+
+
+if __name__ == "__main__":
+    main()
