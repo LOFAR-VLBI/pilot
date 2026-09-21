@@ -66,6 +66,10 @@ inputs:
       doc: |
         Sets the number of directions to split off per DP3 explode call
         (enhances parallelisation and optimises the DP3 explode step)
+    - id: min_source_separation
+      type: float
+      default: 0.06
+      doc: Minimum separation in degrees between selected sources. Only the best scoring source is kept.
 
 steps:
     - id: select_bright_sources
@@ -137,6 +141,8 @@ steps:
           source: phasediff_score_weak
         - id: select_best_n
           source: select_best_n
+        - id: min_source_separation
+          source: min_source_separation
       out:
         - id: phasediff_score_csv
         - id: strong_ms

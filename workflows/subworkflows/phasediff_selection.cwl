@@ -31,6 +31,10 @@ inputs:
       type: int?
       default: 1
       doc: Return this number of best sources according to the selection metric.
+    - id: min_source_separation
+      type: float
+      default: 0.06
+      doc: Minimum separation in degrees between selected sources. Only the best scoring source is kept.
 
 steps:
     - id: dp3_prep_phasediff
@@ -78,6 +82,8 @@ steps:
           source: phasediff_score_weak
         - id: select_best_n
           source: select_best_n
+        - id: min_separation
+          source: min_source_separation
       out:
         - strong_ms
         - weak_ms

@@ -43,6 +43,13 @@ inputs:
       inputBinding:
         prefix: "--select_best_N"
         position: 4
+    - id: min_separation
+      type: float
+      default: 0.06
+      doc: Minimum required separation between sources.
+      inputBinding:
+        prefix: "--min-separation"
+        position: 5
 
 
 outputs:
