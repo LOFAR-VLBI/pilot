@@ -93,11 +93,11 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
     configdict['stop'] = min(12 + int(1/phasediff_score), 20)
 
-    if phaseup or phasediff_score < 0.1:
+    if not phaseup or phasediff_score < 0.15:
+        configdict['robust'] = -1.4
+    else:
         configdict['phaseupstations'] = "core"
         configdict['robust'] = -0.4
-    else:
-        configdict['robust'] = -1.4
 
     soltypecycle_fulljones = max(configdict['soltypecycles_list'][-1] + 1, 5)
 
