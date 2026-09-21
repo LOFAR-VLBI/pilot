@@ -450,13 +450,8 @@ outputs:
       doc: Best self-calibration solutions in h5parm format
 
     - id: solution_inspection_images
-      type: Directory[]
-      outputSource:
-        - ddcal_int_strong/solution_inspection_images
-        - ddcal_int_weak/solution_inspection_images
-        - ddcal_int_unreliable/solution_inspection_images
-      pickValue: all_non_null
-      linkMerge: merge_flattened
+      type: Directory
+      outputSource: store_solution_plots/dir
       doc: LoSoTo solution inspection images
 
     - id: selfcal_PNG_images
