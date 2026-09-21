@@ -119,7 +119,7 @@ def parse_args():
     parser.add_argument('--select_best_N', help='Select the top N best scoring calibrators. If 0, select all.', type=int, default=0)
     parser.add_argument('--suffix', help='Suffix to add to MSes after phasediff selection. In case of reclassification this is the new suffix.', default='_best')
     parser.add_argument('--reclassify_from', help='Suffix that will be rename to that given by --suffix.', default='')
-    parser.add_argument('--min-separation', help='Maximum allowed separation in degrees between sources. The best scoring source is kept.', default=0.06)
+    parser.add_argument('--min-separation', help='Minimum allowed separation in degrees between sources. The best scoring source is kept.', default=0.06)
     return parser.parse_args()
 
 
@@ -139,8 +139,6 @@ def main():
             df = df.head(args.select_best_N)
         else:
             df = filter_too_nearest_neighbours(args.csv, sep=args.min_separation)
-
-            # Sort values
             df = df.sort_values("spd_score", ascending=True)
             if len(df) < args.select_best_N:
                 print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
