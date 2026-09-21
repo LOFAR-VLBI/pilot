@@ -307,6 +307,19 @@ steps:
         - id: final_files_weak
       run: ../steps/select_final_files.cwl
 
+    - id: clean_ms_names
+      in:
+        - id: msin
+          source:
+            - split_directions/msout_concat_strong
+            - split_directions/msout_concat_weak
+            - split_directions/msout_concat_unreliable
+          linkMerge: merge_flattened
+          pickValue: all_non_null
+      out:
+        - msout
+      run: ../steps/clean_ms_names.cwl
+
     - id: store_configs
       label: Store selfcal config files
       in:
@@ -415,10 +428,6 @@ outputs:
 
     - id: msout
       type: Directory[]
-      outputSource:
-        - split_directions/msout_concat_strong
-        - split_directions/msout_concat_weak
-        - split_directions/msout_concat_unreliable
+      outputSource: clean_ms_names/msout
       pickValue: all_non_null
-      linkMerge: merge_flattened
-      doc: MeasurementSets of all (selected) directions
+      doc: MeasurementSets of all (selected) directions _without_ solutions.
