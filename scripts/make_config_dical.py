@@ -17,12 +17,13 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
+def make_config(best_solint: float, phasediff_score: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
     """
     Make configuration file for facetselfcal
 
     Args:
         best_solint: Optimal solution interval, determined within this script
+        phasediff_score: Phasediff-score
         smoothness: Optimal smoothness constraint determined within this script
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
         inputmodel: Input skymodel to be added to configuration file
@@ -35,11 +36,10 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     # Decide if a bandpass correction is needed
     if imagecat is not None:
-        bandpass, phaseup, peak_flux = process_catalog(imagecat, ms)
+        bandpass, phaseup = process_catalog(imagecat, ms)
     else:
         bandpass = False
         phaseup = True
-        peak_flux = 0
 
     # Set solints and smoothness constraints
     with ct.table(ms, readonly=True, ack=False) as t:
@@ -47,18 +47,18 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
     phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 96)))
-    if peak_flux > 1:
+    if phasediff_score < 0.1:
         amplitude_solint = '15min'
-    elif peak_flux > 0.5:
+    elif phasediff_score < 0.2:
         amplitude_solint = '20min'
-    elif peak_flux > 0.25:
+    elif phasediff_score < 0.3:
         amplitude_solint = '30min'
-    elif peak_flux > 0.1:
+    elif phasediff_score < 0.5:
         amplitude_solint = '40min'
     else:
         amplitude_solint = '1h'
-    amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0) if peak_flux > 0 else 40.0
-    scalarphasediff_smoothness = min(max(round(10*smoothness, 1), 10.0), 40.0)
+    amplitude_smoothness = round(min(max(smoothness * 5, 5.0), 40.0), 1)
+    scalarphasediff_smoothness = round(min(max(10*smoothness, 10.0), 40.0), 1)
 
     # Check number of components in VLASS model
     with open(inputmodel, 'r') as f:
@@ -91,9 +91,9 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['update_multiscale'] = 'True'
     configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'alldutch:2,international:1']
     configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
-    configdict['stop'] = min(12 + N_comp + int(peak_flux*5), 20)
+    configdict['stop'] = min(12 + int(1/phasediff_score), 20)
 
-    if phaseup:
+    if phaseup or phasediff_score < 0.1:
         configdict['phaseupstations'] = "core"
         configdict['robust'] = -0.4
     else:
@@ -207,12 +207,15 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
 
     for col in ['Source_id', 'source']:  # Handling possible column variations (versions)
         if col in phasediff.columns:
-            return phasediff[phasediff[col].apply(parse_source_from_h5) == sourceid]['best_solint'].min()
+            phasediff_csv = phasediff[phasediff[col].apply(parse_source_from_h5) == sourceid]
+            best_solint = phasediff_csv['best_solint'].min()
+            phasediff_score = phasediff_csv['spd_score'].min()
+            return best_solint, phasediff_score
 
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
 
-def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
+def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
     """
     Search through image_catalogue.csv for two purposes.
     1. Is calibrator bright enough for final bandpass solve
@@ -287,7 +290,7 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
 
     print('Minimum flux density for bandpass: ', min_flux)
     print('Delay cal flux density: ', total_flux)
-    return bandpass, phaseup, delay_cal["Peak_flux"]/1000
+    return bandpass, phaseup
 
 
 def make_utf8(inp: bytes | str) -> str:
@@ -363,9 +366,9 @@ def main():
 
     args = parse_args()
 
-    best_solint = get_best_solint(args.ms, args.phasediff_output)
+    best_solint, phasediff_score = get_best_solint(args.ms, args.phasediff_output)
     smoothness = get_smoothing(args.scalarphase_h5)
-    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
+    make_config(best_solint, phasediff_score, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
 
 if __name__ == "__main__":
     main()
