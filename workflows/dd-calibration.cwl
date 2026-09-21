@@ -336,6 +336,32 @@ steps:
         - id: dir
       run: ../steps/collectfiles.cwl
 
+    - id: flatten_inspection_images
+      in:
+        - id: nestedarray
+          source:
+            - filter_selfcal_pngs/final_files_strong
+            - filter_selfcal_pngs/final_files_weak
+            - filter_selfcal_pngs/final_files_unreliable
+          pickValue: all_non_null
+          # This valueFrom helps suppress warnings about CWL not being able to verify
+          # the (non-)nullness of the input.
+          valueFrom: $(self)
+      out:
+        - flattenedarray
+      run: ../steps/flatten.cwl
+
+    - id: store_inspection_images
+      label: Store selfcal PNG
+      in:
+        - id: files
+          source: flatten_inspection_images/flattenedarray
+        - id: sub_directory_name
+          default: selfcal_inspection_images
+      out:
+        - id: dir
+      run: ../steps/collectfiles.cwl
+
     - id: concat_validation_csvs
       label: Merge strong and weak validation
       in:
@@ -408,17 +434,8 @@ outputs:
       doc: LoSoTo solution inspection images
 
     - id: selfcal_PNG_images
-      type:
-        - type: array
-          items:
-            type: array
-            items:
-              - "null"
-              - File
-      outputSource:
-        - filter_selfcal_pngs/final_files_strong
-        - filter_selfcal_pngs/final_files_weak
-        - filter_selfcal_pngs/final_files_unreliable
+      type: Directory
+      outputSource: store_inspection_images/dir
       doc: Self-calibration images in PNG format
 
     - id: selfcal_configs
@@ -429,5 +446,4 @@ outputs:
     - id: msout
       type: Directory[]
       outputSource: clean_ms_names/msout
-      pickValue: all_non_null
       doc: MeasurementSets of all (selected) directions _without_ solutions.
