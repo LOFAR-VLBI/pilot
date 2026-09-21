@@ -57,7 +57,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
         amplitude_solint = '40min'
     else:
         amplitude_solint = '1h'
-    amplitude_smoothness = round(min(max(smoothness * 5, 5.0), 40.0), 1)
+    amplitude_smoothness = round(min(max(smoothness * 6, 7.5), 40.0), 1)
     scalarphasediff_smoothness = round(min(max(10*smoothness, 10.0), 40.0), 1)
 
     # Check number of components in VLASS model
