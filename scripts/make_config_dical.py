@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 from collections.abc import Sequence
 import os
 from typing import Any
+import sys
 
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
@@ -36,10 +37,9 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
 
     # Decide if a bandpass correction is needed
     if imagecat is not None:
-        bandpass, phaseup = process_catalog(imagecat, ms)
+        nearby_other_bright_sources = find_nearby_other_bright_sources(imagecat, ms)
     else:
-        bandpass = False
-        phaseup = True
+        nearby_other_bright_sources = True
 
     # Set solints and smoothness constraints
     with ct.table(ms, readonly=True, ack=False) as t:
@@ -66,8 +66,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
 
     # This strategy follows:
     # scalarphasediff to solve for differential Faraday rotation
-    # scalarphase with short solints and large smoothness (reduces degrees of freedom)
-    # scalarphase with long solints and small smoothness (reduces degrees of freedom)
+    # scalarphase to solve for phases
     # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
     configdict['imagename'] = filename
@@ -93,7 +92,10 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
     configdict['stop'] = min(12 + int(1/phasediff_score), 20)
 
-    if not phaseup or phasediff_score < 0.15:
+    # If there are no other nearby bright sources and phasediff score is below 0.5, we can solve without phaseup
+    # If the phasediff score is below 0.15, the source is very high S/N, so phaseup can be avoided
+    # Otherwise, do phaseup with higher robust weighting
+    if (not nearby_other_bright_sources and phasediff_score < 0.5) or phasediff_score < 0.15:
         configdict['robust'] = -1.4
     else:
         configdict['phaseupstations'] = "core"
@@ -127,8 +129,8 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
             configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
             configdict['antenna_smoothness_factors_list'].append('alldutch:2,international:1')
 
-    # Add bandpass if requested
-    if bandpass:
+    # Add bandpass solve if phasediff score is below 0.2
+    if phasediff_score < 0.2:
         configdict['soltype_list'].append('scalarcomplexgain')
         configdict['solint_list'].append("9h")
         configdict['soltypecycles_list'].append(configdict['stop'] - 2)
@@ -215,29 +217,22 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
 
-def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
+def find_nearby_other_bright_sources(imagecat: str, ms: str) -> tuple[bool, bool]:
     """
-    Search through image_catalogue.csv for two purposes.
-    1. Is calibrator bright enough for final bandpass solve
-    2. Is there a nearby source that requires core phaseup
+    Search through LoTSS catalogue to find if there are other high S/N sources
 
     Args:
         ms: input measurement set
-        imagecat: image_catalogue.csv from plot_field.py
+        imagecat: image_catalogue.csv from plot_field.py (or alternative LOFAR catalogue)
 
     Returns:
-        bandpass: bool
-        phaseup: bool
-        peak_flux: float (in Janksy)
+        bool
     """
 
     im_t = Table.read(imagecat)
 
-    bandpass = False # Default option
-    phaseup = True # Default option
-
     if not im_t:
-        return bandpass, phaseup
+        sys.exit("ERROR: Function needs catalogue, but no catalogue given.")
 
     with ct.table(f"{ms}/FIELD", readonly=True, ack=False) as field_table:
         phase_dir = field_table.getcol('PHASE_DIR')[0, 0]  # shape: (n_fields, 1, 2)
@@ -257,40 +252,22 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool]:
 
     # Calibrator should be closest source
     delay_cal = im_t[0]
-    
-    # Get time
-    with ct.table(ms, readonly=True, ack=False) as t:
-        time = np.unique(t.getcol('TIME'))
-        full_time = np.abs(time[-1] - time[0])
-   
+
+    # Other bright calibrators
     im_t = im_t[1:]
+    im_t = im_t[im_t['Total_flux'] > delay_cal["Total_flux"] * 0.25]
 
-    # 8 hours requires 0.5Jy
-    total_flux = delay_cal["Total_flux"]
-    scaling = full_time/(8 * 60 * 60)
-    min_flux = 500/np.sqrt(scaling) # This is minimum flux for bandpass solve
-    if total_flux > min_flux:
-        bandpass = True
-
-    # Some sort of logic for flux weighted
-    # Anything 2-10 arcmins and bright could be a problem 
-
-    #Filter catalogue to only those bright enough to be a problem
-    im_t = im_t[im_t['Total_flux'] > total_flux*0.25]
-
-    # Search within 2 arcmin
+    # Search within 2 arcmin for calibrators
     small_search = im_t[im_t['separation_arcsec'] < 2*60]
 
-    # Search within 10 arcmin
+    # Search within 10 arcmin for calibrators
     large_search = im_t[im_t['separation_arcsec'] < 10*60]
-    large_search = large_search[large_search['Total_flux'] > total_flux]
+    large_search = large_search[large_search['Total_flux'] > delay_cal["Total_flux"]]
 
-    if(len(small_search) == 0) and (len(large_search) == 0):
-        phaseup = False 
+    if (len(small_search) == 0) and (len(large_search) == 0):
+        return False
 
-    print('Minimum flux density for bandpass: ', min_flux)
-    print('Delay cal flux density: ', total_flux)
-    return bandpass, phaseup
+    return True
 
 
 def make_utf8(inp: bytes | str) -> str:
