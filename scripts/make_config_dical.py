@@ -128,7 +128,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
             configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
             configdict['antenna_smoothness_factors_list'].append('alldutch:2,international:1')
 
-    # Add bandpass solve if phasediff score is below 0.2
+    # Add bandpass solve for high SNR sources
     if phasediff_score < 0.2:
         configdict['soltype_list'].append('scalarcomplexgain')
         configdict['solint_list'].append("9h")
