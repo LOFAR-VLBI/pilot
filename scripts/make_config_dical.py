@@ -324,7 +324,7 @@ def parse_args():
 
     parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
     parser.add_argument('--ms', type=str, help='MeasurementSet', required=True)
-    parser.add_argument('--inputmodel', type=str, help='Input sky model', required=True)
+    parser.add_argument('--inputmodel', type=str, help='Input sky model to start calibration from.', required=True)
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output', required=True)
     parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions', required=True)
     parser.add_argument('--imagecat', type=str, help='Image catalogue CSV file')
