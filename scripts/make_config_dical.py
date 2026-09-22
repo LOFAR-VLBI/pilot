@@ -36,7 +36,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
 
     # Decide if a bandpass correction is needed
     if imagecat is not None:
-        nearby_other_bright_sources = find_nearby_other_bright_sources(imagecat, ms)
+        nearby_other_bright_sources = has_nearby_other_bright_sources(imagecat, ms)
     else:
         nearby_other_bright_sources = True
 
@@ -89,7 +89,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     configdict['update_multiscale'] = 'True'
     configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'alldutch:2,international:1']
     configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
-    configdict['stop'] = min(10 + int(1/phasediff_score) + N_comp, 20)
+    configdict['stop'] = min(10 + int(1/max(phasediff_score, 0.05)) + N_comp, 20)
 
     # If there are no other nearby bright sources and phasediff score is below 0.3, we can solve without phaseup
     # If the phasediff score is below 0.15, the source is very high S/N, so phaseup can be avoided
