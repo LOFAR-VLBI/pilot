@@ -117,7 +117,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
             configdict['soltype_list'].extend(['complexgain', 'leakage'])
             configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
             configdict['antenna_smoothness_factors_list'].extend(['alldutch:2,international:1', 'alldutch:2,international:1'])
-        elif calibrate_leakage:
+        else:
             configdict['soltypecycles_list'].append(soltypecycle_fulljones)
             configdict['solint_list'].append(amplitude_solint)
             configdict['smoothnessconstraint_list'].append(amplitude_smoothness)
