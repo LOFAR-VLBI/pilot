@@ -216,7 +216,7 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
 
-def find_nearby_other_bright_sources(imagecat: str, ms: str) -> tuple[bool, bool]:
+def has_nearby_other_bright_sources(imagecat: str, ms: str) -> bool:
     """
     Search through the provided catalogue to find if there are high S/N sources nearby.
 
