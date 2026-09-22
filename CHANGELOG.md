@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.2
+
+### Fixed
+
+* Fixed a runtime crash in the intermediate resolution workflow due to file permissions (#151)
+* Fixed CWL outputs and inputs for the PSF images and the swarp calls (#163, #165)
+* Fixed the SOLSDIR for ddf-pipeline solutions not being handled properly (#168)
+* Fixed PyBDSF crashing with socket paths being too long (#127)
+
+### Added
+
+* LINC VLBI is now enforced and legacy workflows such as `setup.cwl`, `clip-A_team.cwl` and `concatenate-flag.cwl` have been deprecated. (#129)
+* Intermediate-resolution imaging now uses shared facets reads and writes for a performance increase. (#160)
+* Linear polarisation imaging workflow (#126)
+* Leakage calibration on the delay calibrator (#174))
+* Parallelise solution validation in the dd calibration at the CWL level (#177)
+* A new direction-dependent calibration strategy which automatically propagate nearby calibration solutions from stronger to weaker sources to reduce the need for post-run refinement of calibration (#175, #180)
+
+
 ## 1.1.2
 
 ### Fixed
