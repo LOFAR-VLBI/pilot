@@ -60,7 +60,9 @@ steps:
         - id: time_resolution
           source: time_resolution
       out:
-        - id: msout_concat
+        - id: msout_concat_strong
+        - id: msout_concat_weak
+        - id: msout_concat_unreliable
         - id: phasediff_score_csv
       run: ../split-directions.cwl
       label: select_best_delay_cal
@@ -68,7 +70,12 @@ steps:
     - id: filter_skymodels
       in:
         - id: ms
-          source: select_best_delay_cal/msout_concat
+          source:
+            - select_best_delay_cal/msout_concat_strong
+            - select_best_delay_cal/msout_concat_weak
+            - select_best_delay_cal/msout_concat_unreliable
+          linkMerge: merge_flattened
+          pickValue: all_non_null
         - id: files
           source: starting_skymodel
       out:
@@ -90,7 +97,12 @@ steps:
     - id: sort_ms
       in:
         - id: input_entry
-          source: select_best_delay_cal/msout_concat
+          source:
+            - select_best_delay_cal/msout_concat_strong
+            - select_best_delay_cal/msout_concat_weak
+            - select_best_delay_cal/msout_concat_unreliable
+          linkMerge: merge_flattened
+          pickValue: all_non_null
       out:
         - id: sorted_entries
       run: ../../steps/sort_by_name.cwl
@@ -137,8 +149,11 @@ steps:
 outputs:
   - id: msout
     outputSource:
-      - select_best_delay_cal/msout_concat
+      - select_best_delay_cal/msout_concat_strong
+      - select_best_delay_cal/msout_concat_weak
+      - select_best_delay_cal/msout_concat_unreliable
     linkMerge: merge_flattened
+    pickValue: all_non_null
     type: Directory[]
     doc: |
         The fully concatenated data in MeasurementSet

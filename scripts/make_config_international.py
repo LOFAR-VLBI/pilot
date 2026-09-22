@@ -243,7 +243,7 @@ def parse_args():
     parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
     parser.add_argument('--ms', type=str, help='Input MeasurementSet.')
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output.')
-    parser.add_argument('--dutch_multidir_h5', action="store_true", help='Have used pre-applied Dutch calibration solutions.')
+    parser.add_argument('--reset_dutch_solutions', action="store_true", help='Reset Dutch station solutions during solves, keeping the pre-applied Dutch calibration solutions.')
     return parser.parse_args()
 
 
@@ -255,7 +255,7 @@ def main():
     args = parse_args()
 
     solint = get_solint(args.ms, args.phasediff_output)
-    make_config(solint, args.ms, args.dutch_multidir_h5)
+    make_config(solint, args.ms, args.reset_dutch_solutions)
 
 
 if __name__ == "__main__":
