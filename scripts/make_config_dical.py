@@ -27,7 +27,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
         phasediff_score: Phasediff-score
         smoothness: Optimal smoothness constraint determined within this script
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
-        inputmodel: Input skymodel to be added to configuration file
+        inputmodel: Input sky model to be added to configuration file
         ms: MeasurementSet name
         calibrate_leakage: Perform leakage calibration
     """
@@ -90,7 +90,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     configdict['update_multiscale'] = 'True'
     configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'alldutch:2,international:1']
     configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
-    configdict['stop'] = min(12 + int(1/phasediff_score), 20)
+    configdict['stop'] = min(10 + int(1/phasediff_score) + N_comp, 20)
 
     # If there are no other nearby bright sources and phasediff score is below 0.5, we can solve without phaseup
     # If the phasediff score is below 0.15, the source is very high S/N, so phaseup can be avoided
@@ -104,11 +104,11 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     soltypecycle_fulljones = max(configdict['soltypecycles_list'][-1] + 1, 5)
 
     # Add Leakage calibration if requested
-    # If the peak intensity is less than 1 Jy/beam we perform complexgain + leakage to reduce the degrees of freedom
-    # If the peak intensity is larger than 1 Jy/beam we perform a direct fulljones calibration step, assuming we have enough S/N
+    # If phasediff_score is above 0.1 we perform complexgain + leakage to reduce the degrees of freedom
+    # If phasediff_score is below 0.1 we perform a direct fulljones calibration step, assuming we have enough S/N
     if calibrate_leakage:
         configdict['makeimage_fullpol'] = 'True'
-        if phasediff_score < 0.1:
+        if phasediff_score > 0.1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
             configdict['smoothnessconstraint_list'].extend([amplitude_smoothness, amplitude_smoothness])
@@ -327,11 +327,11 @@ def parse_args():
     """
 
     parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
-    parser.add_argument('--ms', type=str, help='MeasurementSet')
+    parser.add_argument('--ms', type=str, help='MeasurementSet', required=True)
+    parser.add_argument('--inputmodel', type=str, help='Input sky model', required=True)
+    parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output', required=True)
+    parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions', required=True)
     parser.add_argument('--imagecat', type=str, help='Image catalogue CSV file')
-    parser.add_argument('--inputmodel', type=str, help='Input skymodel')
-    parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output')
-    parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions')
     parser.add_argument('--calibrate-leakage', action="store_true", help='Perform leakage calibration')
     return parser.parse_args()
 
