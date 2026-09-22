@@ -253,10 +253,8 @@ def has_nearby_other_bright_sources(imagecat: str, ms: str) -> bool:
     im_t = im_t[1:]
     im_t = im_t[im_t['Total_flux'] > delay_cal["Total_flux"] * 0.25]
 
-    # Search within 2 arcmin for calibrators
+    # Search for other bright sources within different radii
     small_search = im_t[im_t['separation_arcsec'] < 2*60]
-
-    # Search within 10 arcmin for calibrators
     large_search = im_t[im_t['separation_arcsec'] < 10*60]
     large_search = large_search[large_search['Total_flux'] > delay_cal["Total_flux"]]
 
