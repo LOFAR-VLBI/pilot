@@ -218,7 +218,7 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
 
 def find_nearby_other_bright_sources(imagecat: str, ms: str) -> tuple[bool, bool]:
     """
-    Search through LoTSS catalogue to find if there are other high S/N sources
+    Search through the provided catalogue to find if there are high S/N sources nearby.
 
     Args:
         ms: input measurement set
