@@ -108,7 +108,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     # If the peak intensity is larger than 1 Jy/beam we perform a direct fulljones calibration step, assuming we have enough S/N
     if calibrate_leakage:
         configdict['makeimage_fullpol'] = 'True'
-        if peak_flux <= 1:
+        if phasediff_score < 0.1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
             configdict['smoothnessconstraint_list'].extend([amplitude_smoothness, amplitude_smoothness])
