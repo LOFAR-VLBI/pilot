@@ -60,7 +60,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     amplitude_smoothness = round(min(max(smoothness * 6, 7.5), 40.0), 1)
     scalarphasediff_smoothness = round(min(max(10*smoothness, 10.0), 40.0), 1)
 
-    # Check number of components in VLASS model
+    # Check number of components from sky model
     with open(inputmodel, 'r') as f:
         N_comp = max(len(f.readlines()) - 1, 1)
 
