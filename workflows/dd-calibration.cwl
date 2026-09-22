@@ -148,6 +148,8 @@ steps:
       in:
         - id: h5parms
           source: ddcal_int_strong/h5parms
+        - id: high_memory
+          source: freeze_dutch_solutions
       out:
         - multidir_h5
       run: ../steps/multidir_merger.cwl
@@ -212,6 +214,8 @@ steps:
             - multidir_merge_strong/multidir_h5
           linkMerge: merge_flattened
           pickValue: all_non_null
+        - id: high_memory
+          source: freeze_dutch_solutions
       out:
         - id: multidir_h5
       run: ../steps/multidir_merger.cwl

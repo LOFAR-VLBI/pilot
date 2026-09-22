@@ -22,6 +22,10 @@ inputs:
     inputBinding:
       prefix: "--no_weight_prop"
       position: 1
+  - id: high_memory
+    type: boolean
+    default: false
+    doc: Toggle to reserve a large amount of memory for larger merges.
 
 outputs:
     - id: multidir_h5
@@ -45,7 +49,7 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
   - class: ResourceRequirement
-    ramMin: 45000
+    ramMin: "$(inputs.high_memory ? 150000 : 45000)"
 
 stdout: multidir_h5_merger.log
 stderr: multidir_h5_merger_err.log
