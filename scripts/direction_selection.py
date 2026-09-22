@@ -127,7 +127,6 @@ def parse_args():
     parser.add_argument('--suffix', help='Suffix to add to MSes after phasediff selection. In case of reclassification this is the new suffix.', default='_best')
     parser.add_argument('--reclassify_from', help='Suffix that will be rename to that given by --suffix.', default='')
     parser.add_argument('--min-separation', help='Minimum allowed separation in degrees between sources. The best scoring source is kept.', default=0.06)
-    parser.add_argument('--keep-close-sources', help='Keeps sources that are too close to a calibrator such that they can still be imaged with the nearest solutions.', default='')
     parser.add_argument('--keep-close-sources', action="store_true", help='Keeps sources that are too close to a calibrator such that they can still be imaged with the nearest solutions.', default='')
     return parser.parse_args()
 
