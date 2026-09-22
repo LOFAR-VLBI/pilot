@@ -7,7 +7,6 @@ from argparse import ArgumentParser
 from collections.abc import Sequence
 import os
 from typing import Any
-import sys
 
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
@@ -232,13 +231,10 @@ def find_nearby_other_bright_sources(imagecat: str, ms: str) -> tuple[bool, bool
     im_t = Table.read(imagecat)
 
     if not im_t:
-        sys.exit("ERROR: Function needs catalogue, but no catalogue given.")
+        return True # Remain conservative if table is empty
 
     with ct.table(f"{ms}/FIELD", readonly=True, ack=False) as field_table:
-        phase_dir = field_table.getcol('PHASE_DIR')[0, 0]  # shape: (n_fields, 1, 2)
-        ra_rad, dec_rad = phase_dir
-        ra_deg = np.degrees(ra_rad)
-        dec_deg = np.degrees(dec_rad)
+        ra_deg, dec_deg = np.degrees(field_table.getcol('PHASE_DIR')[0, 0])
 
     calibrator_coord = SkyCoord(ra = ra_deg, dec = dec_deg, unit = 'deg')
     image_coords = SkyCoord(ra = im_t['RA'], dec = im_t['DEC'], unit = 'deg')
