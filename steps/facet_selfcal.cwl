@@ -80,10 +80,26 @@ outputs:
         by lofar_facet_selfcal in HDF5 format.
 
     - id: best_h5parm
-      type: File?
+      type: File
       outputBinding:
-        glob: 'h5_solutions/best_*solutions.h5'
-      doc: The best output merged calibration solution file, selected during self-calibration if early-stopping is used.
+        glob: [h5_solutions/best_*solutions.h5, h5_solutions/merged_addCS_selfcalcycle*.h5]
+        outputEval: |
+          ${
+            var best = self.filter(function(f) { return f.basename.indexOf("best_") === 0; });
+            if (best.length > 0) { return best[0]; }
+            function cycleNum(f) {
+              var m = f.basename.match(/selfcalcycle(\d+)/);
+              return m ? parseInt(m[1], 10) : -1;
+            }
+            var sorted = self.slice().sort(function(a, b) {
+              return cycleNum(a) - cycleNum(b);
+            });
+            return sorted[sorted.length - 1];
+          }
+      doc: |
+        The best output merged calibration solution file if early-stopping
+        was used; otherwise falls back to the last regular selfcal-cycle
+        h5parm, chosen by the highest cycle number.
 
     - id: inspection_plots
       type: Directory[]
@@ -95,10 +111,26 @@ outputs:
         identifier extracted from the input MS name.
 
     - id: best_fits_image
-      type: File?
+      type: File
       outputBinding:
-         glob: 'fits_images/best_*MFS-image.fits'
-      doc: The best selfcal FITS image, selected during self-calibration if early-stopping is used.
+         glob: ['fits_images_$(inputs.msin.basename)/best_*MFS-image.fits', 'fits_images_$(inputs.msin.basename)/*MFS-*image.fits']
+         outputEval: |
+           ${
+             var best = self.filter(function(f) { return f.basename.indexOf("best_") === 0; });
+             if (best.length > 0) { return best[0]; }
+             function cycleNum(f) {
+               var m = f.basename.match(/selfcalcycle(\d+)/);
+               return m ? parseInt(m[1], 10) : -1;
+             }
+             var sorted = self.slice().sort(function(a, b) {
+               return cycleNum(a) - cycleNum(b);
+             });
+             return sorted[sorted.length - 1];
+           }
+      doc: |
+        The best selfcal FITS image if early-stopping was used; otherwise
+        falls back to the last regular selfcal-cycle FITS image, chosen by
+        the highest cycle number.
 
     - id: logfile
       type: File[]
