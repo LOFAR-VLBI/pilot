@@ -402,5 +402,4 @@ outputs:
     - id: msout
       type: Directory[]
       outputSource: clean_ms_names/msout
-      pickValue: all_non_null
       doc: MeasurementSets of all (selected) directions _without_ solutions.
