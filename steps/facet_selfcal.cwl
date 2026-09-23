@@ -16,8 +16,7 @@ arguments:
     position: 1000
   - valueFrom: |
       mv plots plots_$(inputs.msin.basename) &&
-      mv fits_images fits_images_$(inputs.msin.basename) &&
-      for d in solution_plots*; do mv "$d" "$d"_$(inputs.msin.basename); done
+      mv fits_images fits_images_$(inputs.msin.basename); done
     shellQuote: false
     position: 1001
 
@@ -104,7 +103,7 @@ outputs:
     - id: inspection_plots
       type: Directory[]
       outputBinding:
-        glob: $(["plots_" + inputs.msin.basename, "solution_plots*_" + inputs.msin.basename, "fits_images_" + inputs.msin.basename])
+        glob: $(["plots_" + inputs.msin.basename, "solution_plots*", "fits_images_" + inputs.msin.basename])
       doc: |
         Renamed directories (plots, fits_images, solution_plots*) containing
         delay calibrator images and LoSoTo solution plots, suffixed with an
