@@ -106,7 +106,6 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     # If phasediff_score is above 0.1 we perform complexgain + leakage to reduce the degrees of freedom
     # If phasediff_score is below 0.1 we perform a direct fulljones calibration step, assuming we have enough S/N
     if calibrate_leakage:
-        configdict['makeimage_fullpol'] = 'True'
         if phasediff_score > 0.1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
@@ -115,8 +114,8 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
             configdict['antennaconstraint_list'].extend([None, None])
             configdict['nchan_list'].extend([1, 1])
             configdict['soltype_list'].extend(['complexgain', 'leakage'])
-            configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
-            configdict['antenna_smoothness_factors_list'].extend(['alldutch:2,international:1', 'alldutch:2,international:1'])
+            configdict['antenna_averaging_factors_list'].extend(['core:4,remote:2,international:1','core:4,remote:2,international:1'])
+            configdict['antenna_smoothness_factors_list'].extend(['core:4,remote:3,international:1.5', 'core:4,remote:3,international:1.5'])
         else:
             configdict['soltypecycles_list'].append(soltypecycle_fulljones)
             configdict['solint_list'].append(amplitude_solint)
@@ -125,8 +124,8 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
             configdict['antennaconstraint_list'].append(None)
             configdict['nchan_list'].append(1)
             configdict['soltype_list'].append('fulljones')
-            configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
-            configdict['antenna_smoothness_factors_list'].append('alldutch:2,international:1')
+            configdict['antenna_averaging_factors_list'].append('core:4,remote:2,international:1')
+            configdict['antenna_smoothness_factors_list'].append('core:4,remote:3,international:1.5')
 
     # Add bandpass solve for high SNR sources
     if phasediff_score < 0.2:
