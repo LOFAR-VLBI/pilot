@@ -80,7 +80,7 @@ outputs:
         by lofar_facet_selfcal in HDF5 format.
 
     - id: best_h5parm
-      type: File
+      type: File?
       outputBinding:
         glob: 'h5_solutions/best_*solutions.h5'
       doc: The best output merged calibration solution file, selected during self-calibration if early-stopping is used.
@@ -95,7 +95,7 @@ outputs:
         identifier extracted from the input MS name.
 
     - id: best_fits_image
-      type: File
+      type: File?
       outputBinding:
          glob: 'fits_images/best_*MFS-image.fits'
       doc: The best selfcal FITS image, selected during self-calibration if early-stopping is used.
