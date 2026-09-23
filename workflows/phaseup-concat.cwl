@@ -184,6 +184,8 @@ steps:
       - id: starting_skymodel
       - id: config
       - id: inspection_plots
+      - id: best_fits_image
+      - id: best_h5parm
       - id: logfile
     run: ./subworkflows/delay_cal_run.cwl
     label: delay_cal_run
@@ -266,6 +268,16 @@ outputs:
     doc: |
         The configuration file for facetselfcal that was
         used in the delay solve.
+
+  - id: best_fits_image
+    type: File?
+    outputSource: delay_cal_run/best_fits_image
+    doc: Best calibration FITS image
+
+  - id: best_h5parm
+    type: File?
+    outputSource: delay_cal_run/best_h5parm
+    doc: Best calibration HDF5 solutions
 
   - id: summary_file
     type: File

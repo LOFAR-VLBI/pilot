@@ -196,6 +196,8 @@ steps:
         - id: facetselfcal_config
         - id: starting_skymodel
         - id: logdir
+        - id: best_fits_image
+        - id: best_h5parm
         - id: summary_file
       run: ./phaseup-concat.cwl
       label: phaseup
@@ -257,6 +259,8 @@ steps:
         - id: inspection_plots
         - id: phasediff_score_csv
         - id: solutions
+        - id: best_fits_image
+        - id: best_h5parm
         - id: configs
       run: ./subworkflows/find-best-delay-calibrator.cwl
       when: $(inputs.do_auto_delay_selection)
@@ -362,6 +366,26 @@ outputs:
     pickValue: the_only_non_null
     doc: |
         A CSV file containing the phasediff scores for each of the calibrators that were split out.
+
+  - id: best_fits_image
+    type:
+      - File?
+      - File[]?
+    outputSource:
+      - phaseup/best_fits_image
+      - select_best_delay_cal/best_fits_image
+    pickValue: first_non_null
+    doc: Best calibration FITS image
+
+  - id: best_h5parm
+    type:
+      - File?
+      - File[]?
+    outputSource:
+      - phaseup/best_h5parm
+      - select_best_delay_cal/best_h5parm
+    pickValue: first_non_null
+    doc: Best calibration HDF5 solutions
 
   - id: summary_files
     outputSource:

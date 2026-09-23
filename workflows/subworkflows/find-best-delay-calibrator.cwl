@@ -128,6 +128,8 @@ steps:
         - id: starting_skymodel
         - id: config
         - id: inspection_plots
+        - id: best_fits_image
+        - id: best_h5parm
         - id: logfile
       run: ./delay_cal_run.cwl
       scatter: [msin, model_image]
@@ -192,6 +194,16 @@ outputs:
       - File?
     doc: |
       A CSV file containing the phasediff scores for each of the calibrators that were split out.
+
+  - id: best_fits_image
+    type: File[]?
+    outputSource: delay_selfcal/best_fits_image
+    doc: Best calibration FITS image
+
+  - id: best_h5parm
+    type: File[]?
+    outputSource: delay_selfcal/best_h5parm
+    doc: Best calibration HDF5 solutions
 
   - id: solutions
     outputSource: delay_selfcal/solutions

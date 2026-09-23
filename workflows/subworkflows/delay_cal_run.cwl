@@ -95,6 +95,8 @@ steps:
       - id: h5parm
       - id: inspection_plots
       - id: logfile
+      - id: best_fits_image
+      - id: best_h5parm
     run: ../../steps/facet_selfcal.cwl
     label: delay_solve
 
@@ -122,6 +124,14 @@ outputs:
     doc: |
         The inspection PNG plots generated
         by delay_solve.
+  - id: best_fits_image
+    type: File?
+    outputSource: delay_solve/best_fits_image
+    doc: Best calibration FITS image
+  - id: best_h5parm
+    type: File?
+    outputSource: delay_solve/best_h5parm
+    doc: Best calibration HDF5 solutions
   - id: logfile
     type: File[]
     outputSource: delay_solve/logfile
