@@ -128,7 +128,7 @@ outputs:
     outputSource: run_facetselfcal/best_fits_image
 
   - id: selfcal_inspection_images
-    type: File[]
+    type: Directory[]
     outputSource: run_facetselfcal/inspection_plots
 
   - id: config_file

@@ -109,7 +109,7 @@ outputs:
     doc: Self-calibration images in FITS format
 
   - id: selfcal_inspection_images
-    type: File[]
+    type: Directory[]
     outputSource: flatten_images/flattenedarray
     doc: Self-calibration inspection images in PNG format
 

@@ -15,9 +15,9 @@ arguments:
     shellQuote: false
     position: 1000
   - valueFrom: |
-      mv plots plots_$(inputs.msin.basename &&
-      mv fits_images fits_images_$(inputs.msin.basename &&
-      for d in solution_plots*; do mv "$d" "${d}_$(inputs.msin.basename"; done
+      mv plots plots_$(inputs.msin.basename) &&
+      mv fits_images fits_images_$(inputs.msin.basename) &&
+      for d in solution_plots*; do mv "$d" "$d"_$(inputs.msin.basename); done
     shellQuote: false
     position: 1001
 
