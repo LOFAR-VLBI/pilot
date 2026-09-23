@@ -41,6 +41,9 @@ inputs:
       default: '32.'
       doc: |
         Time resolution to average the split off delay calibrators to.
+    - id: model_cache
+      type: string?
+      doc: Neural network cache directory.
 
 steps:
     - id: select_best_delay_cal
@@ -118,6 +121,8 @@ steps:
           source: image_catalogue
         - id: model_image
           source: sort_skymodels/sorted_entries
+        - id: model_cache
+          source: model_cache
       out:
         - id: solutions
         - id: starting_skymodel

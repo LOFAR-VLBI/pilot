@@ -118,6 +118,10 @@ inputs:
       default: false
       doc: Add leakage calibration to the DI configuration file.
 
+    - id: model_cache
+      type: string?
+      doc: Neural network cache directory.
+
 steps:
     - id: lofar_vlbi_plot
       in:
@@ -183,6 +187,8 @@ steps:
           source: do_auto_delay_selection
         - id: calibrate_leakage
           source: calibrate_leakage
+        - id: model_cache
+          source: model_cache
       out:
         - id: msout
         - id: solutions
@@ -243,6 +249,8 @@ steps:
           # and thus nothing to automatically select the best from.
           # Practically, we should never be in a situation of having File here.
           valueFrom: $(self)
+        - id: model_cache
+          source: model_cache
       out:
         - id: msout
         - id: starting_skymodels

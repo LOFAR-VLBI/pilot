@@ -50,6 +50,10 @@ inputs:
     default: false
     doc: Add leakage calibration to the DI configuration file.
 
+  - id: model_cache
+    type: string?
+    doc: Neural network cache directory.
+
 steps:
   - id: prep_delay
     in:
@@ -173,6 +177,8 @@ steps:
         source: number_cores
       - id: calibrate_leakage
         source: calibrate_leakage
+      - id: model_cache
+        source: model_cache
     out:
       - id: solutions
       - id: starting_skymodel

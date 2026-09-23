@@ -28,6 +28,9 @@ inputs:
     doc: |
       Number of cores to use per job for tasks with
       high I/O or memory.
+  - id: model_cache
+    type: string?
+    doc: Neural network cache directory.
 
 steps:
   - id: delay_cal_model
@@ -86,6 +89,8 @@ steps:
         source: gen_delay_config/configfile
       - id: number_cores
         source: number_cores
+      - id: model_cache
+        source: model_cache
     out:
       - id: h5parm
       - id: inspection_plots
