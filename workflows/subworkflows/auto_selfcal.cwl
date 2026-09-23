@@ -84,18 +84,17 @@ steps:
         - id: model_cache
           source: model_cache
       out:
-        - h5_facetselfcal
-        - selfcal_images
-        - solution_inspection_images
-        - fits_image
-      run: ../../steps/facet_selfcal_auto.cwl
+        - best_h5parm
+        - inspection_plots
+        - best_fits_image
+      run: ../../steps/facet_selfcal.cwl
 
     - id: addCS_selfcal
       in:
         - id: ms
           source: msin
         - id: h5parm
-          source: run_facetselfcal/h5_facetselfcal
+          source: run_facetselfcal/best_h5parm
       out:
         - addCS_out_h5
       run: ../../steps/addCS.cwl
@@ -124,17 +123,13 @@ outputs:
       - addCS_selfcal/addCS_out_h5
     pickValue: first_non_null
 
-  - id: fits_images
+  - id: fits_image
     type: File
-    outputSource: run_facetselfcal/fits_image
+    outputSource: run_facetselfcal/best_fits_image
 
   - id: selfcal_inspection_images
     type: File[]
-    outputSource: run_facetselfcal/selfcal_images
-
-  - id: solution_inspection_images
-    type: Directory[]
-    outputSource: run_facetselfcal/solution_inspection_images
+    outputSource: run_facetselfcal/inspection_plots
 
   - id: config_file
     type: File
