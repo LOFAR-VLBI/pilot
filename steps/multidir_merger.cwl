@@ -7,13 +7,25 @@ baseCommand: h5_merger
 
 inputs:
   - id: h5parms
-    type: File[]
+    type:
+      - File[]?
     doc: Input h5parms
     inputBinding:
       prefix: "-in"
       position: 1
       itemSeparator: " "
       separate: true
+  - id: no_propagate_weights
+    type: boolean
+    default: true
+    doc: Propagate the weights of h5parms.
+    inputBinding:
+      prefix: "--no_weight_prop"
+      position: 1
+  - id: high_memory
+    type: boolean
+    default: false
+    doc: Toggle to reserve a large amount of memory for larger merges.
 
 outputs:
     - id: multidir_h5
@@ -36,6 +48,8 @@ requirements:
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
+  - class: ResourceRequirement
+    ramMin: "$(inputs.high_memory ? 150000 : 45000)"
 
 stdout: multidir_h5_merger.log
 stderr: multidir_h5_merger_err.log

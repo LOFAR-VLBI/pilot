@@ -23,11 +23,11 @@ inputs:
       position: 3
       separate: true
 
-  - id: dd_dutch_solutions
+  - id: reset_dutch_solutions
     type: boolean
-    doc: Pre-applied solutions for Dutch stations.
+    doc: Reset Dutch station solutions during calibration such that pre-applied NL corrections are kept as-is.
     inputBinding:
-      prefix: "--dutch_multidir_h5"
+      prefix: "--reset_dutch_solutions"
       position: 4
 
 outputs:

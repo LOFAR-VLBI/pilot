@@ -83,7 +83,10 @@ def main():
     # Cases where images are accepted but bad solutions. This may indicate unstable calibration for good high S/N calibrators
     print(f"Warning: Following directions are rejected and should be inspected: \n{'\n'.join(list(sources_with_bad_solutions.source_id))}")
 
-    if len(sources_with_bad_solutions)/len(validation_csv)>args.max_rejected_fraction:
+    if (len(validation_csv) == 0) and (args.max_rejected_fraction < 1):
+
+        raise ValueError("No directions left whose images passed validation.")
+    elif len(sources_with_bad_solutions)/len(validation_csv)>args.max_rejected_fraction:
         exit(f"ERROR: {int(len(sources_with_bad_solutions)/len(validation_csv)*100)}% directions are rejected, which exceeds the "
              f"provided --max_rejected_fraction={args.max_rejected_fraction} value.")
 
