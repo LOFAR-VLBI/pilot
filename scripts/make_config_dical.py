@@ -17,15 +17,16 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
+def make_config(best_solint: float, phasediff_score: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
     """
     Make configuration file for facetselfcal
 
     Args:
         best_solint: Optimal solution interval, determined within this script
+        phasediff_score: Phasediff-score
         smoothness: Optimal smoothness constraint determined within this script
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
-        inputmodel: Input skymodel to be added to configuration file
+        inputmodel: Input sky model to be added to configuration file
         ms: MeasurementSet name
         calibrate_leakage: Perform leakage calibration
     """
@@ -35,11 +36,9 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
 
     # Decide if a bandpass correction is needed
     if imagecat is not None:
-        bandpass, phaseup, peak_flux = process_catalog(imagecat, ms)
+        nearby_other_bright_sources = has_nearby_other_bright_sources(imagecat, ms)
     else:
-        bandpass = False
-        phaseup = True
-        peak_flux = 0
+        nearby_other_bright_sources = True
 
     # Set solints and smoothness constraints
     with ct.table(ms, readonly=True, ack=False) as t:
@@ -47,27 +46,26 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
         time = np.unique(t.getcol('TIME'))
     deltime = np.abs(time[1] - time[0])
     phase_solint = int(np.ceil(min(max(best_solint * 60, deltime), 96)))
-    if peak_flux > 1:
+    if phasediff_score < 0.1:
         amplitude_solint = '15min'
-    elif peak_flux > 0.5:
+    elif phasediff_score < 0.2:
         amplitude_solint = '20min'
-    elif peak_flux > 0.25:
+    elif phasediff_score < 0.3:
         amplitude_solint = '30min'
-    elif peak_flux > 0.1:
+    elif phasediff_score < 0.5:
         amplitude_solint = '40min'
     else:
         amplitude_solint = '1h'
-    amplitude_smoothness = min(round(smoothness * (3 + 1/peak_flux), 1), 40.0) if peak_flux > 0 else 40.0
-    scalarphasediff_smoothness = min(max(round(10*smoothness, 1), 10.0), 40.0)
+    amplitude_smoothness = round(min(max(smoothness * 6, 7.5), 40.0), 1)
+    scalarphasediff_smoothness = round(min(max(10*smoothness, 10.0), 40.0), 1)
 
-    # Check number of components in VLASS model
+    # Check number of components from sky model
     with open(inputmodel, 'r') as f:
         N_comp = max(len(f.readlines()) - 1, 1)
 
     # This strategy follows:
     # scalarphasediff to solve for differential Faraday rotation
-    # scalarphase with short solints and large smoothness (reduces degrees of freedom)
-    # scalarphase with long solints and small smoothness (reduces degrees of freedom)
+    # scalarphase to solve for phases
     # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
     configdict['imagename'] = filename
@@ -91,22 +89,24 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
     configdict['update_multiscale'] = 'True'
     configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'alldutch:2,international:1']
     configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
-    configdict['stop'] = min(12 + N_comp + int(peak_flux*5), 20)
+    configdict['stop'] = min(10 + int(1/max(phasediff_score, 0.05)) + N_comp, 20)
 
-    if phaseup:
+    # If there are no other nearby bright sources and phasediff score is below 0.3, we can solve without phaseup
+    # If the phasediff score is below 0.15, the source is very high S/N, so phaseup can be avoided
+    # Otherwise, do phaseup with higher robust weighting
+    if (not nearby_other_bright_sources and phasediff_score < 0.3) or phasediff_score < 0.15:
+        configdict['robust'] = -1.4
+    else:
         configdict['phaseupstations'] = "core"
         configdict['robust'] = -0.4
-    else:
-        configdict['robust'] = -1.4
 
     soltypecycle_fulljones = max(configdict['soltypecycles_list'][-1] + 1, 5)
 
     # Add Leakage calibration if requested
-    # If the peak intensity is less than 1 Jy/beam we perform complexgain + leakage to reduce the degrees of freedom
-    # If the peak intensity is larger than 1 Jy/beam we perform a direct fulljones calibration step, assuming we have enough S/N
+    # If phasediff_score is above 0.1 we perform complexgain + leakage to reduce the degrees of freedom
+    # If phasediff_score is below 0.1 we perform a direct fulljones calibration step, assuming we have enough S/N
     if calibrate_leakage:
-        configdict['makeimage_fullpol'] = 'True'
-        if peak_flux <= 1:
+        if phasediff_score > 0.1:
             configdict['soltypecycles_list'].extend([soltypecycle_fulljones, soltypecycle_fulljones])
             configdict['solint_list'].extend([amplitude_solint, amplitude_solint])
             configdict['smoothnessconstraint_list'].extend([amplitude_smoothness, amplitude_smoothness])
@@ -114,9 +114,9 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['antennaconstraint_list'].extend([None, None])
             configdict['nchan_list'].extend([1, 1])
             configdict['soltype_list'].extend(['complexgain', 'leakage'])
-            configdict['antenna_averaging_factors_list'].extend(['alldutch:2,international:1','alldutch:2,international:1'])
-            configdict['antenna_smoothness_factors_list'].extend(['alldutch:2,international:1', 'alldutch:2,international:1'])
-        elif calibrate_leakage:
+            configdict['antenna_averaging_factors_list'].extend(['core:4,remote:2,international:1','core:4,remote:2,international:1'])
+            configdict['antenna_smoothness_factors_list'].extend(['core:4,remote:3,international:1.5', 'core:4,remote:3,international:1.5'])
+        else:
             configdict['soltypecycles_list'].append(soltypecycle_fulljones)
             configdict['solint_list'].append(amplitude_solint)
             configdict['smoothnessconstraint_list'].append(amplitude_smoothness)
@@ -124,11 +124,11 @@ def make_config(best_solint: float, smoothness: float, imagecat: str, inputmodel
             configdict['antennaconstraint_list'].append(None)
             configdict['nchan_list'].append(1)
             configdict['soltype_list'].append('fulljones')
-            configdict['antenna_averaging_factors_list'].append('alldutch:2,international:1')
-            configdict['antenna_smoothness_factors_list'].append('alldutch:2,international:1')
+            configdict['antenna_averaging_factors_list'].append('core:4,remote:2,international:1')
+            configdict['antenna_smoothness_factors_list'].append('core:4,remote:3,international:1.5')
 
-    # Add bandpass if requested
-    if bandpass:
+    # Add bandpass solve for high SNR sources
+    if phasediff_score < 0.2:
         configdict['soltype_list'].append('scalarcomplexgain')
         configdict['solint_list'].append("9h")
         configdict['soltypecycles_list'].append(configdict['stop'] - 2)
@@ -207,40 +207,33 @@ def get_best_solint(ms: str, phasediff_output: str) -> float:
 
     for col in ['Source_id', 'source']:  # Handling possible column variations (versions)
         if col in phasediff.columns:
-            return phasediff[phasediff[col].apply(parse_source_from_h5) == sourceid]['best_solint'].min()
+            phasediff_csv = phasediff[phasediff[col].apply(parse_source_from_h5) == sourceid]
+            best_solint = phasediff_csv['best_solint'].min()
+            phasediff_score = phasediff_csv['spd_score'].min()
+            return best_solint, phasediff_score
 
     raise ValueError("Expected column 'Source_id' or 'source' not found in phasediff_output.")
 
 
-def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
+def has_nearby_other_bright_sources(imagecat: str, ms: str) -> bool:
     """
-    Search through image_catalogue.csv for two purposes.
-    1. Is calibrator bright enough for final bandpass solve
-    2. Is there a nearby source that requires core phaseup
+    Search through the provided catalogue to find if there are high S/N sources nearby.
 
     Args:
         ms: input measurement set
-        imagecat: image_catalogue.csv from plot_field.py
+        imagecat: image_catalogue.csv from plot_field.py (or alternative LOFAR catalogue)
 
     Returns:
-        bandpass: bool
-        phaseup: bool
-        peak_flux: float (in Janksy)
+        bool
     """
 
     im_t = Table.read(imagecat)
 
-    bandpass = False # Default option
-    phaseup = True # Default option
-
     if not im_t:
-        return bandpass, phaseup, 0
+        return True # Remain conservative if table is empty
 
     with ct.table(f"{ms}/FIELD", readonly=True, ack=False) as field_table:
-        phase_dir = field_table.getcol('PHASE_DIR')[0, 0]  # shape: (n_fields, 1, 2)
-        ra_rad, dec_rad = phase_dir
-        ra_deg = np.degrees(ra_rad)
-        dec_deg = np.degrees(dec_rad)
+        ra_deg, dec_deg = np.degrees(field_table.getcol('PHASE_DIR')[0, 0])
 
     calibrator_coord = SkyCoord(ra = ra_deg, dec = dec_deg, unit = 'deg')
     image_coords = SkyCoord(ra = im_t['RA'], dec = im_t['DEC'], unit = 'deg')
@@ -254,40 +247,20 @@ def process_catalog(imagecat: str, ms: str) -> tuple[bool, bool, float]:
 
     # Calibrator should be closest source
     delay_cal = im_t[0]
-    
-    # Get time
-    with ct.table(ms, readonly=True, ack=False) as t:
-        time = np.unique(t.getcol('TIME'))
-        full_time = np.abs(time[-1] - time[0])
-   
+
+    # Other bright calibrators
     im_t = im_t[1:]
+    im_t = im_t[im_t['Total_flux'] > delay_cal["Total_flux"] * 0.25]
 
-    # 8 hours requires 0.5Jy
-    total_flux = delay_cal["Total_flux"]
-    scaling = full_time/(8 * 60 * 60)
-    min_flux = 500/np.sqrt(scaling) # This is minimum flux for bandpass solve
-    if total_flux > min_flux:
-        bandpass = True
-
-    # Some sort of logic for flux weighted
-    # Anything 2-10 arcmins and bright could be a problem 
-
-    #Filter catalogue to only those bright enough to be a problem
-    im_t = im_t[im_t['Total_flux'] > total_flux*0.25]
-
-    # Search within 2 arcmin
+    # Search for other bright sources within different radii
     small_search = im_t[im_t['separation_arcsec'] < 2*60]
-
-    # Search within 10 arcmin
     large_search = im_t[im_t['separation_arcsec'] < 10*60]
-    large_search = large_search[large_search['Total_flux'] > total_flux]
+    large_search = large_search[large_search['Total_flux'] > delay_cal["Total_flux"]]
 
-    if(len(small_search) == 0) and (len(large_search) == 0):
-        phaseup = False 
+    if (len(small_search) == 0) and (len(large_search) == 0):
+        return False
 
-    print('Minimum flux density for bandpass: ', min_flux)
-    print('Delay cal flux density: ', total_flux)
-    return bandpass, phaseup, delay_cal["Peak_flux"]/1000
+    return True
 
 
 def make_utf8(inp: bytes | str) -> str:
@@ -347,11 +320,11 @@ def parse_args():
     """
 
     parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
-    parser.add_argument('--ms', type=str, help='MeasurementSet')
+    parser.add_argument('--ms', type=str, help='MeasurementSet', required=True)
+    parser.add_argument('--inputmodel', type=str, help='Input sky model to start calibration from.', required=True)
+    parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output', required=True)
+    parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions', required=True)
     parser.add_argument('--imagecat', type=str, help='Image catalogue CSV file')
-    parser.add_argument('--inputmodel', type=str, help='Input skymodel')
-    parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output')
-    parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions')
     parser.add_argument('--calibrate-leakage', action="store_true", help='Perform leakage calibration')
     return parser.parse_args()
 
@@ -363,9 +336,9 @@ def main():
 
     args = parse_args()
 
-    best_solint = get_best_solint(args.ms, args.phasediff_output)
+    best_solint, phasediff_score = get_best_solint(args.ms, args.phasediff_output)
     smoothness = get_smoothing(args.scalarphase_h5)
-    make_config(best_solint, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
+    make_config(best_solint, phasediff_score, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
 
 if __name__ == "__main__":
     main()
