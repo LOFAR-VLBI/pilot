@@ -16,6 +16,7 @@ dependencies = [
     "pandas",
     "psutil",
     "joblib",
+    "matplotlib",
     "numba",
     "tables",
     "tox",
@@ -27,8 +28,12 @@ dependencies = [
     "pytest",
 ]
 
-[tool.setuptools]
-packages = []
+[project.scripts]
+pilot-fluxscale = "pilot.validation.flux_density_scale:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pilot*"]
 
 [tool.tox]
 requires = ["tox>=4.22"]
