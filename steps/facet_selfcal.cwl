@@ -16,7 +16,7 @@ arguments:
     position: 1000
   - valueFrom: |
       mv plots plots_$(inputs.msin.basename) &&
-      mv fits_images fits_images_$(inputs.msin.basename); done
+      mv fits_images fits_images_$(inputs.msin.basename)
     shellQuote: false
     position: 1001
 
@@ -32,7 +32,6 @@ inputs:
     - id: skymodel
       type: File?
       inputBinding:
-        position: 0
         prefix: --skymodel
         separate: true
       doc: |
@@ -42,7 +41,6 @@ inputs:
     - id: configfile
       type: File?
       inputBinding:
-        position: 0
         prefix: --configpath
         separate: true
       doc: A plain-text file containing configuration options for self-calibration.
@@ -52,7 +50,6 @@ inputs:
       doc: A text file with directions for DDE calibration
       inputBinding:
         prefix: "--facetdirection"
-        position: 0
         separate: true
 
     - id: model_cache
@@ -60,7 +57,6 @@ inputs:
       doc: Neural network cache directory.
       inputBinding:
         prefix: "--nn-model-cache"
-        position: 0
         separate: true
 
     - id: number_cores
