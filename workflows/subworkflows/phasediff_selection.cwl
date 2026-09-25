@@ -35,6 +35,13 @@ inputs:
       type: float
       default: 0.06
       doc: Minimum separation in degrees between selected sources. Only the best scoring source is kept.
+    - id: keep_close_sources
+      type: boolean
+      default: false
+      doc: |
+        Toggles whether to keep sources that are too close to each other for imaging.
+        Useful for e.g. LoTSS-HR or when calibrator level sources are too close to each other
+        to be kept for dd calibration.
 
 steps:
     - id: dp3_prep_phasediff
@@ -84,6 +91,8 @@ steps:
           source: select_best_n
         - id: min_separation
           source: min_source_separation
+        - id: keep_close_sources
+          source: keep_close_sources
       out:
         - strong_ms
         - weak_ms

@@ -14,7 +14,7 @@ from astropy import units as u
 from make_config_international import parse_source_id
 
 
-def filter_too_nearest_neighbours(csv: str, sep: float = 0.06) -> pd.DataFrame:
+def filter_too_nearest_neighbours(csv: str, sep: float = 0.06, keep_close_sources: bool = False) -> pd.DataFrame:
     """
     Identify sources that have a nearest neighbour within 0.1 degrees distance.
     Keep the source with the highest spd_score.
@@ -22,6 +22,8 @@ def filter_too_nearest_neighbours(csv: str, sep: float = 0.06) -> pd.DataFrame:
     Args:
         csv: CSV file with RA/DEC and spd_score
         sep: separation threshold in degrees
+        keep_close_sources: do not remove sources too close to a calibrator,
+            but give them a poor score such that they can be imaged with nearest solutions.
 
     Returns: DataFrame filtered on spd_score and seperation threshold
     """
@@ -52,11 +54,16 @@ def filter_too_nearest_neighbours(csv: str, sep: float = 0.06) -> pd.DataFrame:
                 to_remove.add(i)
 
     # Remove rows marked for removal
-    print('Removing:')
-    print(df.iloc[list(to_remove)])
-    filtered_df = df.drop(index=to_remove).reset_index(drop=True)
+    if not keep_close_sources:
+        print('Removing:')
+        print(df.iloc[list(to_remove)])
+        filtered_df = df.drop(index=to_remove).reset_index(drop=True)
+        return filtered_df
+    else:
+        print("Keeping close-by sources for general imaging")
+        df.loc[list(to_remove), 'spd_score'] = 10.0
+        return df
 
-    return filtered_df
 
 
 def match_source_id(mslist: list, source_id: str) -> str:
@@ -119,7 +126,8 @@ def parse_args():
     parser.add_argument('--select_best_N', help='Select the top N best scoring calibrators. If 0, select all.', type=int, default=0)
     parser.add_argument('--suffix', help='Suffix to add to MSes after phasediff selection. In case of reclassification this is the new suffix.', default='_best')
     parser.add_argument('--reclassify_from', help='Suffix that will be rename to that given by --suffix.', default='')
-    parser.add_argument('--min-separation', help='Minimum allowed separation in degrees between sources. The best scoring source is kept.', default=0.06)
+    parser.add_argument('--min-separation', help='Minimum allowed separation in degrees between sources. The best scoring source is kept.', default=0.06, type=float)
+    parser.add_argument('--keep-close-sources', action="store_true", help='Keeps sources that are too close to a calibrator such that they can still be imaged with the nearest solutions.', default='')
     return parser.parse_args()
 
 
@@ -138,20 +146,25 @@ def main():
         if args.select_best_N > 0:
             df = df.head(args.select_best_N)
         else:
-            df = filter_too_nearest_neighbours(args.csv, sep=args.min_separation)
+            df = filter_too_nearest_neighbours(args.csv, sep=args.min_separation, keep_close_sources=args.keep_close_sources)
             df = df.sort_values("spd_score", ascending=True)
             if len(df) < args.select_best_N:
                 print(f"Warning: {args.select_best_N} sources requested, but only {len(df)} sources present.")
+
+        df = df.sort_values("spd_score", ascending=True)
         for source in df.set_index('source').iterrows():
             name = source[0]
             score = source[1]['spd_score']
             if score <= args.strong_score:
+                print(f"Marking {name} as strong")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')
             elif (score > args.strong_score) and (score <= args.weak_score):
+                print(f"Marking {name} as weak")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_weak.ms')
             elif score > args.weak_score:
+                print(f"Marking {name} as unreliable")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_unreliable.ms')
     else:
