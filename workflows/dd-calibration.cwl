@@ -148,7 +148,6 @@ steps:
         - h5parms
         - selfcal_images
         - selfcal_inspection_images
-        - solution_inspection_images
         - config_files
         - validation_csv
       run: ./subworkflows/ddcal_calibrators.cwl
@@ -210,7 +209,6 @@ steps:
         - h5parms
         - selfcal_images
         - selfcal_inspection_images
-        - solution_inspection_images
         - config_files
         - validation_csv
       run: ./subworkflows/ddcal_calibrators.cwl
@@ -278,7 +276,6 @@ steps:
         - h5parms
         - selfcal_images
         - selfcal_inspection_images
-        - solution_inspection_images
         - config_files
       run: ./subworkflows/ddcal_calibrators.cwl
 
@@ -290,20 +287,6 @@ steps:
           source: ddcal_int_weak/selfcal_images
         - id: files_unreliable
           source: ddcal_int_unreliable/selfcal_images
-      out:
-        - id: final_files_strong
-        - id: final_files_weak
-        - id: final_files_unreliable
-      run: ../steps/select_final_files.cwl
-
-    - id: filter_selfcal_pngs
-      in:
-        - id: files_strong
-          source: ddcal_int_strong/selfcal_inspection_images
-        - id: files_weak
-          source: ddcal_int_weak/selfcal_inspection_images
-        - id: files_unreliable
-          source: ddcal_int_unreliable/selfcal_inspection_images
       out:
         - id: final_files_strong
         - id: final_files_weak
@@ -411,29 +394,19 @@ outputs:
       linkMerge: merge_flattened
       doc: Best self-calibration solutions in h5parm format
 
-    - id: solution_inspection_images
-      type: Directory[]
-      outputSource:
-        - ddcal_int_strong/solution_inspection_images
-        - ddcal_int_weak/solution_inspection_images
-        - ddcal_int_unreliable/solution_inspection_images
-      pickValue: all_non_null
-      linkMerge: merge_flattened
-      doc: LoSoTo solution inspection images
-
     - id: selfcal_PNG_images
       type:
-        - type: array
-          items:
-            type: array
-            items:
-              - "null"
-              - File
+        type: array
+        items:
+          type: array
+          items: Directory
       outputSource:
-        - filter_selfcal_pngs/final_files_strong
-        - filter_selfcal_pngs/final_files_weak
-        - filter_selfcal_pngs/final_files_unreliable
-      doc: Self-calibration images in PNG format
+        - ddcal_int_strong/selfcal_inspection_images
+        - ddcal_int_weak/selfcal_inspection_images
+        - ddcal_int_unreliable/selfcal_inspection_images
+      pickValue: all_non_null
+      linkMerge: merge_nested
+      doc: Self-calibration inspection images in PNG format
 
     - id: selfcal_configs
       type: Directory
@@ -443,5 +416,4 @@ outputs:
     - id: msout
       type: Directory[]
       outputSource: clean_ms_names/msout
-      pickValue: all_non_null
       doc: MeasurementSets of all (selected) directions _without_ solutions.
