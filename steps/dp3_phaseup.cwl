@@ -121,7 +121,7 @@ inputs:
 
     - id: max_dp3_threads
       type: int?
-      default: 5
+      default: 4
       inputBinding:
         position: 1
         separate: false
