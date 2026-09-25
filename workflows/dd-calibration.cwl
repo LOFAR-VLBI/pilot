@@ -84,6 +84,14 @@ inputs:
         Sets the number of directions to split off per DP3 explode call
         (enhances parallelisation and optimises the DP3 explode step)
 
+    - id: keep_close_sources
+      type: boolean
+      default: false
+      doc: |
+        Toggles whether to keep sources that are too close to each other for imaging.
+        Useful for e.g. LoTSS-HR or when calibrator level sources are too close to each other
+        to be kept for dd calibration.
+
 steps:
     - id: split_directions
       label: Split out calibrator sources in separate measurement sets
@@ -106,6 +114,8 @@ steps:
           valueFrom: $(inputs.custom_phasediff_score_csv == null)
         - id: chunk_size_directions
           source: chunk_size_directions
+        - id: keep_close_sources
+          source: keep_close_sources
       out:
         - msout_concat_strong
         - msout_concat_weak
@@ -147,6 +157,8 @@ steps:
       in:
         - id: h5parms
           source: ddcal_int_strong/h5parms
+        - id: high_memory
+          source: freeze_dutch_solutions
       out:
         - multidir_h5
       run: ../steps/multidir_merger.cwl
@@ -210,6 +222,8 @@ steps:
             - multidir_merge_strong/multidir_h5
           linkMerge: merge_flattened
           pickValue: all_non_null
+        - id: high_memory
+          source: freeze_dutch_solutions
       out:
         - id: multidir_h5
       run: ../steps/multidir_merger.cwl
