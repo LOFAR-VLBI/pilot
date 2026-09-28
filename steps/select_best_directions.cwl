@@ -50,6 +50,16 @@ inputs:
       inputBinding:
         prefix: "--min-separation"
         position: 5
+    - id: keep_close_sources
+      type: boolean
+      default: false
+      inputBinding:
+        prefix: "--keep-close-sources"
+        position: 6
+      doc: |
+        Toggles whether to keep sources that are too close to each other for imaging.
+        Useful for e.g. LoTSS-HR or when calibrator level sources are too close to each other
+        to be kept for dd calibration.
 
 
 outputs:
