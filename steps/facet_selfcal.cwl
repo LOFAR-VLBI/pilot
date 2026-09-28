@@ -6,22 +6,6 @@ doc: Performs calibration with facetselfcal.
 
 baseCommand: facetselfcal
 
-arguments:
-  - prefix: --auto
-    valueFrom: $(inputs.configfile == null)
-  - prefix: --early-stopping
-    valueFrom: $(inputs.model_cache != null)
-  - valueFrom: "&&"
-    shellQuote: false
-    position: 1000
-  - valueFrom: |
-      mkdir plots plots_$(inputs.msin.basename) &&
-      mkdir fits_images fits_images_$(inputs.msin.basename) &&
-      mv fits_images/*MFS*image*.fits fits_images_$(inputs.msin.basename) &&
-      mv plots/*.png plots_$(inputs.msin.basename)
-    shellQuote: false
-    position: 1001
-
 inputs:
     - id: msin
       type: Directory
@@ -65,6 +49,22 @@ inputs:
       type: int?
       default: 12
       doc: The number of cores that should be allocated for the self-calibration.
+
+arguments:
+  - prefix: --auto
+    valueFrom: $(inputs.configfile == null)
+  - prefix: --early-stopping
+    valueFrom: $(inputs.model_cache != null)
+  - valueFrom: "&&"
+    shellQuote: false
+    position: 1000
+  - valueFrom: |
+      mkdir plots plots_$(inputs.msin.basename) &&
+      mkdir fits_images fits_images_$(inputs.msin.basename) &&
+      mv fits_images/*MFS*image*.fits fits_images_$(inputs.msin.basename) &&
+      mv plots/*.png plots_$(inputs.msin.basename)
+    shellQuote: false
+    position: 1001
 
 outputs:
     - id: h5parm
