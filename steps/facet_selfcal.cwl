@@ -15,8 +15,10 @@ arguments:
     shellQuote: false
     position: 1000
   - valueFrom: |
-      mv plots plots_$(inputs.msin.basename) &&
-      mv fits_images fits_images_$(inputs.msin.basename)
+      mkdir plots plots_$(inputs.msin.basename) &&
+      mkdir fits_images fits_images_$(inputs.msin.basename) &&
+      mv fits_images/*MFS*image*.fits fits_images_$(inputs.msin.basename) &&
+      mv plots/*.png plots_$(inputs.msin.basename)
     shellQuote: false
     position: 1001
 
