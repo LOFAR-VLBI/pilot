@@ -34,7 +34,14 @@ inputs:
       type: float
       default: 1.5
       doc: |
-         Phasediff-score for calibrator selection <1.5 good for strong DD-calibrators and <0.7 good for DI-calibrators.
+         Phasediff-score threshold for strong DD-calibrators. Scores below
+         phasediff_score_main are assigned to the main category.
+         Only used when dd_selection==true.
+    - id: phasediff_score_main
+      type: float
+      default: 0.7
+      doc: |
+         Phasediff-score below which sources are assigned to the main category.
          Only used when dd_selection==true.
     - id: phasediff_score_weak
       type: float
@@ -144,6 +151,8 @@ steps:
           source: dd_selection
         - id: phasediff_score_strong
           source: phasediff_score_strong
+        - id: phasediff_score_main
+          source: phasediff_score_main
         - id: phasediff_score_weak
           source: phasediff_score_weak
         - id: select_best_n
@@ -154,6 +163,7 @@ steps:
           source: keep_close_sources
       out:
         - id: phasediff_score_csv
+        - id: main_ms
         - id: strong_ms
         - id: weak_ms
         - id: unreliable_ms
@@ -161,6 +171,12 @@ steps:
       run: ./subworkflows/phasediff_selection.cwl
 
 outputs:
+    - id: msout_concat_main
+      type: Directory[]
+      outputSource:
+        - phasediff_selection/main_ms
+      pickValue: all_non_null
+      linkMerge: merge_flattened
     - id: msout_concat_strong
       type: Directory[]
       outputSource:

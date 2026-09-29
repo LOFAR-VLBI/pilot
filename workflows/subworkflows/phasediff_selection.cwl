@@ -23,6 +23,10 @@ inputs:
       type: float
       default: 1.5
       doc: Phasediff score threshold for strong calibrator selection.
+    - id: phasediff_score_main
+      type: float
+      default: 0.7
+      doc: Phasediff score threshold for main calibrator selection.
     - id: phasediff_score_weak
       type: float
       default: 2.6
@@ -85,6 +89,8 @@ steps:
           source: msin
         - id: phasediff_score_strong
           source: phasediff_score_strong
+        - id: phasediff_score_main
+          source: phasediff_score_main
         - id: phasediff_score_weak
           source: phasediff_score_weak
         - id: select_best_n
@@ -94,6 +100,7 @@ steps:
         - id: keep_close_sources
           source: keep_close_sources
       out:
+        - main_ms
         - strong_ms
         - weak_ms
         - unreliable_ms
@@ -108,6 +115,10 @@ outputs:
       type: Directory[]
       outputSource: select_best_directions/strong_ms
       doc: Final MS selection for strong calibrators.
+    - id: main_ms
+      type: Directory[]
+      outputSource: select_best_directions/main_ms
+      doc: Final MS selection for main calibrators.
     - id: weak_ms
       type: Directory[]
       outputSource: select_best_directions/weak_ms
