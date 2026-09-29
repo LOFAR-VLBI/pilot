@@ -73,6 +73,8 @@ steps:
           source: msin
         - id: reset_dutch_solutions
           source: freeze_dutch_solutions
+        - id: use_dical_config
+          source: use_dical_config
       out:
         - dd_config
       when: $(inputs.use_dical_config == false)
@@ -84,6 +86,8 @@ steps:
           source: msin
         - id: phasediff_output
           source: phasediff_score_csv
+        - id: use_dical_config
+          source: use_dical_config
       out:
         - configfile
       when: $(inputs.use_dical_config)
