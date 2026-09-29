@@ -17,7 +17,7 @@ import tables
 from submods.source_selection.selfcal_selection import parse_source_from_h5
 
 
-def make_config(best_solint: float, phasediff_score: float, smoothness: float, imagecat: str, inputmodel: str, ms: str, calibrate_leakage: bool):
+def make_config(best_solint: float, phasediff_score: float, smoothness: float, imagecat: str | None, inputmodel: str | None, ms: str, calibrate_leakage: bool):
     """
     Make configuration file for facetselfcal
 
@@ -26,7 +26,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
         phasediff_score: Phasediff-score
         smoothness: Optimal smoothness constraint determined within this script
         imagecat: Image catalogue used to decide whether phaseup and bandpass correction needed
-        inputmodel: Input sky model to be added to configuration file
+        inputmodel: Optional input sky model used to estimate component count
         ms: MeasurementSet name
         calibrate_leakage: Perform leakage calibration
     """
@@ -60,8 +60,11 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     scalarphasediff_smoothness = round(min(max(10*smoothness, 10.0), 40.0), 1)
 
     # Check number of components from sky model
-    with open(inputmodel, 'r') as f:
-        N_comp = max(len(f.readlines()) - 1, 1)
+    if inputmodel is None:
+        N_comp = 1
+    else:
+        with open(inputmodel, 'r') as f:
+            N_comp = max(len(f.readlines()) - 1, 1)
 
     # This strategy follows:
     # scalarphasediff to solve for differential Faraday rotation
@@ -321,9 +324,11 @@ def parse_args():
 
     parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
     parser.add_argument('--ms', type=str, help='MeasurementSet', required=True)
-    parser.add_argument('--inputmodel', type=str, help='Input sky model to start calibration from.', required=True)
+    parser.add_argument('--inputmodel', type=str, help='Input sky model to start calibration from.')
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output', required=True)
-    parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions', required=True)
+    parser.add_argument('--scalarphase-h5', type=str, help='h5 with scalarphase solutions for ionospheric conditions')
+    parser.add_argument('--smoothness', type=float, default=1.0,
+                        help='Fallback smoothness when no scalarphase h5 is available.')
     parser.add_argument('--imagecat', type=str, help='Image catalogue CSV file')
     parser.add_argument('--calibrate-leakage', action="store_true", help='Perform leakage calibration')
     return parser.parse_args()
@@ -337,7 +342,7 @@ def main():
     args = parse_args()
 
     best_solint, phasediff_score = get_best_solint(args.ms, args.phasediff_output)
-    smoothness = get_smoothing(args.scalarphase_h5)
+    smoothness = get_smoothing(args.scalarphase_h5) if args.scalarphase_h5 else args.smoothness
     make_config(best_solint, phasediff_score, smoothness, args.imagecat, args.inputmodel, args.ms, args.calibrate_leakage)
 
 if __name__ == "__main__":

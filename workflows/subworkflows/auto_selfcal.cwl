@@ -24,6 +24,11 @@ inputs:
     type: string?
     doc: Neural network cache directory.
 
+  - id: use_dical_config
+    type: boolean
+    default: false
+    doc: Generate a direction-independent configuration for this calibrator.
+
 steps:
     - id: find_closest_h5
       in:
@@ -70,7 +75,19 @@ steps:
           source: freeze_dutch_solutions
       out:
         - dd_config
+      when: $(inputs.use_dical_config == false)
       run: ../../steps/make_dd_config.cwl
+
+    - id: make_dical_config
+      in:
+        - id: ms
+          source: msin
+        - id: phasediff_output
+          source: phasediff_score_csv
+      out:
+        - configfile
+      when: $(inputs.use_dical_config)
+      run: ../../steps/make_main_config.cwl
 
     - id: run_facetselfcal
       in:
@@ -80,7 +97,10 @@ steps:
             - msin
           pickValue: first_non_null
         - id: configfile
-          source: make_dd_config/dd_config
+          source:
+            - make_dd_config/dd_config
+            - make_dical_config/configfile
+          pickValue: first_non_null
         - id: model_cache
           source: model_cache
       out:
@@ -138,4 +158,7 @@ outputs:
 
   - id: config_file
     type: File
-    outputSource: make_dd_config/dd_config
+    outputSource:
+      - make_dd_config/dd_config
+      - make_dical_config/configfile
+    pickValue: first_non_null

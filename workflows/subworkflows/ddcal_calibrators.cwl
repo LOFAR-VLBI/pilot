@@ -24,6 +24,11 @@ inputs:
     type: string?
     doc: Neural network cache directory.
 
+  - id: use_dical_config
+    type: boolean
+    default: false
+    doc: Generate a direction-independent configuration for this calibration tier.
+
   - id: validate
     type: boolean
     default: true
@@ -49,6 +54,8 @@ steps:
           source: phasediff_score_csv
         - id: model_cache
           source: model_cache
+        - id: use_dical_config
+          source: use_dical_config
       out:
         - merged_h5
         - fits_images
