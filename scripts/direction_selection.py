@@ -119,7 +119,10 @@ def parse_args():
     parser.add_argument('--ms', nargs="+", help='Input MS', default=None)
     parser.add_argument('--strong_score', type=float,
                         help='Phasediff score threshold below which calibrators are considered strong.',
-                        default=2.0)
+                        default=1.5)
+    parser.add_argument('--main_score', type=float,
+                        help='Phasediff score threshold below which calibrators are considered main.',
+                        default=0.7)
     parser.add_argument('--weak_score', type=float,
                         help='Lower limit for strong < score < weak between which which calibrators are considered strong.',
                         default=2.6)
@@ -155,7 +158,11 @@ def main():
         for source in df.set_index('source').iterrows():
             name = source[0]
             score = source[1]['spd_score']
-            if score <= args.strong_score:
+            if score < args.main_score:
+                print(f"Marking {name} as main")
+                ms_name = match_source_id(args.ms, name)
+                rename_folder(ms_name, ms_name.split('/')[-1]+'_main.ms')
+            elif score <= args.strong_score:
                 print(f"Marking {name} as strong")
                 ms_name = match_source_id(args.ms, name)
                 rename_folder(ms_name, ms_name.split('/')[-1]+'_strong.ms')

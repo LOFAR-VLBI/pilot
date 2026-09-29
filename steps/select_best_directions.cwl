@@ -28,6 +28,13 @@ inputs:
       inputBinding:
         prefix: "--strong_score"
         position: 3
+    - id: phasediff_score_main
+      type: float
+      default: 0.7
+      doc: Phasediff score below which calibrators are considered main.
+      inputBinding:
+        prefix: "--main_score"
+        position: 3
     - id: phasediff_score_weak
       type: float
       default: 2.6
@@ -63,6 +70,11 @@ inputs:
 
 
 outputs:
+    - id: main_ms
+      type: Directory[]
+      doc: Main directions
+      outputBinding:
+        glob: "*_main.ms"
     - id: strong_ms
       type: Directory[]
       doc: Best directions

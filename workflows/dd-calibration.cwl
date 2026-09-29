@@ -44,9 +44,14 @@ inputs:
       type: float
       default: 1.5
       doc: |
-         Phasediff-score to select strong calibrators and control the DD calibrator selection.
-         See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
-         For calibrator selection <1.5 is good for strong DD-calibrators and <0.7 good for DI-calibrators.
+         Phasediff-score threshold for strong calibrators. Scores below
+         phasediff_score_main are assigned to the main category.
+          See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247).
+
+    - id: phasediff_score_main
+      type: float
+      default: 0.7
+      doc: Phasediff-score below which sources are assigned to the main category.
 
     - id: phasediff_score_weak
       type: float
@@ -104,6 +109,8 @@ steps:
           source: source_catalogue
         - id: phasediff_score_strong
           source: phasediff_score_strong
+        - id: phasediff_score_main
+          source: phasediff_score_main
         - id: phasediff_score_weak
           source: phasediff_score_weak
         - id: peak_flux_cut
@@ -117,20 +124,90 @@ steps:
         - id: keep_close_sources
           source: keep_close_sources
       out:
+        - msout_concat_main
         - msout_concat_strong
         - msout_concat_weak
         - msout_concat_unreliable
         - phasediff_score_csv
       run: ./split-directions.cwl
 
-    # Strong calibrators
-    - id: ddcal_int_strong
-      label: Automatic direction-dependent calibration
+    # Main calibrators
+    - id: ddcal_int_main
+      label: Automatic direction-dependent calibration for main calibrators
       in:
         - id: msin
-          source: split_directions/msout_concat_strong
+          source: split_directions/msout_concat_main
         - id: dd_precorrections
           source: dd_precorrections
+        - id: freeze_dutch_solutions
+          source: freeze_dutch_solutions
+        - id: phasediff_score_csv
+          source:
+            - custom_phasediff_score_csv
+            - split_directions/phasediff_score_csv
+          pickValue: first_non_null
+        - id: model_cache
+          source: model_cache
+        - id: validate
+          source: validate
+        - id: max_rejected_fraction
+          source: max_rejected_fraction
+      out:
+        - h5parms
+        - selfcal_images
+        - selfcal_inspection_images
+        - solution_inspection_images
+        - config_files
+        - validation_csv
+      run: ./subworkflows/ddcal_calibrators.cwl
+      when: $(inputs.msin != null && inputs.msin.length > 0)
+
+    - id: multidir_merge_main
+      in:
+        - id: h5parms
+          source:
+            - ddcal_int_main/h5parms
+            - dd_precorrections
+          linkMerge: merge_flattened
+          pickValue: all_non_null
+        - id: high_memory
+          source: freeze_dutch_solutions
+      out:
+        - multidir_h5
+      run: ../steps/multidir_merger.cwl
+      when: $(inputs.h5parms != null && inputs.h5parms.length > 0)
+
+    - id: demote_main_to_strong
+      label: Identify main sources which failed validation
+      in:
+        - id: msin
+          source: split_directions/msout_concat_main
+        - id: validation_csv
+          source: ddcal_int_main/validation_csv
+        - id: demote_from
+          default: "main"
+        - id: demote_to
+          default: "strong"
+      out:
+        - msout
+      run: ../steps/demote_selection.cwl
+      when: $(inputs.validation_csv != null)
+
+    # Strong calibrators
+    - id: ddcal_int_strong
+      label: Automatic direction-dependent calibration for strong calibrators
+      in:
+        - id: msin
+          source:
+            - split_directions/msout_concat_strong
+            - demote_main_to_strong/msout
+          pickValue: all_non_null
+          linkMerge: merge_flattened
+        - id: dd_precorrections
+          source:
+            - multidir_merge_main/multidir_h5
+            - dd_precorrections
+          pickValue: first_non_null
         - id: freeze_dutch_solutions
           source: freeze_dutch_solutions
         - id: phasediff_score_csv
@@ -157,7 +234,11 @@ steps:
     - id: multidir_merge_strong
       in:
         - id: h5parms
-          source: ddcal_int_strong/h5parms
+          source:
+            - ddcal_int_strong/h5parms
+            - multidir_merge_main/multidir_h5
+          linkMerge: merge_flattened
+          pickValue: all_non_null
         - id: high_memory
           source: freeze_dutch_solutions
       out:
@@ -169,7 +250,11 @@ steps:
       label: Identify strong sources which failed validation
       in:
         - id: msin
-          source: split_directions/msout_concat_strong
+          source:
+            - split_directions/msout_concat_strong
+            - demote_main_to_strong/msout
+          linkMerge: merge_flattened
+          pickValue: all_non_null
         - id: validation_csv
           source: ddcal_int_strong/validation_csv
         - id: demote_from
@@ -284,6 +369,8 @@ steps:
 
     - id: filter_selfcal_fits
       in:
+        - id: files_main
+          source: ddcal_int_main/selfcal_images
         - id: files_strong
           source: ddcal_int_strong/selfcal_images
         - id: files_weak
@@ -291,6 +378,7 @@ steps:
         - id: files_unreliable
           source: ddcal_int_unreliable/selfcal_images
       out:
+        - id: final_files_main
         - id: final_files_strong
         - id: final_files_weak
         - id: final_files_unreliable
@@ -298,6 +386,8 @@ steps:
 
     - id: filter_selfcal_pngs
       in:
+        - id: files_main
+          source: ddcal_int_main/selfcal_inspection_images
         - id: files_strong
           source: ddcal_int_strong/selfcal_inspection_images
         - id: files_weak
@@ -305,6 +395,7 @@ steps:
         - id: files_unreliable
           source: ddcal_int_unreliable/selfcal_inspection_images
       out:
+        - id: final_files_main
         - id: final_files_strong
         - id: final_files_weak
         - id: final_files_unreliable
@@ -312,11 +403,14 @@ steps:
 
     - id: filter_selfcal_h5parms
       in:
+        - id: files_main
+          source: ddcal_int_main/h5parms
         - id: files_strong
           source: ddcal_int_strong/h5parms
         - id: files_weak
           source: ddcal_int_weak/h5parms
       out:
+        - id: final_files_main
         - id: final_files_strong
         - id: final_files_weak
       run: ../steps/select_final_files.cwl
@@ -325,6 +419,7 @@ steps:
       in:
         - id: msin
           source:
+            - split_directions/msout_concat_main
             - split_directions/msout_concat_strong
             - split_directions/msout_concat_weak
             - split_directions/msout_concat_unreliable
@@ -339,6 +434,7 @@ steps:
       in:
         - id: files
           source:
+            - ddcal_int_main/config_files
             - ddcal_int_strong/config_files
             - ddcal_int_weak/config_files
             - ddcal_int_unreliable/config_files
@@ -351,10 +447,11 @@ steps:
       run: ../steps/collectfiles.cwl
 
     - id: concat_validation_csvs
-      label: Merge strong and weak validation
+      label: Merge main, strong, and weak validation
       in:
         - id: input_csvs
           source:
+            - ddcal_int_main/validation_csv
             - ddcal_int_strong/validation_csv
             - ddcal_int_weak/validation_csv
           pickValue: all_non_null
@@ -372,7 +469,7 @@ outputs:
     - id: final_merged_h5
       type: File?
       outputSource: multidir_merge_weak/multidir_h5
-      doc: Final multi-directional h5parm containing solutions in the directions of strong and weak 
+      doc: Final multi-directional h5parm containing solutions in the directions of main, strong, and weak calibrators.
 
     - id: phasediff_score_csv
       type: File?
@@ -393,10 +490,11 @@ outputs:
               - "null"
               - File
       outputSource:
+        - filter_selfcal_fits/final_files_main
         - filter_selfcal_fits/final_files_strong
         - filter_selfcal_fits/final_files_weak
         - filter_selfcal_fits/final_files_unreliable
-      doc: Best self-calibration image in FITS format
+      doc: Best self-calibration image in FITS format, including main calibrators.
 
     - id: calibration_solutions
       type:
@@ -405,15 +503,17 @@ outputs:
             - "null"
             - File
       outputSource:
+        - filter_selfcal_h5parms/final_files_main
         - filter_selfcal_h5parms/final_files_strong
         - filter_selfcal_h5parms/final_files_weak
       pickValue: all_non_null
       linkMerge: merge_flattened
-      doc: Best self-calibration solutions in h5parm format
+      doc: Best self-calibration solutions in h5parm format, including main calibrators.
 
     - id: solution_inspection_images
       type: Directory[]
       outputSource:
+        - ddcal_int_main/solution_inspection_images
         - ddcal_int_strong/solution_inspection_images
         - ddcal_int_weak/solution_inspection_images
         - ddcal_int_unreliable/solution_inspection_images
@@ -430,6 +530,7 @@ outputs:
               - "null"
               - File
       outputSource:
+        - filter_selfcal_pngs/final_files_main
         - filter_selfcal_pngs/final_files_strong
         - filter_selfcal_pngs/final_files_weak
         - filter_selfcal_pngs/final_files_unreliable

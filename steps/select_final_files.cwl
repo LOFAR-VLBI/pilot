@@ -7,6 +7,13 @@ doc: Selects the final selfcal files from overlapping sets of sources
 baseCommand: select_final_files.py
 
 inputs:
+  - id: files_main
+    type: File[]?
+    inputBinding:
+      position: 1
+      prefix: --files-main
+      separate: true
+    doc: Best cycle FITS files for main sources.
   - id: files_strong
     type: File[]?
     inputBinding:
@@ -38,6 +45,9 @@ inputs:
         MeasurementSets should be combined.
 
 outputs:
+  - id: final_files_main
+    type: File[]?
+    doc: The final files of main calibrators.
   - id: final_files_strong
     type: File[]?
     doc: The final files of strong calibrators.
