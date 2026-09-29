@@ -153,6 +153,8 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: use_dical_config
+          default: true
         - id: validate
           source: validate
         - id: max_rejected_fraction
@@ -224,6 +226,8 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: use_dical_config
+          default: false
         - id: validate
           source: validate
         - id: max_rejected_fraction
@@ -294,6 +298,8 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: use_dical_config
+          default: false
         - id: validate
           source: validate
         - id: max_rejected_fraction
@@ -366,6 +372,8 @@ steps:
           pickValue: first_non_null
         - id: model_cache
           source: model_cache
+        - id: use_dical_config
+          default: false
         - id: validate
           default: false
         - id: postage_stamp_imsize
