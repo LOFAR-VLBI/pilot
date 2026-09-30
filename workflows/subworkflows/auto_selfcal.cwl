@@ -24,6 +24,12 @@ inputs:
     type: string?
     doc: Neural network cache directory.
 
+  - id: imsize
+    type: int
+    default: 2048
+    doc: |
+      Image size in pixels to be used during calibration.
+
 steps:
     - id: find_closest_h5
       in:
@@ -68,6 +74,8 @@ steps:
           source: msin
         - id: reset_dutch_solutions
           source: freeze_dutch_solutions
+        - id: imsize
+          source: imsize
       out:
         - dd_config
       run: ../../steps/make_dd_config.cwl

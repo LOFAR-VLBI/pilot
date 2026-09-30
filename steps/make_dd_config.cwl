@@ -30,6 +30,15 @@ inputs:
       prefix: "--reset_dutch_solutions"
       position: 4
 
+  - id: imsize
+    type: int
+    default: 2048
+    doc: |
+      Image size in pixels to be used during calibration.
+    inputBinding:
+      prefix: "--imsize"
+      position: 5
+
 outputs:
     - id: dd_config
       type: File
