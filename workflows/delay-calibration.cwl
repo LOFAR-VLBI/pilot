@@ -297,9 +297,14 @@ outputs:
         format, phase-shifted to the delay calibrator.
 
   - id: msouts
-    outputSource: apply_delay_allms/ms_out
+    outputSource:
+      - apply_delay_allms/ms_out
+      - process_ddf/msout
+    pickValue: first_non_null
     type: Directory[]?
-    doc: The MeasurementSets with delay calibration solutions applied.
+    doc: |
+        The concatenated unaveraged MeasurementSets format with optionally DDF solutions applied
+        and sources subtracted outside 2.5x2.5 deg2 FoV and/or delay solutions applied.
 
   - id: pictures
     outputSource: 
