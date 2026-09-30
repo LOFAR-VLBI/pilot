@@ -303,7 +303,7 @@ outputs:
     pickValue: first_non_null
     type: Directory[]?
     doc: |
-        The concatenated unaveraged MeasurementSets format with DDF solutions applied
+        The concatenated unaveraged MeasurementSets format with optionally DDF solutions applied
         and sources subtracted outside 2.5x2.5 deg2 FoV and/or delay solutions applied.
 
   - id: pictures
