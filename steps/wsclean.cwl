@@ -5,7 +5,7 @@ label: WSClean
 doc: Runs WSClean on the input data to produce an image.
 
 baseCommand: wsclean
-arguments: [-verbose, -log-time, -no-update-model-required, -reorder, -shared-facet-reads, -shared-facet-writes]
+arguments: [-verbose, -log-time, -no-update-model-required, -reorder]
 
 inputs:
   - id: msin
