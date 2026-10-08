@@ -92,6 +92,11 @@ inputs:
         Useful for e.g. LoTSS-HR or when calibrator level sources are too close to each other
         to be kept for dd calibration.
 
+    - id: postage_stamp_imsize
+      type: int
+      default: 2048
+      doc: Image size in pixels for the dd-calibration.
+
 steps:
     - id: split_directions
       label: Split out calibrator sources in separate measurement sets
@@ -144,6 +149,8 @@ steps:
           source: validate
         - id: max_rejected_fraction
           source: max_rejected_fraction
+        - id: postage_stamp_imsize
+          source: postage_stamp_imsize
       out:
         - h5parms
         - selfcal_images
@@ -206,6 +213,8 @@ steps:
           source: validate
         - id: max_rejected_fraction
           default: 1.0
+        - id: postage_stamp_imsize
+          source: postage_stamp_imsize
       out:
         - h5parms
         - selfcal_images
@@ -274,6 +283,8 @@ steps:
           source: model_cache
         - id: validate
           default: false
+        - id: postage_stamp_imsize
+          source: postage_stamp_imsize
       out:
         - h5parms
         - selfcal_images

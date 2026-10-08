@@ -36,6 +36,12 @@ inputs:
        Maximum fraction of bad solutions when validating. Lower value is stricter.
        Workflow crashes if fraction is exceeded.
 
+  - id: postage_stamp_imsize
+    type: int
+    default: 2048
+    doc: |
+      Image size in pixels to be used during calibration.
+
 steps:
     - id: ddcal
       in:
@@ -49,6 +55,8 @@ steps:
           source: phasediff_score_csv
         - id: model_cache
           source: model_cache
+        - id: imsize
+          source: postage_stamp_imsize
       out:
         - merged_h5
         - fits_images

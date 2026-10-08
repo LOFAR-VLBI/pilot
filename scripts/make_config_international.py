@@ -13,7 +13,7 @@ import pandas as pd
 import casacore.tables as ct
 
 
-def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
+def make_config(solint: float, ms: str, with_dutch_sols: bool, imsize: int) -> str:
     """
     Generate a facetselfcal configuration file.
 
@@ -65,7 +65,6 @@ def make_config(solint: float, ms: str, with_dutch_sols: bool) -> str:
     # UV-min larger for high S/N sources and smaller for low S/N sources
     uvmin = int(40000 - 20000 * np.exp(-1 / solint))
     stop = 16
-    imsize = 2048
 
     # Extra time-averaging when solint larger than 60 seconds
     avgstep = 2 if solint_scalarphase_1 * 60 > deltime * 2 else 1
@@ -243,6 +242,7 @@ def parse_args():
     parser = ArgumentParser(description='Make parameter configuration file for facetselfcal.')
     parser.add_argument('--ms', type=str, help='Input MeasurementSet.')
     parser.add_argument('--phasediff_output', type=str, help='Phasediff CSV output.')
+    parser.add_argument('--imsize', type=int, default=2048, help='Image size in pixels.')
     parser.add_argument('--reset_dutch_solutions', action="store_true", help='Reset Dutch station solutions during solves, keeping the pre-applied Dutch calibration solutions.')
     return parser.parse_args()
 
@@ -255,7 +255,7 @@ def main():
     args = parse_args()
 
     solint = get_solint(args.ms, args.phasediff_output)
-    make_config(solint, args.ms, args.reset_dutch_solutions)
+    make_config(solint, args.ms, args.reset_dutch_solutions, args.imsize)
 
 
 if __name__ == "__main__":
