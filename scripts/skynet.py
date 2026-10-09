@@ -119,7 +119,7 @@ def model_from_image(
     sky_model.setColValues("I", sky_model.getColValues("I") * flux_scaling)
     sky_model.setColValues("ReferenceFrequency", [144e6] * len(sky_model))
     sky_model.setColValues("SpectralIndex", [-0.7] * len(sky_model))
-    sky_model.setColValues("LogarithmicSI", [True] * len(sky_model))
+    sky_model.setColValues("LogarithmicSI", ["true"] * len(sky_model))
     return sky_model
 
 
@@ -248,7 +248,7 @@ def main(
                         Orientation=0.0,
                         ReferenceFrequency="144e+06",
                         SpectralIndex=[-0.5],
-                        LogarithmicSI=True,
+                        LogarithmicSI="true",
                     )
                 )
                 sky_model.write(f"skymodel_{src_ids[src_idx]}.txt")
