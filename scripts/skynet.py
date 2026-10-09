@@ -64,7 +64,7 @@ def model_from_image(
     )
     img.write_catalog(
         format="bbs",
-        catalog_type="srl",
+        catalog_type="gaul",
         bbs_patches="single",
         outfile="temp_skymodel.txt",
     )
