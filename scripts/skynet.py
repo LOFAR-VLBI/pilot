@@ -6,6 +6,7 @@ import glob
 import os
 from typing import Optional
 
+import astropy.units as u
 import bdsf
 import numpy as np
 from astropy.coordinates import SkyCoord
@@ -81,21 +82,17 @@ def model_from_image(
         # Cast to string due to return type of np.str_, which crashes getRowValues
         patch = str(sky_model.getPatchNames()[0])
         rows = sky_model.getRowValues(patch)
-        src_coord = SkyCoord(rows[0]["Ra"], rows[0]["Dec"], unit="degree").separation(
-            opt_coords
-        )
+        src_coord = SkyCoord(rows[0]["Ra"], rows[0]["Dec"], unit="degree")
         offsets = src_coord.spherical_offsets_to(opt_coords)
         separation = src_coord.separation(opt_coords)
         for comp in rows[1:]:
-            src_coord = SkyCoord(comp["Ra"], comp["Dec"], unit="degree").separation(
-                opt_coords
-            )
+            src_coord = SkyCoord(comp["Ra"], comp["Dec"], unit="degree")
             new_separation = src_coord.separation(opt_coords)
             if new_separation < separation:
                 separation = new_separation
                 offsets = src_coord.spherical_offsets_to(opt_coords)
 
-        if separation > astroSearchRadius:
+        if separation > astroSearchRadius * u.arcsec:
             raise ValueError(
                 f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away."
             )
