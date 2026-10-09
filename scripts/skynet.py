@@ -251,7 +251,6 @@ def main(
                         LogarithmicSI="true",
                     )
                 )
-                sky_model.write(f"skymodel_{src_ids[src_idx]}.txt")
 
         ## edit spectral index information if necessary
         if (a_1 is not None) and (a_2 is not None):
