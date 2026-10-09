@@ -4,11 +4,11 @@
 import argparse
 import glob
 import os
+import subprocess
 from typing import Optional
 
 import astropy.units as u
 import bdsf
-import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
 from lsmtool.skymodel import SkyModel
@@ -47,27 +47,32 @@ def model_from_image(
     os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
     os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
 
-    img = bdsf.process_image(
-        modelImage, mean_map="zero", rms_map=True, rms_box=(100, 10), outdir=outdir
-    )
-    sources = img.sources
-    maxval = 0.0
-    for src in sources:
-        maxval = np.max((maxval, src.total_flux))
+    subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 5")
     img = bdsf.process_image(
         modelImage,
         mean_map="zero",
         rms_map=True,
         rms_box=(100, 10),
-        advanced_opts=True,
-        blank_limit=0.01 * maxval,
         outdir=outdir,
+        atrous_do=True,
+        atrous_jmax=4,
+        bbs_patches="mask",
+        bbs_patches_mask=modelImage.replace(".fits", ".mask.fits"),
+        thresh_isl=5,
+        thresh_pix=6.5,
     )
     img.write_catalog(
         format="bbs",
         catalog_type="gaul",
         bbs_patches="single",
         outfile="temp_skymodel.txt",
+        clobber=True,
+    )
+    img.export_image(
+        outfile="temp_skymodel.model.fits",
+        img_format="fits",
+        img_type="gaus_model",
+        clobber=True,
     )
 
     sky_model = SkyModel("temp_skymodel.txt")
@@ -93,11 +98,20 @@ def model_from_image(
                 offsets = src_coord.spherical_offsets_to(opt_coords)
 
         if separation > astroSearchRadius * u.arcsec:
-            raise ValueError(
-                f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away."
+            # raise ValueError(
+            #    f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away."
+            # )
+            print(
+                f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away. Not correcting. Please check the cross-matching."
             )
-        delta_ra = offsets[0].deg
-        delta_dec = offsets[1].deg
+            delta_ra = 0
+            delta_dec = 0
+        else:
+            delta_ra = offsets[0].deg
+            delta_dec = offsets[1].deg
+            print(
+                f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} and ΔDEC={delta_dec*3600:f}"
+            )
         sky_model.setColValues(
             "Ra", sky_model.getColValues("Ra", units="degree") + delta_ra
         )
@@ -106,9 +120,9 @@ def model_from_image(
         )
 
     sky_model.setColValues("I", sky_model.getColValues("I") * flux_scaling)
-    sky_model.setColValues("ReferenceFrequency", 144e6)
-    sky_model.setColValues("SpectralIndex", [-0.7])
-    sky_model.setColValues("LogarithmicSI", True)
+    sky_model.setColValues("ReferenceFrequency", [144e6] * len(sky_model))
+    sky_model.setColValues("SpectralIndex", [-0.7] * len(sky_model))
+    sky_model.setColValues("LogarithmicSI", [True] * len(sky_model))
     return sky_model
 
 
@@ -246,7 +260,7 @@ def main(
         if (a_1 is not None) and (a_2 is not None):
             sky_model.setColValues("SpectralIndex", [a_1, a_2])
 
-        sky_model.write(f"skymodel_{src_ids[src_idx]}.txt")
+        sky_model.write(f"skymodel_{src_ids[src_idx]}.txt", clobber=True)
 
 
 if __name__ == "__main__":
