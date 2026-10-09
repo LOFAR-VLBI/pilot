@@ -47,7 +47,7 @@ def model_from_image(
     os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
     os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
 
-    subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 5 --make-binary")
+    subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 15 --make-binary", shell=True)
     img = bdsf.process_image(
         modelImage,
         mean_map="zero",
