@@ -98,9 +98,6 @@ def model_from_image(
                 offsets = src_coord.spherical_offsets_to(opt_coords)
 
         if separation > astroSearchRadius * u.arcsec:
-            # raise ValueError(
-            #    f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away."
-            # )
             print(
                 f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away. Not correcting. Please check the cross-matching."
             )
