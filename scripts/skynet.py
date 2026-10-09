@@ -84,7 +84,7 @@ def model_from_image(
         src_coord = SkyCoord(rows[0]["Ra"], rows[0]["Dec"], unit="degree").separation(
             opt_coords
         )
-        offsets = src_coord.spherical_offset_to(opt_coords)
+        offsets = src_coord.spherical_offsets_to(opt_coords)
         separation = src_coord.separation(opt_coords)
         for comp in rows[1:]:
             src_coord = SkyCoord(comp["Ra"], comp["Dec"], unit="degree").separation(
@@ -93,7 +93,7 @@ def model_from_image(
             new_separation = src_coord.separation(opt_coords)
             if new_separation < separation:
                 separation = new_separation
-                offsets = src_coord.spherical_offset_to(opt_coords)
+                offsets = src_coord.spherical_offsets_to(opt_coords)
 
         if separation > astroSearchRadius:
             raise ValueError(
