@@ -107,13 +107,13 @@ def model_from_image(
             delta_ra = offsets[0].deg
             delta_dec = offsets[1].deg
             print(
-                f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} and ΔDEC={delta_dec*3600:f}"
+                f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} arcsec and ΔDEC={delta_dec*3600:f} arcsec"
             )
         sky_model.setColValues(
             "Ra", sky_model.getColValues("Ra", units="degree") + delta_ra
         )
         sky_model.setColValues(
-            "I", sky_model.getColValues("Dec", units="degree") * delta_dec
+            "Dec", sky_model.getColValues("Dec", units="degree") * delta_dec
         )
 
     sky_model.setColValues("I", sky_model.getColValues("I") * flux_scaling)
