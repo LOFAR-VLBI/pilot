@@ -47,7 +47,7 @@ def model_from_image(
     os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
     os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
 
-    subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 15 --make-binary", shell=True)
+    subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 15 --make-binary -o mask.fits", shell=True)
     img = bdsf.process_image(
         modelImage,
         mean_map="zero",
@@ -57,7 +57,7 @@ def model_from_image(
         atrous_do=True,
         atrous_jmax=4,
         bbs_patches="mask",
-        bbs_patches_mask=modelImage.replace(".fits", ".mask.fits"),
+        bbs_patches_mask="./mask.fits",
         thresh_isl=5,
         thresh_pix=6.5,
     )
