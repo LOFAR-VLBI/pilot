@@ -4,6 +4,7 @@
 import argparse
 import glob
 import os
+import shutil
 import subprocess
 from typing import Optional
 
@@ -48,8 +49,9 @@ def model_from_image(
     os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
 
     subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 15 --make-binary -o mask.fits", shell=True)
+    shutil.copy(modelImage, "./image.fits")
     img = bdsf.process_image(
-        modelImage,
+        "./image.fits",
         mean_map="zero",
         rms_map=True,
         rms_box=(100, 10),
