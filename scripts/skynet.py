@@ -115,7 +115,7 @@ def model_from_image(
             "Ra", sky_model.getColValues("Ra", units="degree") + delta_ra
         )
         sky_model.setColValues(
-            "Dec", sky_model.getColValues("Dec", units="degree") * delta_dec
+            "Dec", sky_model.getColValues("Dec", units="degree") + delta_dec
         )
 
     sky_model.setColValues("I", sky_model.getColValues("I") * flux_scaling)
