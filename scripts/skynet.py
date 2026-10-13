@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
+# Sometimes if temporary directory paths are too long PyBDSF's multiprocessing
+# will fail with a `OSError: AF_UNIX path too long`, because socket paths are not
+# allowed to exceed 108 bytes. To avoid this we purposely override the usual
+# temporary paths here.
+os.environ["TMPDIR"] = "/tmp"
+os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
+os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
+
 import argparse
 import glob
-import os
 import shutil
 import subprocess
 from typing import Optional
-
 import astropy.units as u
 import bdsf
 from astropy.coordinates import SkyCoord
@@ -40,13 +47,6 @@ def model_from_image(
     Raises:
         ValueError: if opt_coords is given, but no match within astroSearchRadius is found.
     """
-    # Sometimes if temporary directory paths are too long PyBDSF's multiprocessing
-    # will fail with a `OSError: AF_UNIX path too long`, because socket paths are not
-    # allowed to exceed 108 bytes. To avoid this we purposely override the usual
-    # temporary paths here.
-    os.environ["TMPDIR"] = "/tmp"
-    os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
-    os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
 
     subprocess.run(f"breizorro -r {modelImage} -t 6.5 --dilate 15 --make-binary -o mask.fits", shell=True)
     shutil.copy(modelImage, "./image.fits")
