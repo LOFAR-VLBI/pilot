@@ -6,6 +6,7 @@ import os
 # will fail with a `OSError: AF_UNIX path too long`, because socket paths are not
 # allowed to exceed 108 bytes. To avoid this we purposely override the usual
 # temporary paths here.
+# We set this here intentionally. Do not move this block after the bdsf import.
 os.environ["TMPDIR"] = "/tmp"
 os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
 os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
