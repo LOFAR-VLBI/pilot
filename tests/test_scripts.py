@@ -6,6 +6,9 @@ from TargetListToCoords import plugin_main as main_target_list
 from skynet import main as main_skynet
 from compareStationListVLBI import plugin_main as main_compare_stations
 
+from astropy.utils.diff import report_diff_values
+from lsmtool.skymodel import SkyModel
+
 # VLBI_ROOT_DIR is defined in pyproject.toml
 data_dir = os.environ["VLBI_ROOT_DIR"] + "/tests/data"
 ref_dir = os.environ["VLBI_ROOT_DIR"] + "/tests/reference"
@@ -38,22 +41,26 @@ def test_target_split_directions():
     assert result == reference
 
 def test_skynet():
-    import filecmp
-
     main_skynet(f"{data_dir}/ILTJ140815.23+522952.0", catalogue)
-    assert filecmp.cmp(skymodel, "skymodel_ILTJ140815.23+522952.0.txt", shallow=False)
+    sm_ref = SkyModel(skymodel)
+    sm_cur = SkyModel("skymodel_ILTJ140815.23+522952.0.txt")
+    assert report_diff_values(sm_ref.table, sm_cur.table)
 
     main_skynet(f"{data_dir}/ILTJ140815.23+522952.0_L762475_142MHz_uv.dp3concat", catalogue)
-    assert filecmp.cmp(skymodel, "skymodel_ILTJ140815.23+522952.0.txt", shallow=False)
+    sm_cur = SkyModel("skymodel_ILTJ140815.23+522952.0.txt")
+    assert report_diff_values(sm_ref.table, sm_cur.table)
 
     main_skynet(f"{data_dir}/CustomSource2_L762475_142MHz_uv.dp3concat", catalogue2)
-    assert filecmp.cmp(skymodel, "skymodel_CustomSource2.txt", shallow=False)
+    sm_cur = SkyModel("skymodel_CustomSource2.txt")
+    assert report_diff_values(sm_ref.table, sm_cur.table)
 
     main_skynet(f"{data_dir}/5758326_L762475_142MHz_uv.dp3concat", catalogue2)
-    assert filecmp.cmp(skymodel, "skymodel_5758326.txt", shallow=False)
+    sm_cur = SkyModel("skymodel_5758326.txt")
+    assert report_diff_values(sm_ref.table, sm_cur.table)
 
     main_skynet(f"{data_dir}/S235687_L762475_142MHz_uv.dp3concat", catalogue2)
-    assert filecmp.cmp(skymodel, "skymodel_S235687.txt", shallow=False)
+    sm_cur = SkyModel("skymodel_S235687.txt")
+    assert report_diff_values(sm_ref.table, sm_cur.table)
 
 
 def test_compare_stations():
