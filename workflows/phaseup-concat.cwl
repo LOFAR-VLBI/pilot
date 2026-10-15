@@ -50,6 +50,10 @@ inputs:
     default: false
     doc: Add leakage calibration to the DI configuration file.
 
+  - id: model_cache
+    type: string?
+    doc: Neural network cache directory.
+
 steps:
   - id: prep_delay
     in:
@@ -173,11 +177,15 @@ steps:
         source: number_cores
       - id: calibrate_leakage
         source: calibrate_leakage
+      - id: model_cache
+        source: model_cache
     out:
       - id: solutions
       - id: starting_skymodel
       - id: config
-      - id: pictures
+      - id: inspection_plots
+      - id: best_fits_image
+      - id: best_h5parm
       - id: logfile
     run: ./subworkflows/delay_cal_run.cwl
     label: delay_cal_run
@@ -247,11 +255,11 @@ outputs:
         The directory containing all the stdin
         and stderr files from the workflow.
 
-  - id: pictures
-    type: File[]
-    outputSource: delay_cal_run/pictures
+  - id: inspection_plots
+    type: Directory[]
+    outputSource: delay_cal_run/inspection_plots
     doc: |
-        The inspection plots generated
+        The inspection PNG plots generated
         by delay_solve.
 
   - id: facetselfcal_config
@@ -260,6 +268,16 @@ outputs:
     doc: |
         The configuration file for facetselfcal that was
         used in the delay solve.
+
+  - id: best_fits_image
+    type: File?
+    outputSource: delay_cal_run/best_fits_image
+    doc: Best calibration FITS image
+
+  - id: best_h5parm
+    type: File?
+    outputSource: delay_cal_run/best_h5parm
+    doc: Best calibration HDF5 solutions
 
   - id: summary_file
     type: File
