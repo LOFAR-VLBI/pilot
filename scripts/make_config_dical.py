@@ -71,8 +71,7 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     # scalarphase to solve for phases
     # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
-    configdict['imagename'] = filenamecs_factor = int(np.ceil(40/smoothness))
-    rs_factor = int(np.ceil(20/smoothness))
+    configdict['imagename'] = filename
     configdict['imsize'] = 1024
     configdict['pixelscale'] = 0.075
     configdict['uvmin'] = 40000
