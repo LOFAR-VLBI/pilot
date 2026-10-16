@@ -59,6 +59,9 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     amplitude_smoothness = round(min(max(smoothness * 6, 7.5), 40.0), 1)
     scalarphasediff_smoothness = round(min(max(10*smoothness, 10.0), 40.0), 1)
 
+    cs_factor = int(np.ceil(40/smoothness))
+    rs_factor = int(np.ceil(20/smoothness))
+
     # Check number of components from sky model
     with open(inputmodel, 'r') as f:
         N_comp = max(len(f.readlines()) - 1, 1)
@@ -68,7 +71,8 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     # scalarphase to solve for phases
     # scalarcomplexgain to solve for amplitudes as well
     configdict = {}
-    configdict['imagename'] = filename
+    configdict['imagename'] = filenamecs_factor = int(np.ceil(40/smoothness))
+    rs_factor = int(np.ceil(20/smoothness))
     configdict['imsize'] = 1024
     configdict['pixelscale'] = 0.075
     configdict['uvmin'] = 40000
@@ -87,8 +91,8 @@ def make_config(best_solint: float, phasediff_score: float, smoothness: float, i
     configdict['channelsout'] = 12
     configdict['fitspectralpol'] = 5
     configdict['update_multiscale'] = 'True'
-    configdict['antenna_averaging_factors_list'] = [None,'core:4,remote:2,international:1', 'alldutch:2,international:1']
-    configdict['antenna_smoothness_factors_list'] = [None, 'core:4,remote:2,international:1','alldutch:2,international:1']
+    configdict['antenna_averaging_factors_list'] = [None,'core:2,remote:1,international:1', 'alldutch:2,international:1']
+    configdict['antenna_smoothness_factors_list'] = [None, f'core:{cs_factor},remote:{rs_factor},international:1','alldutch:2,international:1']
     configdict['stop'] = min(10 + int(1/max(phasediff_score, 0.05)) + N_comp, 20)
 
     # If there are no other nearby bright sources and phasediff score is below 0.3, we can solve without phaseup
