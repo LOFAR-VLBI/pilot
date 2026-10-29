@@ -42,7 +42,7 @@ inputs:
 
     - id: phasediff_score_strong
       type: float
-      default: 1.5
+      default: 1.3
       doc: |
          Phasediff-score threshold for strong calibrators. Scores below
          phasediff_score_main are assigned to the main category.
@@ -50,12 +50,12 @@ inputs:
 
     - id: phasediff_score_main
       type: float
-      default: 0.7
+      default: 0.6
       doc: Phasediff-score below which sources are assigned to the main category.
 
     - id: phasediff_score_weak
       type: float
-      default: 2.6
+      default: 2.3
       doc: |
          Phasediff-score to weak calibrators and control the DD calibrator selection.
          See Section 3.3.1 from de Jong et al. (2024; https://arxiv.org/pdf/2407.13247)
