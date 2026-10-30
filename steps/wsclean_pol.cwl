@@ -85,6 +85,7 @@ inputs:
       position: 1
       shellQuote: false
       prefix: '-name'
+      valueFrom: $('channel-images/' + self)
   - id: scale
     type: string?
     default: "0.075asec"
@@ -94,18 +95,26 @@ inputs:
       prefix: '-scale'
   - id: beam-size
     type: string?
-    default: "0.3asec"
+    default: null
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-beam-size'
+      valueFrom: "$(inputs['beam-shape'] ? null : self)"
   - id: taper-gaussian
     type: string?
-    default: 0.25asec
+    default: null
     inputBinding:
       position: 1
       shellQuote: false
       prefix: '-taper-gaussian'
+  - id: beam-shape
+    type: float[]?
+    doc: Common restoring beam [major arcsec, minor arcsec, PA degrees].
+    inputBinding:
+      position: 1
+      shellQuote: false
+      prefix: '-beam-shape'
   - id: niter
     type: int
     default: 5000
@@ -218,27 +227,33 @@ outputs:
     type: File[]?
     doc: Per-channel Stokes Q images.
     outputBinding:
-      glob: '$(inputs.name)-????-Q-image.fits'
+      glob: 'channel-images/$(inputs.name)-????-Q-image.fits'
   - id: U_channel_images
     type: File[]?
     doc: Per-channel Stokes U images.
     outputBinding:
-      glob: '$(inputs.name)-????-U-image.fits'
+      glob: 'channel-images/$(inputs.name)-????-U-image.fits'
   - id: I_channel_images
     type: File[]?
     doc: Per-channel Stokes I images.
     outputBinding:
-      glob: '$(inputs.name)-????-I-image.fits'
+      glob: 'channel-images/$(inputs.name)-????-I-image.fits'
   - id: V_channel_images
     type: File[]?
     doc: Per-channel Stokes V images.
     outputBinding:
-      glob: '$(inputs.name)-????-V-image.fits'
+      glob: 'channel-images/$(inputs.name)-????-V-image.fits'
   - id: MFS_images
     type: File[]?
     doc: MFS images.
     outputBinding:
-      glob: '*MFS*image.fits'
+      glob: 'channel-images/*MFS*image.fits'
+
+  - id: channel_images
+    type: Directory
+    doc: Channel-image directory, passed as one mount for scalable cube creation.
+    outputBinding:
+      glob: channel-images
 
 hints:
   - class: DockerRequirement
@@ -247,11 +262,15 @@ hints:
     coresMin: $(inputs.ncpu)
 
 requirements:
+  - class: LoadListingRequirement
+    loadListing: no_listing
   - class: ShellCommandRequirement
   - class: InlineJavascriptRequirement
   - class: InitialWorkDirRequirement
     listing:
       - entry: $(inputs.msin)
+      - entry: '$({class: "Directory", basename: "channel-images", listing: []})'
+        writable: true
 
 stdout: wsclean_qu.log
 stderr: wsclean_qu_err.log
