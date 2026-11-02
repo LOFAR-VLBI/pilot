@@ -71,16 +71,11 @@ def make_config(
     rs_factor = int(np.ceil(20 / smoothness))
 
     # Check number of components from sky model
-<<<<<<< HEAD
-    with open(inputmodel, "r") as f:
-        N_comp = max(len(f.readlines()) - 1, 1)
-=======
     if inputmodel is None:
         N_comp = 1
     else:
         with open(inputmodel, 'r') as f:
             N_comp = max(len(f.readlines()) - 1, 1)
->>>>>>> 00a7933 (Generate DI configs for the main calibrators)
 
     # This strategy follows:
     # scalarphasediff to solve for differential Faraday rotation
