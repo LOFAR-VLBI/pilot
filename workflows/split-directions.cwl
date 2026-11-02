@@ -147,8 +147,6 @@ steps:
       in:
         - id: msin
           source: flatten_msout/flattenedarray
-        - id: dd_selection
-          source: dd_selection
         - id: phasediff_score_strong
           source: phasediff_score_strong
         - id: phasediff_score_main
@@ -167,7 +165,6 @@ steps:
         - id: strong_ms
         - id: weak_ms
         - id: unreliable_ms
-      when: $(inputs.dd_selection)
       run: ./subworkflows/phasediff_selection.cwl
 
 outputs:
@@ -196,5 +193,5 @@ outputs:
       pickValue: all_non_null
       linkMerge: merge_flattened
     - id: phasediff_score_csv
-      type: File?
+      type: File
       outputSource: phasediff_selection/phasediff_score_csv

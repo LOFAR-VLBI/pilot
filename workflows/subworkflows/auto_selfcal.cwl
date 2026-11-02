@@ -17,7 +17,7 @@ inputs:
     doc: Leave the Dutch stations untouched during selfcal. Useful if pre-applying Dutch station corrections.
 
   - id: phasediff_score_csv
-    type: File?
+    type: File
     doc: CSV with DD selection positions and phasediff scores.
 
   - id: model_cache

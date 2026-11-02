@@ -120,10 +120,6 @@ steps:
           source: phasediff_score_weak
         - id: peak_flux_cut
           source: peak_flux_cut
-        - id: custom_phasediff_score_csv
-          source: custom_phasediff_score_csv
-        - id: dd_selection
-          valueFrom: $(inputs.custom_phasediff_score_csv == null)
         - id: chunk_size_directions
           source: chunk_size_directions
         - id: keep_close_sources
