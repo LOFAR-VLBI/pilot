@@ -19,6 +19,11 @@ class MSAstrometryCorrector:
         self.new_uvw = None
 
     def get_phase_centre(self) -> SkyCoord:
+        """Get the phase centre from the Measurement Set.
+
+        Returns:
+            phase centre as a SkyCoord.
+        """
         with ct.table(self.ms + "::FIELD", ack=False, readonly=True) as table:
             pc = table.getcol("PHASE_DIR").squeeze()
             pc_coord = SkyCoord(pc[0], pc[1], unit="rad")
@@ -26,6 +31,14 @@ class MSAstrometryCorrector:
             return pc_coord
 
     def calculate_lmn(self, new_coord: SkyCoord) -> tuple[float, float, float]:
+        """Calculates the (l, m, n) direction vector for the new position.
+
+        Args:
+            new_coord: position that the data will be shifted towards.
+
+        Returns:
+            (l, m, n) tuple representing the new direction vector.
+        """
         l = np.cos(new_coord.dec.rad) * np.sin(
             new_coord.ra.rad - self.phase_centre.ra.rad
         )
@@ -42,10 +55,15 @@ class MSAstrometryCorrector:
         self.n = n
         return (l, m, n)
 
-    def calculate_new_station_uvw(self, new_coord):
-        """
-        coord_A : SkyCoord (ICRS) of the astrometric source position to shift towards.
-        returns : uvw (Nt, Nant, 3) in metres, in the frame of A
+    def calculate_new_station_uvw(self, new_coord: SkyCoord):
+        """Calculates the UVW coordinates corresponding to the position of the source.
+        that is shifted towards.
+
+        Args:
+            new_coord (SkyCoord): position of the astrometric source position to shift towards.
+
+        Returns:
+            uvw (ndarray): array of (Nt, Nant, 3) with the new UVW coordinates in metres.
         """
         ms_times = ct.taql(f"SELECT DISTINCT TIME FROM {self.ms}").getcol("TIME")
         times = Time(ms_times / 86400.0, format="mjd", scale="utc")
@@ -78,14 +96,14 @@ class MSAstrometryCorrector:
         return uvw
 
     def calculate_delays(self):
+        """Calculate delays for each antenna, for each time step to achieve the desired
+        positional shift for the source."""
         # (time, ant, 3)
         self.delays = (
             self.new_uvw[:, :, 0] * self.l
             + self.new_uvw[:, :, 1] * self.m
             + self.new_uvw[:, :, 2] * (self.n - 1)
         ) / constants.c.value
-        print(self.delays.shape)
-        print(self.delays * 1e9)
 
     def write_astrometric_h5parm(
         self,
@@ -94,6 +112,17 @@ class MSAstrometryCorrector:
         soltab="clock000",
         overwrite=True,
     ):
+        """Write the astrometric corrections to an h5parm.
+
+        Args:
+            h5file (str): name of the h5parm file.
+            solset (str): name of the solset to store the correction in.
+            soltab (str): name of the soltab to store the correction in.
+            overwrite (bool): if the soltab exists, remove it and create a fresh one.
+
+        Raises:
+            RuntimeError: if the soltab exists and overwrite is False.
+        """
         times = ct.taql(f"SELECT DISTINCT TIME FROM {self.ms}").getcol("TIME")
 
         with ct.table(self.ms + "::ANTENNA", ack=False, readonly=True) as tab:
@@ -123,17 +152,29 @@ class MSAstrometryCorrector:
         h5.close()
 
 
-def derive_astrometric_correction(ms: str, to_ra: float, to_dec: float):
+def encode_astrometric_correction(
+    ms: str, delta_ra: float, delta_dec: float, h5name: str
+):
+    """Encodes an positional shift for right ascension and declination as a per-station
+    clock correction (i.e. delays) in an h5parm that can be applied with DP3.
+
+    Args:
+        ms (str): the Measurement Set for which the correction will be calculated.
+        delta_ra: the offset in right ascension in degrees.
+        delta_dec: the offset in decliation in degrees.
+    """
     corrector = MSAstrometryCorrector(ms)
     pc = corrector.get_phase_centre()
-    pc_new = SkyCoord(to_ra, to_dec, unit="deg")
+    pc_new = SkyCoord(
+        pc.ra.deg.value + delta_ra, pc.dec.deg.value + delta_dec, unit="deg"
+    )
     print(
-        f"Separation between current and target: {pc.separation(pc_new).to('arcsec'):.3f}"
+        f"Separation between current phase centre and target: {pc.separation(pc_new).to('arcsec'):.3f}"
     )
     corrector.calculate_lmn(pc_new)
     corrector.calculate_new_station_uvw(pc_new)
     corrector.calculate_delays()
-    corrector.write_astrometric_h5parm("astrometry.h5")
+    corrector.write_astrometric_h5parm(h5name)
 
 
 def main():
@@ -145,22 +186,21 @@ def main():
         help="MeasurementSet from which the phase centre and antenna positions will be taken.",
     )
     parser.add_argument(
-        "--to-ra",
+        "--delta-ra",
         type=float,
         required=False,
-        help="Right ascension to shift the MS to.",
+        help="Right ascension shift in degrees.",
     )
     parser.add_argument(
-        "--to-dec", type=float, required=False, help="Declination to shift the MS to."
-    )
-    parser.add_argument(
-        "--h5parm", type=str, required=False, help="H5Parm to store the correction in."
-    )
-    parser.add_argument(
-        "--as-phase", help="Store the offset as a phase instead of clock type SolTab."
+        "--delta-dec",
+        type=float,
+        required=False,
+        help="Declination shift in degrees.",
     )
     args = parser.parse_args()
-    derive_astrometric_correction(args.ms, args.to_ra, args.to_dec)
+    encode_astrometric_correction(
+        args.ms, args.delta_ra, args.delta_ra, args.ms.rstrip(".ms") + ".astrometry.h5"
+    )
 
 
 if __name__ == "__main__":
