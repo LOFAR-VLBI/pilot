@@ -15,26 +15,26 @@ inputs:
       prefix: --ms
       position: 1
 
-  - id: to_ra
+  - id: delta_ra
     type: float
-    doc: Intended right ascension in degrees.
+    doc: Offset to shift towards the intended right ascension in degrees.
     inputBinding:
-      prefix: --to-ra
+      prefix: --delta-ra
       position: 2
 
-  - id: to_dec
+  - id: delta_dec
     type: float
-    doc: Intended declination in degrees.
+    doc: Offset to shift toward the intended declination in degrees.
     inputBinding:
-      prefix: --to-dec
+      prefix: --delta-dec
       position: 3
 
 outputs:
   - id: h5parm
     type: File
-    doc: H5parm containing phase solutions to apply the astrometric shift.
+    doc: H5parm containing the astrometric clock correction.
     outputBinding:
-      glob: astrometry.h5
+      glob: ILTJ*.astrometry.h5
 
   - id: logfile
     type: File[]
