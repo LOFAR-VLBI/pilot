@@ -74,7 +74,7 @@ def make_config(
     if inputmodel is None:
         N_comp = 1
     else:
-        with open(inputmodel, 'r') as f:
+        with open(inputmodel, "r") as f:
             N_comp = max(len(f.readlines()) - 1, 1)
 
     # This strategy follows:
@@ -386,7 +386,6 @@ def parse_args():
         "--inputmodel",
         type=str,
         help="Input sky model to start calibration from.",
-        required=True,
     )
     parser.add_argument(
         "--phasediff_output", type=str, help="Phasediff CSV output", required=True
@@ -395,11 +394,16 @@ def parse_args():
         "--scalarphase-h5",
         type=str,
         help="h5 with scalarphase solutions for ionospheric conditions",
-        required=True,
     )
     parser.add_argument("--imagecat", type=str, help="Image catalogue CSV file")
     parser.add_argument(
         "--calibrate-leakage", action="store_true", help="Perform leakage calibration"
+    )
+    parser.add_argument(
+        "--default-smoothness",
+        type=float,
+        default=1.0,
+        help="Default smoothness constraint to use when no scalarphase solutions are passed, e.g. in the scenario of DD calibration.",
     )
     return parser.parse_args()
 
@@ -412,7 +416,10 @@ def main():
     args = parse_args()
 
     best_solint, phasediff_score = get_best_solint(args.ms, args.phasediff_output)
-    smoothness = get_smoothing(args.scalarphase_h5)
+    if args.scalarphase_h5 is not None:
+        smoothness = get_smoothing(args.scalarphase_h5)
+    else:
+        smoothness = args.default_smoothness
     make_config(
         best_solint,
         phasediff_score,

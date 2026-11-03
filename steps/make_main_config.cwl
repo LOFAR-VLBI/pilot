@@ -34,10 +34,10 @@ inputs:
 
   - id: smoothness
     type: float
-    default: 1.0
-    doc: Fallback smoothness used when no scalarphase solution is available.
+    default: 2.0
+    doc: Default smoothness constriant used when no scalarphase solution is available.
     inputBinding:
-      prefix: --smoothness
+      prefix: --default-smoothness
       position: 3
 
 outputs:
