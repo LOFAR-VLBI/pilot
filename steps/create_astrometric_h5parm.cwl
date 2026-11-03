@@ -36,7 +36,7 @@ outputs:
     outputBinding:
       glob: ILTJ*.astrometry.h5
 
-  - id: logfile
+  - id: logfiles
     type: File[]
     doc: Standard output and error logs from the script.
     outputBinding:
