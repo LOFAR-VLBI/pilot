@@ -223,7 +223,7 @@ def main(
                 vlass_file = glob.glob(
                     os.path.join(
                         os.path.dirname(delayCalFile),
-                        "{:s}_vlass.fits".format(lbcs_id[0]),
+                        "{:s}_vlass.fits".format(lbcs_id),
                     )
                 )
                 if len(vlass_file) > 0 and os.path.isfile(vlass_file[0]):
