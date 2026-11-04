@@ -310,6 +310,7 @@ if __name__ == "__main__":
         args.MS,
         delayCalFile=args.delay_cal_file,
         modelImage=args.model_image,
+        astroSearchRadius=args.astrometric_search_radius,
         skip_vlass=args.skip_vlass,
         outdir=args.outdir,
         process_all=args.process_all,
