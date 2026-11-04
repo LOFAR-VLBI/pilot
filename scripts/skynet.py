@@ -48,9 +48,6 @@ def model_from_image(
 
     Returns:
         sky_model (lsmtool.skymodel.SkyModel): a sky model in BBS format.
-
-    Raises:
-        ValueError: if opt_coords is given, but no match within astroSearchRadius is found.
     """
 
     subprocess.run(
