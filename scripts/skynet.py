@@ -271,7 +271,7 @@ def main(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Skynet script to handle LBCS calibrators."
+        description="Generate starting model(s) for LBCS delay calibrators."
     )
 
     parser.add_argument("MS", type=str, help="Measurement set for which to run skynet")
