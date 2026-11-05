@@ -40,4 +40,4 @@ hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
   - class: ResourceRequirement
-    ramMin: 100000
+    ramMin: 120000
