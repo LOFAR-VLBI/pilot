@@ -3,7 +3,8 @@ cwlVersion: v1.2
 id: run_rmtools
 label: Run RM-Tools rmsynth3d
 doc: |
-  Run RM-Tools rmsynth3d on Stokes Q/U cubes and a frequency list.
+  Run RM-Tools rmsynth3d on Stokes Q/U cubes. By default frequencies are
+  reconstructed from the FITS spectral WCS; an explicit list is optional.
 
 baseCommand: run_rmtools.py
 
@@ -22,21 +23,34 @@ inputs:
       prefix: --stokes-u
   - id: freqs_hz
     type: File?
-    doc: Frequency list in Hz (one per channel).
+    doc: Optional frequency list in Hz; otherwise use the FITS spectral WCS.
     inputBinding:
       position: 1
       prefix: --freqs
   - id: max_lam2
     type: float?
     default: 150
-    doc: Maximum lambda-squared value for rmsynth3d (-l).
+    doc: Maximum absolute Faraday depth in rad/m^2 (rmsynth3d -l).
     inputBinding:
       position: 1
       prefix: --l
+  - id: rms_noise
+    type: File?
+    doc: Channel RMS in Jy/beam, one entry per cube plane. Required for variance weighting.
+    inputBinding:
+      position: 1
+      prefix: --rms
+  - id: weighting
+    type: string
+    default: variance
+    doc: Channel weighting, variance or uniform. Variance requires rms_noise.
+    inputBinding:
+      position: 1
+      prefix: --weighting
   - id: dlam2
     type: float?
     default: 0.3
-    doc: Lambda-squared channel width for rmsynth3d (-d).
+    doc: Faraday-depth sampling interval in rad/m^2 (rmsynth3d -d).
     inputBinding:
       position: 1
       prefix: --d

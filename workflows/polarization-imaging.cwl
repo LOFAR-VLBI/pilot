@@ -6,7 +6,10 @@ doc: |
   This workflow will image the provided MS in Q and U, and perform Rotation Measure
   Synthesis to provide linear polarization images. The intended use is for datasets
   of science targets that have been fully calibrated, including leakage calibration.
-  These datasets are generally averaged to at least 32 seconds and at least 96 kHz channels.
+  Choose time/frequency averaging for the field size and Faraday-depth range.
+  Fine-channel inputs (e.g. 12.207 or 48.828 kHz) must not be averaged further
+  unintentionally by channels-out. The input must already contain the required
+  polarization-preserving calibration corrections.
 
 requirements:
     - class: InlineJavascriptRequirement
@@ -21,8 +24,32 @@ inputs:
       doc: Pixel size (WSClean scale), e.g. "0.075asec".
 
     - id: taper
-      type: string
+      type: string?
       doc: Angular resolution that will be passed to WSClean's taper argument. Its syntax follows that of WSClean.
+
+    - id: beam_size
+      type: string?
+      default: "0.3asec"
+      doc: Common circular restoring beam; set null when using beam_shape.
+
+    - id: beam_shape
+      type: float[]?
+      doc: Common elliptical restoring beam [major arcsec, minor arcsec, PA degrees].
+
+    - id: min_uv_lambda
+      type: float?
+      default: 80.0
+      doc: Minimum baseline in wavelengths.
+
+    - id: niter
+      type: int
+      default: 5000
+      doc: Maximum CLEAN iterations.
+
+    - id: max_major_cycles
+      type: int
+      default: 5
+      doc: Maximum WSClean major iterations.
 
     - id: image_size
       type: int[]?
@@ -36,21 +63,26 @@ inputs:
 
     - id: num_channels
       type: int
-      doc: Number of channels to image in Q and U.
+      doc: Number of output Q/U channels. Set to the input channel count to preserve its channel width.
 
     - id: stokes
       type: string
       default: "QU"
 
+    - id: multiscale
+      type: boolean
+      default: false
+      doc: Enable multiscale Q/U deconvolution; leave false for WSClean before 3.8.
+
     - id: rmtools_max_lam2
       type: float?
       default: 150
-      doc: Maximum lambda-squared value for rmsynth3d (-l).
+      doc: Maximum absolute Faraday depth in rad/m^2 (rmsynth3d -l).
 
     - id: rmtools_dlam2
       type: float?
       default: 0.3
-      doc: Lambda-squared channel width for rmsynth3d (-d).
+      doc: Faraday-depth sampling interval in rad/m^2 (rmsynth3d -d).
 
     - id: rmtools_output_prefix
       type: string?
@@ -82,14 +114,27 @@ steps:
           source: num_channels
         - id: pol
           source: stokes
+        - id: multiscale
+          source: multiscale
         - id: briggs
           source: briggs
         - id: ncpu
           source: ncpu
+        - id: beam-size
+          source: beam_size
+        - id: beam-shape
+          source: beam_shape
+        - id: minuv-l
+          source: min_uv_lambda
+        - id: niter
+          source: niter
+        - id: nmiter
+          source: max_major_cycles
       out:
         - id: Q_channel_images
         - id: U_channel_images
         - id: MFS_images
+        - id: channel_images
       run: ../steps/wsclean_pol.cwl
 
     - id: image_iv
@@ -122,6 +167,16 @@ steps:
           default: 0.7
         - id: ncpu
           source: ncpu
+        - id: beam-size
+          source: beam_size
+        - id: beam-shape
+          source: beam_shape
+        - id: minuv-l
+          source: min_uv_lambda
+        - id: niter
+          source: niter
+        - id: nmiter
+          source: max_major_cycles
       out:
         - id: I_channel_images
         - id: V_channel_images
@@ -132,10 +187,8 @@ steps:
       label: Make QU cubes
       when: $(inputs.stokes == "QU")
       in:
-        - id: Q_images
-          source: image_qu/Q_channel_images
-        - id: U_images
-          source: image_qu/U_channel_images
+        - id: image_directory
+          source: image_qu/channel_images
         - id: image_size
           source: image_size
         - id: nchannels
@@ -147,6 +200,7 @@ steps:
         - id: stokesUcube
         - id: frequencies_list
         - id: rms_list
+        - id: channel_flags
       run: ../steps/concat_pol.cwl
 
     - id: run_rmtools
@@ -157,8 +211,8 @@ steps:
           source: make_qu_cubes/stokesQcube
         - id: stokes_u
           source: make_qu_cubes/stokesUcube
-        - id: freqs_hz
-          source: make_qu_cubes/frequencies_list
+        - id: rms_noise
+          source: make_qu_cubes/rms_list
         - id: max_lam2
           source: rmtools_max_lam2
         - id: dlam2
@@ -180,6 +234,18 @@ steps:
       run: ../steps/run_rmtools.cwl
 
 outputs:
+  - id: channel_flags
+    type: File?
+    outputSource: make_qu_cubes/channel_flags
+
+  - id: frequencies_list
+    type: File?
+    outputSource: make_qu_cubes/frequencies_list
+
+  - id: rms_list
+    type: File?
+    outputSource: make_qu_cubes/rms_list
+
   - id: stokesI
     type: File[]?
     outputSource: image_iv/I_channel_images

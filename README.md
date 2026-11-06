@@ -52,3 +52,7 @@ Additional command line arguments which are relevant for cwltool's validation ca
 ```
 tox -e py313 -- --singularity --strict
 ```
+
+### Polarization imaging
+
+See [the polarization configurations and reference test](pipeline_config_files/polarization/README.md) for Q/U imaging and noise-weighted RM synthesis, including LoTSS-HR examples that preserve 12.2 or 48.8 kHz channels.

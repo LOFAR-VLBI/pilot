@@ -1,0 +1,32 @@
+{
+  "msin": [
+    {
+      "class": "Directory",
+      "path": "/path/to/calibrated-target.ms"
+    }
+  ],
+  "pixel_scale": "1.5arcsec",
+  "taper": null,
+  "beam_size": null,
+  "beam_shape": [
+    10.738210356913106,
+    5.588108730474249,
+    96.9883679347604
+  ],
+  "image_size": [
+    256,
+    256
+  ],
+  "briggs": -0.5,
+  "min_uv_lambda": 0.0,
+  "num_channels": 120,
+  "stokes": "QU",
+  "multiscale": false,
+  "niter": 100000,
+  "max_major_cycles": 10,
+  "ncpu": 12,
+  "rmtools_max_lam2": 200.0,
+  "rmtools_dlam2": 0.3,
+  "rmtools_output_prefix": "target",
+  "rmtools_extra_args": null
+}
