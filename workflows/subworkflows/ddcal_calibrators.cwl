@@ -17,12 +17,17 @@ inputs:
     doc: Leave the Dutch stations untouched during selfcal. Useful if pre-applying Dutch station corrections.
 
   - id: phasediff_score_csv
-    type: File?
+    type: File
     doc: CSV with DD selection positions and phasediff scores.
 
   - id: model_cache
     type: string?
     doc: Neural network cache directory.
+
+  - id: use_dical_config
+    type: boolean
+    default: false
+    doc: Generate a direction-independent configuration for this calibration tier.
 
   - id: validate
     type: boolean
@@ -57,6 +62,8 @@ steps:
           source: model_cache
         - id: imsize
           source: postage_stamp_imsize
+        - id: use_dical_config
+          source: use_dical_config
       out:
         - merged_h5
         - fits_images
