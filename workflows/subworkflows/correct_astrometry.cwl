@@ -94,6 +94,8 @@ steps:
         source: sort_mses/sorted_entries
       - id: h5parm
         source: sort_h5parms/sorted_entries
+      - id: infix
+        default: ".astrometry"
     out:
       - ms_out
       - logfile
