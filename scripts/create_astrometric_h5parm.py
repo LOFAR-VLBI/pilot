@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from astropy import constants
 from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
@@ -166,7 +168,7 @@ def encode_astrometric_correction(
     corrector = MSAstrometryCorrector(ms)
     pc = corrector.get_phase_centre()
     pc_new = SkyCoord(
-        pc.ra.deg.value + delta_ra, pc.dec.deg.value + delta_dec, unit="deg"
+        pc.ra.deg + delta_ra, pc.dec.deg + delta_dec, unit="deg"
     )
     print(
         f"Separation between current phase centre and target: {pc.separation(pc_new).to('arcsec'):.3f}"
