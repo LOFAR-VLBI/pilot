@@ -16,6 +16,8 @@ import astropy.units as u
 import bdsf
 import json
 import numpy as np
+import os
+import shutil
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.modeling import fitting, models
@@ -242,14 +244,19 @@ def main():
         help="CSV file from the selfcal validation.",
     )
     parser.add_argument(
-        "--fits-directory",
-        type=Path,
-        help="Directory where to find the FITS images for source finding.",
+        "--fits-images",
+        type=str,
+        help="FITS images for source finding.",
     )
     args = parser.parse_args()
 
+    os.mkdir("fits_images")
+    fits_directory = Path("./fits_images")
+    for f in args.fits_images:
+        shutil.copy(f, Path(os.getcwd()) / "fits_images" / os.path.basename(f))
+
     astro = AstrometryDeriver(
-        args.astrometric_references, args.validation_csv, args.fits_directory
+        args.astrometric_references, args.validation_csv, fits_directory
     )
     astro.crossmatch_sources()
     astro.derive_offsets()
