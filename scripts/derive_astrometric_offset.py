@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+import os
+
+if os.access("/tmp", os.W_OK):
+    os.environ["TMPDIR"] = "/tmp"
+    os.environ["APPTAINERENV_TMPDIR"] = "/tmp"
+    os.environ["SINGULARITYENV_TMPDIR"] = "/tmp"
+else:
+    print("/tmp not writable to us. You may encounter `OSError: AF_UNIX path too long`")
+
 import argparse
 from pathlib import Path
 
