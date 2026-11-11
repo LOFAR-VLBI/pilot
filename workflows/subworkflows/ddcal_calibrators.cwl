@@ -8,6 +8,10 @@ inputs:
     type: Directory[]
     doc: Input MeasurementSets from individual calibrator directions.
 
+  - id: peeling_model
+    type: File?
+    doc: A skymodel in BBS format containing directions to peel. Each direction should be its own patch.
+
   - id: dd_precorrections
     type: File?
     doc: Multi-directional h5parm with Dutch DD solutions.
@@ -43,10 +47,25 @@ inputs:
       Image size in pixels to be used during calibration.
 
 steps:
-    - id: ddcal
+    - id: peel
       in:
         - id: msin
           source: msin
+        - id: skymodel
+          source: peeling_model
+      out:
+        - msout
+      run: ./dp3_peel.cwl
+      when: $(inputs.peeling_model != null)
+      scatter: msin
+
+    - id: ddcal
+      in:
+        - id: msin
+          source:
+            - peel/msout
+            - msin
+          pickValue: first_non_null
         - id: dd_precorrections
           source: dd_precorrections
         - id: freeze_dutch_solutions
