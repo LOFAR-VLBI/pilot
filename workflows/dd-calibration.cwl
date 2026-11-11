@@ -26,7 +26,7 @@ inputs:
       type: File?
       doc: |
         A catalogue in CSV format containing (a) reference source(s) to derive astrometric corrections from.
-        Must have at least `Source_id`, `RA` and `DEC` columns.
+        Must have at least `Source_id`, `RA`, `DEC`, `gaia_RA` and `gaia_DEC` columns.
 
     - id: delay_solset
       type: File?
@@ -404,7 +404,7 @@ steps:
         - id: msout
         - id: logfile
       run: subworkflows/correct_astrometry.cwl
-      when: $(inputs.astrometric_references != null)
+      when: $(inputs.astrometric_references != null && inputs.validation_csv != null)
 
 outputs:
     - id: final_merged_h5
