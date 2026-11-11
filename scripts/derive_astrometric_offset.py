@@ -171,7 +171,7 @@ class AstrometryDeriver:
                 delta_ra = 0
                 delta_dec = 0
             else:
-                delta_ra = offsets[0].deg * np.cos(np.deg2rad(ref_dec))
+                delta_ra = offsets[0].deg / np.cos(np.deg2rad(ref_dec))
                 delta_dec = offsets[1].deg
                 print(
                     f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} arcsec and ΔDEC={delta_dec*3600:f} arcsec"
