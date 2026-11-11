@@ -190,6 +190,11 @@ class AstrometryDeriver:
         """Summarise the sources used for the corrections and the final average astrometric correction."""
         print("== PILOT astrometric summary ==")
         N_sources = len(self.corrections)
+        if N_sources == 0:
+            print("No suitable astrometric refefences were found.")
+            self.delta_ra = 0
+            self.delta_dec = 0
+            return
         dra_avg = 0
         ddec_avg = 0
         for source, (
