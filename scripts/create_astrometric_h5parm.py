@@ -201,7 +201,7 @@ def main():
     )
     args = parser.parse_args()
     encode_astrometric_correction(
-        args.ms, args.delta_ra, args.delta_ra, args.ms.rstrip(".ms") + ".astrometry.h5"
+        args.ms, args.delta_ra, args.delta_dec, args.ms.rstrip(".ms") + ".astrometry.h5"
     )
 
 

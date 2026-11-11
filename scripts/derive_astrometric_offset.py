@@ -146,6 +146,7 @@ class AstrometryDeriver:
             offsets = None
             separation = None
             patch_size = None
+            ref_dec = None
             for i, (name, (ra, dec)) in enumerate(
                 sky_model.getPatchPositions().items()
             ):
@@ -154,12 +155,14 @@ class AstrometryDeriver:
                     offsets = src_coord.spherical_offsets_to(opt_coords)
                     separation = src_coord.separation(opt_coords)
                     patch_size = sky_model.getPatchSizes(units="arcsec")[i]
+                    ref_dec = dec
                 else:
                     new_separation = src_coord.separation(opt_coords)
                     if new_separation < separation:
                         separation = new_separation
                         offsets = src_coord.spherical_offsets_to(opt_coords)
                         patch_size = sky_model.getPatchSizes(units="arcsec")[i]
+                        ref_dec = dec
 
             if separation > astroSearchRadius * u.arcsec:
                 print(
@@ -168,7 +171,7 @@ class AstrometryDeriver:
                 delta_ra = 0
                 delta_dec = 0
             else:
-                delta_ra = offsets[0].deg
+                delta_ra = offsets[0].deg * np.cos(np.deg2rad(ref_dec))
                 delta_dec = offsets[1].deg
                 print(
                     f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} arcsec and ΔDEC={delta_dec*3600:f} arcsec"
@@ -245,7 +248,7 @@ def main():
     )
     parser.add_argument(
         "--fits-images",
-        type=str,
+        nargs="+",
         help="FITS images for source finding.",
     )
     args = parser.parse_args()
