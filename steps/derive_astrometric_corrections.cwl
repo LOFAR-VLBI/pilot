@@ -27,8 +27,6 @@ inputs:
     inputBinding:
       prefix: --fits-images
       position: 4
-      itemSeparator: " "
-      separate: true
 
 outputs:
   - id: delta_ra
