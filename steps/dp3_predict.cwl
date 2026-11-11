@@ -11,7 +11,6 @@ arguments:
   - steps=[predict]
   - msout.storagemanager=sisco
   - msout.datacolumn=MODEL_DATA
-  - predict.sourcedb=ILTJ103333.94+581436.3_049-sources-pb.txt
   - predict.usefastpredict=False
   - predict.operation=replace
   - predict.usebeammodel=True
