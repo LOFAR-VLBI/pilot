@@ -88,7 +88,7 @@ steps:
         source: number_cores
     out:
       - id: h5parm
-      - id: images
+      - id: inspection_plots
       - id: logfile
     run: ../../steps/facet_selfcal.cwl
     label: delay_solve
@@ -111,11 +111,11 @@ outputs:
     outputSource: gen_delay_config/configfile
     doc: |
         The custom config file for the delay calibrator
-  - id: pictures
-    type: File[]
-    outputSource: delay_solve/images
+  - id: inspection_plots
+    type: Directory[]
+    outputSource: delay_solve/inspection_plots
     doc: |
-        The inspection plots generated
+        The inspection PNG plots generated
         by delay_solve.
   - id: logfile
     type: File[]

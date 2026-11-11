@@ -177,7 +177,7 @@ steps:
       - id: solutions
       - id: starting_skymodel
       - id: config
-      - id: pictures
+      - id: inspection_plots
       - id: logfile
     run: ./subworkflows/delay_cal_run.cwl
     label: delay_cal_run
@@ -247,11 +247,11 @@ outputs:
         The directory containing all the stdin
         and stderr files from the workflow.
 
-  - id: pictures
-    type: File[]
-    outputSource: delay_cal_run/pictures
+  - id: inspection_plots
+    type: Directory[]
+    outputSource: delay_cal_run/inspection_plots
     doc: |
-        The inspection plots generated
+        The inspection PNG plots generated
         by delay_solve.
 
   - id: facetselfcal_config
