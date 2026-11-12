@@ -11,6 +11,9 @@ arguments:
   - steps=[predict]
   - msout.storagemanager=sisco
   - msout.datacolumn=MODEL_DATA
+  # The fast predict is optimised for a multi-dir predict and
+  # is much slower for a single source as is more likely in this
+  # scenario, so we disable it.
   - predict.usefastpredict=False
   - predict.operation=replace
   - predict.usebeammodel=True
