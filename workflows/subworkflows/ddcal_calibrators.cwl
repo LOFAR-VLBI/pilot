@@ -8,6 +8,10 @@ inputs:
     type: Directory[]
     doc: Input MeasurementSets from individual calibrator directions.
 
+  - id: peeling_model
+    type: File[]?
+    doc: A skymodel in BBS format containing directions to peel. Each direction should be its own patch.
+
   - id: dd_precorrections
     type: File?
     doc: Multi-directional h5parm with Dutch DD solutions.
@@ -43,10 +47,55 @@ inputs:
       Image size in pixels to be used during calibration.
 
 steps:
-    - id: ddcal
+    - id: make_peeling_models
       in:
         - id: msin
           source: msin
+        - id: skymodels
+          source: peeling_model
+        - id: peel_radius
+          default: 15
+      out:
+        - skymodel
+      run: ../../steps/make_peeling_model.cwl
+      scatter: msin
+
+    - id: sort_mses
+      in:
+        - id: input_entry
+          source: msin
+      out:
+        - id: sorted_entries
+      run: ../../steps/sort_by_name.cwl
+
+    - id: sort_peel_models
+      in:
+        - id: input_entry
+          source: make_peeling_models/skymodel
+      out:
+        - id: sorted_entries
+      run: ../../steps/sort_by_name.cwl
+
+    - id: peel
+      in:
+        - id: msin
+          source: sort_mses/sorted_entries
+        - id: skymodel
+          source: sort_peel_models/sorted_entries
+      out:
+        - msout
+      run: ./dp3_peel.cwl
+      when: $(inputs.peeling_model != null)
+      scatter: [msin,skymodel]
+      scatterMethod: dotproduct
+
+    - id: ddcal
+      in:
+        - id: msin
+          source:
+            - peel/msout
+            - msin
+          pickValue: first_non_null
         - id: dd_precorrections
           source: dd_precorrections
         - id: freeze_dutch_solutions
@@ -60,6 +109,7 @@ steps:
       out:
         - merged_h5
         - fits_images
+        - skymodel
         - selfcal_inspection_images
         - solution_inspection_images
         - config_file
@@ -124,6 +174,11 @@ outputs:
     type: File[]
     outputSource: ddcal/fits_images
     doc: Self-calibration images in FITS format
+
+  - id: selfcal_skymodels
+    type: File[]
+    outputSource: ddcal/skymodel
+    doc: Clean-component models of the best self-calibrated images.
 
   - id: selfcal_inspection_images
     type: File[]
