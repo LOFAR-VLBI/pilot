@@ -30,7 +30,10 @@ outputs:
       type: Directory
       doc: Output MeasurementSet with solutions applied
       outputBinding:
-        glob: "*$(inputs.infix)*.ms"
+        glob:
+          - "*$(inputs.infix)*.ms"
+          - "*$(inputs.infix)*.dp3concat"
+          - "*$(inputs.infix)*.dp3-concat"
     - id: logfile
       type: File[]
       doc: Log files corresponding to this step

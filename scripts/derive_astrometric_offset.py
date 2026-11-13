@@ -16,13 +16,12 @@ import astropy.units as u
 import bdsf
 import json
 import numpy as np
-import os
 import shutil
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.modeling import fitting, models
 from astropy.table import Table, join
-from collections.abc import Generator
+from collections.abc import Iterable
 from lsmtool.skymodel import SkyModel
 from skimage.metrics import structural_similarity
 
@@ -192,7 +191,7 @@ class AstrometryDeriver:
         print("== PILOT astrometric summary ==")
         N_sources = len(self.corrections)
         if N_sources == 0:
-            print("No suitable astrometric refefences were found.")
+            print("No suitable astrometric references were found.")
             self.delta_ra = 0
             self.delta_dec = 0
             return
@@ -202,18 +201,17 @@ class AstrometryDeriver:
             delta_ra,
             delta_dec,
             size,
-            chi2,
+            ssim,
         ) in self.corrections.copy().items():
-            if chi2 < 0.5:
+            if ssim < 0.5:
                 print(
-                    f"{source} ΔRA={delta_ra*3600:f} arcsec, ΔDEC={delta_dec*3600:f} arcsec; size {size:.2f} arcsec; single-Gaussian SSIM={chi2:.2f} (!! bad similarity -- source is likely not a Gaussian)"
-                    # f"{source} ΔRA={delta_ra*3600:f} arcsec, ΔDEC={delta_dec*3600:f} arcsec; size {size:.2f} arcsec; single-Gaussian χ2={chi2:.2f}"
+                    f"{source} ΔRA={delta_ra*3600:f} arcsec, ΔDEC={delta_dec*3600:f} arcsec; size {size:.2f} arcsec; single-Gaussian SSIM={ssim:.2f} (!! bad similarity -- source is likely not a Gaussian)"
                 )
                 self.corrections.pop(source)
                 N_sources -= 1
             else:
                 print(
-                    f"{source} ΔRA={delta_ra*3600:f} arcsec, ΔDEC={delta_dec*3600:f} arcsec; size {size:.2f} arcsec; single-Gaussian SSIM={chi2:.2f}"
+                    f"{source} ΔRA={delta_ra*3600:f} arcsec, ΔDEC={delta_dec*3600:f} arcsec; size {size:.2f} arcsec; single-Gaussian SSIM={ssim:.2f}"
                 )
                 dra_avg += delta_ra
                 ddec_avg += delta_dec
@@ -244,7 +242,11 @@ class AstrometryDeriver:
         with open(filename, "w") as f:
             json.dump({"delta_ra": self.delta_ra, "delta_dec": self.delta_dec}, f)
 
-    def correct_images(self, images: Generator[Path]):
+    def correct_images(self, images: Iterable[Path]):
+        if self.delta_ra == 0 and self.delta_dec == 0:
+            print(
+                "No corrections will be done. Please check if this is expected. This could mean all reference sources were rejected."
+            )
         for img in images:
             with fits.open(img, mode="update") as hdul:
                 hdul[0]["CRVAL1"] += self.delta_ra
@@ -273,7 +275,7 @@ def main():
     )
     args = parser.parse_args()
 
-    os.mkdir("fits_images")
+    os.makedirs("fits_images", exist_ok=True)
     fits_directory = Path("./fits_images")
     for f in args.fits_images:
         shutil.copy(f, Path(os.getcwd()) / "fits_images" / os.path.basename(f))
@@ -285,7 +287,7 @@ def main():
     astro.derive_offsets()
     astro.summarise_corrections()
     img_path = Path(os.getcwd()) / "fits_images"
-    astro.correct_images(img_path.glob("*.fits"))
+    astro.correct_images(list(img_path.glob("*.fits")))
     astro.dump_to_json()
 
 

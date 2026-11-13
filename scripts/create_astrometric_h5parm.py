@@ -68,7 +68,7 @@ class MSAstrometryCorrector:
         Returns:
             uvw (ndarray): array of (Nt, Nant, 3) with the new UVW coordinates in metres.
         """
-        ms_times = ct.taql(f"SELECT DISTINCT TIME FROM {self.ms}").getcol("TIME")
+        ms_times = ct.taql(f"SELECT DISTINCT TIME FROM {self.ms} ORDERBY TIME").getcol("TIME")
         times = Time(ms_times / 86400.0, format="mjd", scale="utc")
         with ct.table(self.ms + "::ANTENNA", ack=False, readonly=True) as tab:
             xyz = tab.getcol("POSITION")

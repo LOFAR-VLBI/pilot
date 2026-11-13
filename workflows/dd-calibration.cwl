@@ -490,4 +490,6 @@ outputs:
         - correct_astrometry/msout
         - clean_ms_names/msout
       pickValue: first_non_null
-      doc: MeasurementSets of all (selected) directions _without_ solutions.
+      doc: -|
+        MeasurementSets of all (selected) directions _without_ DD solutions preapplied, but
+        _with_ any astrometric corrections if done.
