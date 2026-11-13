@@ -90,7 +90,7 @@ class AstrometryDeriver:
                 print("Axis 1 is longer than the necessary 10 arcsec; trimming.")
                 low1 = int((header["NAXIS1"] // 2) - (pix_needed1 // 2))
                 high1 = int((header["NAXIS1"] // 2) + (pix_needed1 // 2))
-            if header["NAXIS2"] > pix_needed1:
+            if header["NAXIS2"] > pix_needed2:
                 print("Axis 2 is longer than the necessary 10 arcsec; trimming.")
                 low2 = int((header["NAXIS2"] // 2) - (pix_needed2 // 2))
                 high2 = int((header["NAXIS2"] // 2) + (pix_needed2 // 2))
@@ -126,7 +126,9 @@ class AstrometryDeriver:
                 y_stddev=1.0,
             )
             fitter = fitting.LevMarLSQFitter()
-            y, x = np.meshgrid(np.arange(data.shape[0]), np.arange(data.shape[1]))
+            y, x = np.meshgrid(
+                np.arange(data.shape[0]), np.arange(data.shape[1]), indexing="ij"
+            )
             fit = fitter(init_model, x, y, data)
 
             ssim_value = structural_similarity(
@@ -169,8 +171,6 @@ class AstrometryDeriver:
                 print(
                     f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away. Not correcting."
                 )
-                delta_ra = 0
-                delta_dec = 0
             else:
                 delta_ra = offsets[0].deg / np.cos(np.deg2rad(ref_dec))
                 delta_dec = offsets[1].deg
@@ -178,12 +178,12 @@ class AstrometryDeriver:
                     f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} arcsec and ΔDEC={delta_dec*3600:f} arcsec"
                 )
 
-            corrections[source["Source_id"]] = (
-                delta_ra,
-                delta_dec,
-                patch_size,
-                ssim_value,
-            )
+                corrections[source["Source_id"]] = (
+                    delta_ra,
+                    delta_dec,
+                    patch_size,
+                    ssim_value,
+                )
 
         self.corrections = corrections
 
@@ -218,6 +218,13 @@ class AstrometryDeriver:
                 dra_avg += delta_ra
                 ddec_avg += delta_dec
 
+        if N_sources == 0:
+            print(
+                "All astrometric references were rejected after Gaussianity check. Not correcting."
+            )
+            self.delta_ra = 0
+            self.delta_dec = 0
+            return
         dra_avg /= N_sources
         ddec_avg /= N_sources
         self.delta_ra = dra_avg
@@ -239,7 +246,7 @@ class AstrometryDeriver:
 
     def correct_images(self, images: Generator[Path]):
         for img in images:
-            with open(img, mode="update") as hdul:
+            with fits.open(img, mode="update") as hdul:
                 hdul[0]["CRVAL1"] += self.delta_ra
                 hdul[0]["CRVAL2"] += self.delta_dec
             img.rename(img.absolute().with_suffix(".astrometry.fits"))

@@ -134,25 +134,32 @@ class MSAstrometryCorrector:
         assert self.delays.shape == (len(times), len(names)), self.delays.shape
 
         h5 = h5parm(h5file, readonly=False)
-        ss = h5.makeSolset(solset)
-        ss.obj.antenna.append(list(zip(names, np.asarray(xyz, dtype="f4"))))
-        ss.obj.source.append(
-            [("pointing", [self.phase_centre.ra.rad, self.phase_centre.dec.rad])]
-        )
-        if solset in ss.getSoltabNames():
-            if not overwrite:
-                raise RuntimeError(f"solset {solset} already exists")
-            st = ss.getSoltab(soltab)
-            st.delete()
-        ss.makeSoltab(
-            soltype="clock",
-            soltabName=soltab,
-            axesNames=["time", "ant"],
-            axesVals=[times, np.array(names)],
-            vals=self.delays,
-            weights=np.ones_like(self.delays),
-        )
-        h5.close()
+        try:
+            if solset in h5.getSolsetNames():
+                if not overwrite:
+                    print(f"solset {solset} already exists; appending.")
+                ss = h5.getSolset(solset)
+                ss.delete()
+            ss = h5.makeSolset(solset)
+            ss.obj.antenna.append(list(zip(names, np.asarray(xyz, dtype="f4"))))
+            ss.obj.source.append(
+                [("pointing", [self.phase_centre.ra.rad, self.phase_centre.dec.rad])]
+            )
+            if soltab in ss.getSoltabNames():
+                if not overwrite:
+                    raise RuntimeError(f"soltab {soltab} already exists")
+                st = ss.getSoltab(soltab)
+                st.delete()
+            ss.makeSoltab(
+                soltype="clock",
+                soltabName=soltab,
+                axesNames=["time", "ant"],
+                axesVals=[times, np.array(names)],
+                vals=self.delays,
+                weights=np.ones_like(self.delays),
+            )
+        finally:
+            h5.close()
 
 
 def encode_astrometric_correction(
@@ -189,13 +196,13 @@ def main():
     parser.add_argument(
         "--delta-ra",
         type=float,
-        required=False,
+        required=True,
         help="Right ascension shift in degrees.",
     )
     parser.add_argument(
         "--delta-dec",
         type=float,
-        required=False,
+        required=True,
         help="Declination shift in degrees.",
     )
     args = parser.parse_args()
