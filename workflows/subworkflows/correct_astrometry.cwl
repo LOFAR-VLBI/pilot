@@ -29,10 +29,6 @@ inputs:
     type: File[]
     doc: Self-calibration FITS images whose headers will be shifted.
 
-  - id: h5parm
-    type: File?
-    doc: Existing calibration solutions to apply to the MeasurementSets.
-
 steps:
   - id: derive_astrometric_corrections
     in:
