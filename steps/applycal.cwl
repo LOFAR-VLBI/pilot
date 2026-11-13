@@ -30,7 +30,7 @@ outputs:
       type: Directory
       doc: Output MeasurementSet with solutions applied
       outputBinding:
-        glob: "*$(inputs.infix)*"
+        glob: "*$(inputs.infix)*.ms"
     - id: logfile
       type: File[]
       doc: Log files corresponding to this step
