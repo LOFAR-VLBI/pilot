@@ -43,6 +43,7 @@ steps:
       - id: fits_images
         source: fits_images
     out:
+      - corrected_fits_images
       - delta_ra
       - delta_dec
       - logfiles
@@ -116,6 +117,10 @@ outputs:
     type: Directory[]
     outputSource: apply_astrometric_corrections/ms_out
     doc: MeasurementSets with calibration and astrometric corrections applied.
+
+  - id: corrected_fits_images
+    type: File[]
+    outputSource: derive_astrometric_corrections/corrected_fits_images
 
   - id: astrometric_h5parms
     type: File[]
