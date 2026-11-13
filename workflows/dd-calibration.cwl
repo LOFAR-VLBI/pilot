@@ -401,8 +401,8 @@ steps:
           linkMerge: merge_flattened
           pickValue: all_non_null
       out:
-        - id: corrected_fits_images
         - id: msout
+        - id: corrected_fits_images
         - id: logfile
       run: subworkflows/correct_astrometry.cwl
       when: $(inputs.astrometric_references != null && inputs.validation_csv != null)
