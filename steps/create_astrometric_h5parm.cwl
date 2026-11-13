@@ -15,18 +15,22 @@ inputs:
       prefix: --ms
       position: 1
 
+  # No separation is important for these two arguments as otherwise argparse
+  # tries to interpret negative values as flags to the script.
   - id: delta_ra
     type: float
     doc: Offset to shift towards the intended right ascension in degrees.
     inputBinding:
-      prefix: --delta-ra
+      prefix: --delta-ra=
+      separate: false
       position: 2
 
   - id: delta_dec
     type: float
     doc: Offset to shift toward the intended declination in degrees.
     inputBinding:
-      prefix: --delta-dec
+      prefix: --delta-dec=
+      separate: false
       position: 3
 
 outputs:
