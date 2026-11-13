@@ -22,6 +22,7 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.modeling import fitting, models
 from astropy.table import Table, join
+from collections.abc import Generator
 from lsmtool.skymodel import SkyModel
 from skimage.metrics import structural_similarity
 
@@ -236,6 +237,13 @@ class AstrometryDeriver:
         with open(filename, "w") as f:
             json.dump({"delta_ra": self.delta_ra, "delta_dec": self.delta_dec}, f)
 
+    def correct_images(self, images: Generator[Path]):
+        for img in images:
+            with open(img, mode="update") as hdul:
+                hdul[0]["CRVAL1"] += self.delta_ra
+                hdul[0]["CRVAL2"] += self.delta_dec
+            img.rename(img.absolute().with_suffix(".astrometry.fits"))
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -269,6 +277,8 @@ def main():
     astro.crossmatch_sources()
     astro.derive_offsets()
     astro.summarise_corrections()
+    img_path = Path(os.getcwd()) / "fits_images"
+    astro.correct_images(img_path.glob("*.fits"))
     astro.dump_to_json()
 
 

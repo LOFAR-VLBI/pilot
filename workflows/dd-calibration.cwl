@@ -401,6 +401,7 @@ steps:
           linkMerge: merge_flattened
           pickValue: all_non_null
       out:
+        - id: corrected_fits_images
         - id: msout
         - id: logfile
       run: subworkflows/correct_astrometry.cwl
@@ -421,6 +422,11 @@ outputs:
       type: File?
       outputSource: concat_validation_csvs/concat_csv
       doc: Validation CSV file
+
+    - id: FITS_images_astrometry
+      type: File[]?
+      outputSource: correct_astrometry/corrected_fits_images
+      doc: Best self-calibration image in FITS format
 
     - id: FITS_images
       type:
