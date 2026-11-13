@@ -4,6 +4,7 @@ from astropy import constants
 from astropy.coordinates import EarthLocation, SkyCoord
 from astropy.time import Time
 from losoto.h5parm import h5parm
+from pathlib import Path
 
 import argparse
 import astropy.units as u
@@ -167,9 +168,7 @@ def encode_astrometric_correction(
     """
     corrector = MSAstrometryCorrector(ms)
     pc = corrector.get_phase_centre()
-    pc_new = SkyCoord(
-        pc.ra.deg + delta_ra, pc.dec.deg + delta_dec, unit="deg"
-    )
+    pc_new = SkyCoord(pc.ra.deg + delta_ra, pc.dec.deg + delta_dec, unit="deg")
     print(
         f"Separation between current phase centre and target: {pc.separation(pc_new).to('arcsec'):.3f}"
     )
@@ -183,7 +182,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--ms",
-        type=str,
+        type=Path,
         required=True,
         help="MeasurementSet from which the phase centre and antenna positions will be taken.",
     )
@@ -201,7 +200,10 @@ def main():
     )
     args = parser.parse_args()
     encode_astrometric_correction(
-        args.ms, args.delta_ra, args.delta_dec, args.ms.rstrip(".ms") + ".astrometry.h5"
+        args.ms,
+        args.delta_ra,
+        args.delta_dec,
+        args.ms.with_suffix(".astrometry.h5").name,
     )
 
 
