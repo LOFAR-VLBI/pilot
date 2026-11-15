@@ -32,7 +32,7 @@ outputs:
   - id: corrected_fits_images
     type: File[]
     outputBinding:
-      glob: "*.astrometry.fits"
+      glob: "fits_images/*.astrometry.fits"
   - id: delta_ra
     type: float
     doc: Astrometric correction for the right ascension.
