@@ -14,7 +14,7 @@ import numpy as np
 
 class MSAstrometryCorrector:
     def __init__(self, ms):
-        self.ms = ms.rstrip("/")
+        self.ms = ms.as_posix()
         self.phase_centre = None
         self.l = None
         self.m = None
