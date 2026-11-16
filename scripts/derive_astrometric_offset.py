@@ -171,7 +171,7 @@ class AstrometryDeriver:
                     f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away. Not correcting."
                 )
             else:
-                delta_ra = offsets[0].deg / np.cos(np.deg2rad(ref_dec))
+                delta_ra = offsets[0].deg / np.cos(np.deg2rad(ref_dec.value))
                 delta_dec = offsets[1].deg
                 print(
                     f"Found a component within {astroSearchRadius:f} arcsec of reference coordinate. Correcting with ΔRA={delta_ra*3600:f} arcsec and ΔDEC={delta_dec*3600:f} arcsec"
@@ -249,8 +249,8 @@ class AstrometryDeriver:
             )
         for img in images:
             with fits.open(img, mode="update") as hdul:
-                hdul[0]["CRVAL1"] += self.delta_ra
-                hdul[0]["CRVAL2"] += self.delta_dec
+                hdul[0].header["CRVAL1"] += self.delta_ra
+                hdul[0].header["CRVAL2"] += self.delta_dec
             img.rename(img.absolute().with_suffix(".astrometry.fits"))
 
 
