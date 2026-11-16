@@ -9,16 +9,20 @@
 * Fixed the SOLSDIR for ddf-pipeline solutions not being handled properly (#168)
 * Fixed PyBDSF crashing with socket paths being too long (#127)
 * Reserve RAM for the multidir h5parm merging (#147)
+* DDF-subtracted MSes are now returned (#189)
+* Smoothness constraint for core and remote stations during delay calibration is enlarged (#197)
+* Skynet model generation handles multi-component sources properly (#195)
+* Reserve more RAM for the DIS2 h5parm merging (#200)
 
 ### Added
 
 * LINC VLBI is now enforced and legacy workflows such as `setup.cwl`, `clip-A_team.cwl` and `concatenate-flag.cwl` have been deprecated. (#129)
-* Intermediate-resolution imaging now uses shared facets reads and writes for a performance increase. (#160)
 * Linear polarisation imaging workflow (#126)
 * Leakage calibration can now be enabled on the delay calibrator (#174)
-* Parallelise solution validation in the dd calibration at the CWL level (#177)
+* Parallelise solution validation in the dd calibration at the CWL level for wall time reduction (#177)
 * A new direction-dependent calibration strategy which automatically propagate nearby calibration solutions from stronger to weaker sources to reduce the need for post-run refinement of calibration (#175, #180)
 * Generation of delay calibrator settings has been refined and now uses the phasediff score instead of an external measure of source brightness (#182)
+* User-specifiable image size for postage stamps (#190)
 
 
 ## 1.1.2
