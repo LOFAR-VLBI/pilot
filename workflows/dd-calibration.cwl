@@ -398,6 +398,7 @@ steps:
           source:
             - filter_selfcal_fits/final_files_strong
             - filter_selfcal_fits/final_files_weak
+            - filter_selfcal_fits/final_files_unreliable
           linkMerge: merge_flattened
           pickValue: all_non_null
       out:
