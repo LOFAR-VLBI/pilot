@@ -108,6 +108,16 @@ steps:
       - flattenedarray
     run: ../../steps/flatten.cwl
 
+  - id: merge_h5parms
+    in:
+      - id: h5parms
+        source: sort_h5parms/sorted_entries
+    out:
+      - multidir_h5
+    run: ../steps/multidir_merger.cwl
+    when: $(inputs.h5parms != null && inputs.h5parms.length > 0)
+
+
 outputs:
   - id: msout
     type: Directory[]
@@ -118,10 +128,10 @@ outputs:
     type: File[]
     outputSource: derive_astrometric_corrections/corrected_fits_images
 
-  - id: astrometric_h5parms
-    type: File[]
-    outputSource: create_astrometric_h5parm/h5parm
-    doc: Per-MeasurementSet h5parms containing astrometric corrections.
+  - id: astrometric_h5parm
+    type: File
+    outputSource: merge_h5parms/multidir_h5
+    doc: H5Parm containing astrometric corrections for all Measurement Sets.
 
   - id: logfile
     type: File[]
