@@ -404,6 +404,7 @@ steps:
       out:
         - id: msout
         - id: corrected_fits_images
+        - id: astrometric_h5parm
         - id: logfile
       run: subworkflows/correct_astrometry.cwl
       when: $(inputs.astrometric_references != null && inputs.validation_csv != null)
@@ -413,6 +414,11 @@ outputs:
       type: File?
       outputSource: multidir_merge_weak/multidir_h5
       doc: Final multi-directional h5parm containing solutions in the directions of strong and weak 
+
+    - id: astrometric_h5
+      type: File?
+      outputSource: correct_astrometry/astrometric_h5parm
+      doc: Final multi-directional h5parm containing astrometric solutions.
 
     - id: phasediff_score_csv
       type: File?

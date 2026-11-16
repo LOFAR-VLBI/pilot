@@ -114,7 +114,7 @@ steps:
         source: sort_h5parms/sorted_entries
     out:
       - multidir_h5
-    run: ../steps/multidir_merger.cwl
+    run: ../../steps/multidir_merger.cwl
     when: $(inputs.h5parms != null && inputs.h5parms.length > 0)
 
 
