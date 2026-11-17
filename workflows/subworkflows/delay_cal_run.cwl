@@ -28,6 +28,9 @@ inputs:
     doc: |
       Number of cores to use per job for tasks with
       high I/O or memory.
+  - id: model_cache
+    type: string?
+    doc: Neural network cache directory.
 
 steps:
   - id: delay_cal_model
@@ -86,10 +89,14 @@ steps:
         source: gen_delay_config/configfile
       - id: number_cores
         source: number_cores
+      - id: model_cache
+        source: model_cache
     out:
       - id: h5parm
-      - id: images
+      - id: inspection_plots
       - id: logfile
+      - id: best_fits_image
+      - id: best_h5parm
     run: ../../steps/facet_selfcal.cwl
     label: delay_solve
 
@@ -111,12 +118,20 @@ outputs:
     outputSource: gen_delay_config/configfile
     doc: |
         The custom config file for the delay calibrator
-  - id: pictures
-    type: File[]
-    outputSource: delay_solve/images
+  - id: inspection_plots
+    type: Directory[]
+    outputSource: delay_solve/inspection_plots
     doc: |
-        The inspection plots generated
+        The inspection PNG plots generated
         by delay_solve.
+  - id: best_fits_image
+    type: File?
+    outputSource: delay_solve/best_fits_image
+    doc: Best calibration FITS image
+  - id: best_h5parm
+    type: File?
+    outputSource: delay_solve/best_h5parm
+    doc: Best calibration HDF5 solutions
   - id: logfile
     type: File[]
     outputSource: delay_solve/logfile

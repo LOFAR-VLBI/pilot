@@ -59,9 +59,8 @@ steps:
           source: postage_stamp_imsize
       out:
         - merged_h5
-        - fits_images
+        - fits_image
         - selfcal_inspection_images
-        - solution_inspection_images
         - config_file
       run: ./auto_selfcal.cwl
       scatter: msin
@@ -74,18 +73,10 @@ steps:
         - flattenedarray
       run: ../../steps/flatten.cwl
 
-    - id: flatten_solution_plots
-      in:
-        - id: nestedarray
-          source: ddcal/solution_inspection_images
-      out:
-        - flattenedarray
-      run: ../../steps/flatten.cwl
-
     - id: validation
       in:
         - id: images
-          source: ddcal/fits_images
+          source: ddcal/fits_image
         - id: h5parm
           source: ddcal/merged_h5
         - id: model_cache
@@ -122,18 +113,13 @@ outputs:
 
   - id: selfcal_images
     type: File[]
-    outputSource: ddcal/fits_images
+    outputSource: ddcal/fits_image
     doc: Self-calibration images in FITS format
 
   - id: selfcal_inspection_images
-    type: File[]
+    type: Directory[]
     outputSource: flatten_images/flattenedarray
     doc: Self-calibration inspection images in PNG format
-
-  - id: solution_inspection_images
-    type: Directory[]
-    outputSource: flatten_solution_plots/flattenedarray
-    doc: LoSoTo solution inspection images
 
   - id: config_files
     type: File[]
