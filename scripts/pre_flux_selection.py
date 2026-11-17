@@ -94,7 +94,7 @@ def select_bright_sources(phase_centre: SkyCoord, catalogue: str, fluxcut: float
     """
 
     df = read_catalogue(catalogue)
-    df = df[df['Peak_flux'] > fluxcut]
+    df = df[df['Peak_flux'] > fluxcut * 1e3]
 
     # Convert source coordinates
     sourcedir_x = SkyCoord(ra=phase_centre.ra.value * u.deg, dec=df['DEC'].values * u.deg)
