@@ -94,6 +94,21 @@ inputs:
       default: true
       doc: Validate DI calibration, using merged output calibration solutions.
 
+    - id: use_ms_weighting
+      type: boolean
+      default: true
+      doc: Use input-MS sensitivity weighting for phase validation.
+
+    - id: phase_weight_uvmin
+      type: float
+      default: 40000.0
+      doc: Minimum baseline length in wavelengths for MS phase weighting.
+
+    - id: flag_solutions
+      type: boolean
+      default: true
+      doc: Flag phase outliers within the limits when the initial phase score fails.
+
     - id: select_best_n_delay_calibrators
       type: int?
       default: 1
@@ -206,8 +221,20 @@ steps:
           valueFrom: $(self)
         - id: do_validation
           source: do_validation
+        - id: weighting_mses
+          source:
+            - select_best_delay_cal/msout
+            - phaseup/msout
+          pickValue: first_non_null
+        - id: use_ms_weighting
+          source: use_ms_weighting
+        - id: weight_uvmin
+          source: phase_weight_uvmin
+        - id: flag_solutions
+          source: flag_solutions
       out:
         - validate_csv
+        - selected_h5
       run: ./subworkflows/dical_validation.cwl
       when: $(inputs.do_validation)
 
@@ -262,15 +289,12 @@ steps:
           pickValue: first_non_null
         - id: h5parm
           source:
+            - validation/selected_h5
             - phaseup/solutions
             - select_best_delay_cal/solutions
           pickValue: first_non_null
-          linkMerge: merge_flattened
-          # This valueFrom suppresses CWL's warning about potentially incompatible types.
-          # select_best_delay_cal can technically return either File or File[], but the when
-          # clause for this step prevents from running if we have more than 1 candidate, so
-          # we should never be in a situation of having File[] here.
-          valueFrom: $(self)
+          # This step runs only when one calibrator was selected.
+          valueFrom: "$(Array.isArray(self) ? self[0] : self)"
         - id: infix
           default: ".delay_corrected"
         - id: apply_delay_solutions
@@ -336,9 +360,10 @@ outputs:
 
   - id: solutions
     outputSource:
+      - validation/selected_h5
       - select_best_delay_cal/solutions
       - phaseup/solutions
-    pickValue: all_non_null
+    pickValue: first_non_null
     type:
       - File?
       - File[]?
