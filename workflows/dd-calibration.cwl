@@ -9,6 +9,7 @@ doc: |
     * Performs self-calibration on the target directions with facetselfcal (with automatically tuned parameter settings)
 
 requirements:
+  - class: ScatterFeatureRequirement
   - class: SubworkflowFeatureRequirement
   - class: MultipleInputFeatureRequirement
   - class: InlineJavascriptRequirement
@@ -154,6 +155,7 @@ steps:
       out:
         - h5parms
         - selfcal_images
+        - selfcal_skymodels
         - selfcal_inspection_images
         - solution_inspection_images
         - config_files
@@ -215,6 +217,8 @@ steps:
           default: 1.0
         - id: postage_stamp_imsize
           source: postage_stamp_imsize
+        - id: peeling_model
+          source: ddcal_int_strong/selfcal_skymodels
       out:
         - h5parms
         - selfcal_images
@@ -454,5 +458,4 @@ outputs:
     - id: msout
       type: Directory[]
       outputSource: clean_ms_names/msout
-      pickValue: all_non_null
       doc: MeasurementSets of all (selected) directions _without_ solutions.
