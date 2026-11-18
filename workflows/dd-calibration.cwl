@@ -405,6 +405,7 @@ steps:
         - id: msout
         - id: corrected_fits_images
         - id: astrometric_h5parm
+        - id: astrometric_offsets
         - id: logfile
       run: subworkflows/correct_astrometry.cwl
       when: $(inputs.astrometric_references != null && inputs.validation_csv != null)
@@ -419,6 +420,11 @@ outputs:
       type: File?
       outputSource: correct_astrometry/astrometric_h5parm
       doc: Final multi-directional h5parm containing astrometric solutions.
+
+    - id: astrometric_offsets
+      type: File?
+      outputSource: correct_astrometry/astrometric_offsets
+      doc: File containing the applied astrometric offsets.
 
     - id: phasediff_score_csv
       type: File?

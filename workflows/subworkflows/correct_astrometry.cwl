@@ -43,6 +43,7 @@ steps:
       - delta_ra
       - delta_dec
       - logfiles
+      - offset_file
     run: ../../steps/derive_astrometric_corrections.cwl
 
   - id: create_astrometric_h5parm
@@ -132,6 +133,11 @@ outputs:
     type: File
     outputSource: merge_h5parms/multidir_h5
     doc: H5Parm containing astrometric corrections for all Measurement Sets.
+
+  - id: astrometric_offsets
+    type: File
+    outputSource: derive_astrometric_corrections/offset_file
+    doc: JSON file containing the applied offset.
 
   - id: logfile
     type: File[]

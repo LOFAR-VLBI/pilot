@@ -47,6 +47,11 @@ outputs:
       loadContents: true
       glob: astrometry.json
       outputEval: $(JSON.parse(self[0].contents).delta_dec)
+  - id: offset_file
+    type: File
+    doc: JSON file containing the derived offsets.
+    outputBinding:
+      glob: astrometry.json
   - id: logfiles
     type: File[]
     doc: Standard output and error logs from the cross-match.
