@@ -113,6 +113,8 @@ steps:
     in:
       - id: h5parms
         source: sort_h5parms/sorted_entries
+      - id: h5parm_out
+        default: "astrometry_merged.h5"
     out:
       - multidir_h5
     run: ../../steps/multidir_merger.cwl
