@@ -50,6 +50,8 @@ outputs:
 
 requirements:
   - class: InlineJavascriptRequirement
+  - class: EnvVarRequirement
+    envDef: {APPTAINER_BIND: "", SINGULARITY_BIND: ""}
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
