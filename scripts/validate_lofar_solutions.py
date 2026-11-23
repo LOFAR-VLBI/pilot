@@ -152,7 +152,7 @@ def subtract_parabola(phases: np.ndarray, multiplier: float = 1.0):
             x = np.arange(-len(time_interval)//2,len(time_interval)//2)
 
             #Initial estimate of parameters
-            p_0[2] = np.mean(time_interval[max(len(time_interval)//2-10, 0):len(time_interval)//2+10])
+            p_0[2] = np.nanmean(time_interval[max(len(time_interval)//2-10, 0):len(time_interval)//2+10])
             chi2 = residuals_brute(sample_range[:,None], time_interval[None,~np.isnan(time_interval)], x[None,~np.isnan(time_interval)], p_0[2])
             p_0[0] = sample_range[np.argmin(chi2)]
 
