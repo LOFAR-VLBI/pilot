@@ -23,14 +23,6 @@ inputs:
       folders with DIS2 solutions.
     inputBinding:
       position: 1
-  - id: flagging_parset
-    type: File
-    default:
-      class: File
-      location: ../pipeline_config_files/losoto_dis2_flagging.parset
-    doc: LoSoTo configuration for flagging the merged DIS2 solutions.
-    inputBinding:
-      position: 3
 
 outputs:
   - id: dis2_h5parm
