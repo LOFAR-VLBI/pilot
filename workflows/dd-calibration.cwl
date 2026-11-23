@@ -97,6 +97,11 @@ inputs:
       default: 2048
       doc: Image size in pixels for the dd-calibration.
 
+    - id: skip_unreliable_sources
+      type: boolean
+      default: false
+      doc: Skip imaging and self-calibration of initially unreliable sources and sources demoted to unreliable entirely.
+
 steps:
     - id: split_directions
       label: Split out calibrator sources in separate measurement sets
@@ -264,6 +269,8 @@ steps:
     - id: ddcal_int_unreliable
       label: Automatic direction-dependent calibration
       in:
+        - id: skip_unreliable_sources
+          source: skip_unreliable_sources
         - id: msin
           source:
             - split_directions/msout_concat_unreliable
@@ -292,6 +299,7 @@ steps:
         - solution_inspection_images
         - config_files
       run: ./subworkflows/ddcal_calibrators.cwl
+      when: $(!inputs.skip_unreliable_sources)
 
     - id: filter_selfcal_fits
       in:
