@@ -2,9 +2,8 @@ class: CommandLineTool
 cwlVersion: v1.2
 id: gatherdis2
 doc: |-
-  Gathers the final direction dependent solutions from the DDF-pipeline
-  and other files required for the subtraction: the clean component model,
-  the facet layout and the clean mask.
+  Converts and merges the DDF-pipeline DIS2 solutions, then flags outlying
+  diagonal amplitudes and phases before the full-Jones solutions are applied.
 
 baseCommand:
   - convert_DIS2_to_h5parm.sh
@@ -28,16 +27,28 @@ inputs:
 outputs:
   - id: dis2_h5parm
     type: File
-    doc: The direction independent solutions from DDF-pipeline.
+    doc: Full-Jones DIS2 solutions with outlier flags stored in the H5 weights.
     outputBinding:
       glob: DIS2_full.h5
   - id: solsdir
     type: Directory
     outputBinding:
       outputEval: $(inputs.ddf_solsdir)
+  - id: logfile
+    type: File[]
+    doc: Conversion, merging and LoSoTo flagging logs.
+    outputBinding:
+      glob: [gatherdis2.log, gatherdis2_err.log, losoto-dis2.log]
+
+requirements:
+  - class: ResourceRequirement
+    coresMin: 4
+    coresMax: 4
+    ramMin: 120000
 
 hints:
   - class: DockerRequirement
     dockerPull: vlbi-cwl
-  - class: ResourceRequirement
-    ramMin: 120000
+
+stdout: gatherdis2.log
+stderr: gatherdis2_err.log
