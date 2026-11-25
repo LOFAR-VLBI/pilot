@@ -166,7 +166,9 @@ class AstrometryDeriver:
                         patch_size = sky_model.getPatchSizes(units="arcsec")[i]
                         ref_dec = dec
 
-            if separation > astroSearchRadius * u.arcsec:
+            if not separation:
+                print("No components fitted in the image. Not correcting anything.")
+            elif separation > astroSearchRadius * u.arcsec:
                 print(
                     f"Closest match is more than the allowed distance of {astroSearchRadius} arcsec away. Not correcting."
                 )
