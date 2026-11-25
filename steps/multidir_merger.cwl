@@ -15,6 +15,10 @@ inputs:
       position: 1
       itemSeparator: " "
       separate: true
+  - id: h5parm_out
+    type: string
+    doc: Name of the merged h5parm.
+    default: "merged.h5"
   - id: no_propagate_weights
     type: boolean
     default: true
@@ -32,7 +36,7 @@ outputs:
       type: File
       doc: Merged multi-directional h5parm.
       outputBinding:
-        glob: merged.h5
+        glob: $(inputs.h5parm_out)
     - id: logfile
       type: File[]
       doc: Log files corresponding to this step.
@@ -40,7 +44,7 @@ outputs:
         glob: multidir_h5_merger*.log
 
 arguments:
-  - --h5_out=merged.h5
+  - --h5_out=$(inputs.h5parm_out)
 
 requirements:
   - class: InlineJavascriptRequirement
