@@ -47,47 +47,17 @@ inputs:
       Image size in pixels to be used during calibration.
 
 steps:
-    - id: make_peeling_models
-      in:
-        - id: msin
-          source: msin
-        - id: skymodels
-          source: peeling_model
-        - id: peel_radius
-          default: 15
-      out:
-        - skymodel
-      run: ../../steps/make_peeling_model.cwl
-      scatter: msin
-
-    - id: sort_mses
-      in:
-        - id: input_entry
-          source: msin
-      out:
-        - id: sorted_entries
-      run: ../../steps/sort_by_name.cwl
-
-    - id: sort_peel_models
-      in:
-        - id: input_entry
-          source: make_peeling_models/skymodel
-      out:
-        - id: sorted_entries
-      run: ../../steps/sort_by_name.cwl
-
     - id: peel
       in:
         - id: msin
-          source: sort_mses/sorted_entries
-        - id: skymodel
-          source: sort_peel_models/sorted_entries
+          source: msin
+        - id: peeling_model
+          source: peeling_model
       out:
         - msout
-      run: ./dp3_peel.cwl
-      when: $(inputs.peeling_model != null)
-      scatter: [msin,skymodel]
-      scatterMethod: dotproduct
+      run: ./peel_calibrators.cwl
+      scatter: msin
+      when: $(inputs.peeling_model != null && inputs.peeling_model.length > 0)
 
     - id: ddcal
       in:
