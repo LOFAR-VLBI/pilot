@@ -126,7 +126,7 @@ class MSAstrometryCorrector:
         Raises:
             RuntimeError: if the soltab exists and overwrite is False.
         """
-        times = ct.taql(f"SELECT DISTINCT TIME FROM {self.ms}").getcol("TIME")
+        times = ct.taql(f"SELECT DISTINCT TIME FROM {self.ms} ORDERBY TIME").getcol("TIME")
 
         with ct.table(self.ms + "::ANTENNA", ack=False, readonly=True) as tab:
             xyz = tab.getcol("POSITION")
