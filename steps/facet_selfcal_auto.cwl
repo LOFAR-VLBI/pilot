@@ -71,6 +71,12 @@ outputs:
          glob: 'fits_images/best_*MFS-image.fits'
       doc: Best selfcal FITS image
 
+    - id: selfcal_skymodel
+      type: File
+      outputBinding:
+         glob: 'fits_images/best_*sources.txt'
+      doc: Clean-component model belonging to the best selfcal FITS image.
+
     - id: logfile
       type: File[]
       outputBinding:

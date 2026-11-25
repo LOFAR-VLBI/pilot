@@ -96,6 +96,7 @@ steps:
         - selfcal_images
         - solution_inspection_images
         - fits_image
+        - selfcal_skymodel
       run: ../../steps/facet_selfcal_auto.cwl
 
     - id: addCS_selfcal
@@ -135,6 +136,10 @@ outputs:
   - id: fits_images
     type: File
     outputSource: run_facetselfcal/fits_image
+
+  - id: skymodel
+    type: File
+    outputSource: run_facetselfcal/selfcal_skymodel
 
   - id: selfcal_inspection_images
     type: File[]
